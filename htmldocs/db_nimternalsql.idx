@@ -1,0 +1,21 @@
+Examples	db_nimternalsql.html#examples	 Examples	
+Opening a connection to a database	db_nimternalsql.html#examples-opening-a-connection-to-a-database	  Opening a connection to a database	
+Creating a table	db_nimternalsql.html#examples-creating-a-table	  Creating a table	
+Inserting data	db_nimternalsql.html#examples-inserting-data	  Inserting data	
+DbConn	db_nimternalsql.html#DbConn	db_nimternalsql: DbConn	
+Row	db_nimternalsql.html#Row	db_nimternalsql: Row	
+open	db_nimternalsql.html#open,string,string,string,string	db_nimternalsql: open(connection, user, password, database: string): DbConn	
+close	db_nimternalsql.html#close,DbConn	db_nimternalsql: close(db: DbConn)	
+dbError	db_nimternalsql.html#dbError,DbConn	db_nimternalsql: dbError(db: DbConn)	
+exec	db_nimternalsql.html#exec,DbConn,SqlQuery,varargs[string,]	db_nimternalsql: exec(conn: DbConn; sql: SqlQuery; args: varargs[string, `$`])	
+tryExec	db_nimternalsql.html#tryExec,DbConn,SqlQuery,varargs[string,]	db_nimternalsql: tryExec(db: DbConn; query: SqlQuery; args: varargs[string, `$`]): bool	
+execAffectedRows	db_nimternalsql.html#execAffectedRows,DbConn,SqlQuery,varargs[string,]	db_nimternalsql: execAffectedRows(conn: DbConn; sql: SqlQuery; args: varargs[string, `$`]): int64	
+instantRows	db_nimternalsql.html#instantRows.i,DbConn,SqlQuery,varargs[string,]	db_nimternalsql: instantRows(conn: DbConn; sql: SqlQuery; args: varargs[string, `$`]): InstantRow	
+`[]`	db_nimternalsql.html#[],InstantRow,int	db_nimternalsql: `[]`(row: InstantRow; col: int): string	
+len	db_nimternalsql.html#len,InstantRow	db_nimternalsql: len(row: InstantRow): int	
+rows	db_nimternalsql.html#rows.i,DbConn,SqlQuery,varargs[string,]	db_nimternalsql: rows(db: DbConn; query: SqlQuery; args: varargs[string, `$`]): Row	
+getAllRows	db_nimternalsql.html#getAllRows,DbConn,SqlQuery,varargs[string,]	db_nimternalsql: getAllRows(db: DbConn; query: SqlQuery; args: varargs[string, `$`]): seq[Row]	
+getRow	db_nimternalsql.html#getRow,DbConn,SqlQuery,varargs[string,]	db_nimternalsql: getRow(conn: DbConn; query: SqlQuery; args: varargs[string, `$`]): Row	
+getValue	db_nimternalsql.html#getValue,DbConn,SqlQuery,varargs[string,]	db_nimternalsql: getValue(conn: DbConn; query: SqlQuery; args: varargs[string, `$`]): string	
+save	db_nimternalsql.html#save,DbConn,string	db_nimternalsql: save(conn: DbConn; filename: string)	
+restore	db_nimternalsql.html#restore,DbConn,string	db_nimternalsql: restore(conn: DbConn; filename: string)	

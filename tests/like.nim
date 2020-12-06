@@ -1,0 +1,21 @@
+import nimternalsql/like
+
+doAssert matchesLike("", "")
+doAssert matchesLike("", "%")
+doAssert matchesLike("Grummel", "%")
+doAssert matchesLike("Grummel", "%_")
+doAssert matchesLike("Grummel", "%umme%")
+doAssert matchesLike("Grummel", "%ru%me%")
+doAssert matchesLike("Grummel", "Grum%mel")
+doAssert matchesLike("Grummel", "Grummel%")
+doAssert matchesLike("Blabli", "%l_")
+doAssert matchesLike("Blabli", "%l%")
+doAssert matchesLike("Sql", "Sq_")
+doAssert matchesLike("Abrakadabra", "%ra_ad%")
+
+doAssert not matchesLike(" ", "")
+doAssert not matchesLike("", "_")
+doAssert not matchesLike("Grummel", "%umme")
+doAssert not matchesLike("Grummel", "umme%")
+doAssert not matchesLike("Blabli", "%la_")
+doAssert not matchesLike("Abrakadabra", "%ra_ab%")

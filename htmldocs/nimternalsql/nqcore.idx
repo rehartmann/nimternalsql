@@ -1,0 +1,60 @@
+maxPrecision	nimternalsql/nqcore.html#maxPrecision	nqcore: maxPrecision	
+tvkNull	nimternalsql/nqcore.html#tvkNull	NqValueKind.tvkNull	
+tvkInt	nimternalsql/nqcore.html#tvkInt	NqValueKind.tvkInt	
+tvkNumeric	nimternalsql/nqcore.html#tvkNumeric	NqValueKind.tvkNumeric	
+tvkFloat	nimternalsql/nqcore.html#tvkFloat	NqValueKind.tvkFloat	
+tvkString	nimternalsql/nqcore.html#tvkString	NqValueKind.tvkString	
+tvkBool	nimternalsql/nqcore.html#tvkBool	NqValueKind.tvkBool	
+tvkList	nimternalsql/nqcore.html#tvkList	NqValueKind.tvkList	
+NqValueKind	nimternalsql/nqcore.html#NqValueKind	nqcore: NqValueKind	
+NqValue	nimternalsql/nqcore.html#NqValue	nqcore: NqValue	
+VarResolver	nimternalsql/nqcore.html#VarResolver	nqcore: VarResolver	
+VTable	nimternalsql/nqcore.html#VTable	nqcore: VTable	
+BaseTableRef	nimternalsql/nqcore.html#BaseTableRef	nqcore: BaseTableRef	
+ColumnAssignment	nimternalsql/nqcore.html#ColumnAssignment	nqcore: ColumnAssignment	
+InstantRow	nimternalsql/nqcore.html#InstantRow	nqcore: InstantRow	
+Cursor	nimternalsql/nqcore.html#Cursor	nqcore: Cursor	
+newInstantRow	nimternalsql/nqcore.html#newInstantRow,VTable,seq[NqValue]	nqcore: newInstantRow(table: VTable; vals: seq[NqValue]): InstantRow	
+newMatInstantRow	nimternalsql/nqcore.html#newMatInstantRow,VTable,Record[MatValue]	nqcore: newMatInstantRow(table: VTable; key: Record[MatValue]): InstantRow	
+newWhereTable	nimternalsql/nqcore.html#newWhereTable,VTable,Expression	nqcore: newWhereTable(child: VTable; whereExp: Expression): VTable	
+newProjectTable	nimternalsql/nqcore.html#newProjectTable,VTable,seq[SelectElement]	nqcore: newProjectTable(child: VTable; columns: seq[SelectElement]): VTable	
+columnNo	nimternalsql/nqcore.html#columnNo.e,VTable,string,string	nqcore: columnNo(rtable: VTable; name: string; tableName: string): int	
+isQVarExp	nimternalsql/nqcore.html#isQVarExp,Expression	nqcore: isQVarExp(exp: Expression): bool	
+hash	nimternalsql/nqcore.html#hash,NqValue	nqcore: hash(v: NqValue): Hash	
+toNum	nimternalsql/nqcore.html#toNum,NqValue	nqcore: toNum(v: NqValue): NqValue	
+toNumeric	nimternalsql/nqcore.html#toNumeric,NqValue	nqcore: toNumeric(v: NqValue): NqValue	
+toInt	nimternalsql/nqcore.html#toInt,NqValue	nqcore: toInt(v: NqValue): int	
+toFloat	nimternalsql/nqcore.html#toFloat,NqValue	nqcore: toFloat(v: NqValue): float	
+adjustScale	nimternalsql/nqcore.html#adjustScale,NqValue,NqValue	nqcore: adjustScale(a: var NqValue; b: var NqValue)	
+toNqValue	nimternalsql/nqcore.html#toNqValue,MatValue,ColumnDef	nqcore: toNqValue(v: MatValue; colDef: ColumnDef): NqValue	
+toMatValue	nimternalsql/nqcore.html#toMatValue,NqValue,ColumnDef	nqcore: toMatValue(v: NqValue; colDef: ColumnDef): MatValue	
+`==`	nimternalsql/nqcore.html#==,seq,seq	nqcore: `==`(r1: seq; r2: seq): bool	
+newDatabase	nimternalsql/nqcore.html#newDatabase	nqcore: newDatabase(): Database	
+insert	nimternalsql/nqcore.html#insert,BaseTable,seq[NqValue]	nqcore: insert(table: BaseTable; values: seq[NqValue])	
+getTable	nimternalsql/nqcore.html#getTable,Database,string	nqcore: getTable(db: Database; tableName: string): BaseTable	
+eval	nimternalsql/nqcore.html#eval.e,Expression,VarResolver,AggrResolver	nqcore: eval(exp: Expression; varResolver: VarResolver; aggrResolver: AggrResolver = proc (\n    exp: ScalarOpExp): NqValue = raiseDbError(exp.opName &amp; &quot; not supported&quot;)): NqValue	
+eval	nimternalsql/nqcore.html#eval.e,StringLit,VarResolver,AggrResolver	nqcore: eval(exp: StringLit; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
+createBaseTable	nimternalsql/nqcore.html#createBaseTable,Database,string,openArray[ColumnDef],seq[string]	nqcore: createBaseTable(db: Database; name: string; columns: openArray[ColumnDef];\n                key: seq[string]): BaseTable	
+dropBaseTable	nimternalsql/nqcore.html#dropBaseTable,Database,string	nqcore: dropBaseTable(db: Database; name: string)	
+eval	nimternalsql/nqcore.html#eval.e,NumericLit,VarResolver,AggrResolver	nqcore: eval(exp: NumericLit; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
+eval	nimternalsql/nqcore.html#eval.e,BoolLit,VarResolver,AggrResolver	nqcore: eval(exp: BoolLit; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
+eval	nimternalsql/nqcore.html#eval.e,NullLit,VarResolver,AggrResolver	nqcore: eval(exp: NullLit; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
+newCursor	nimternalsql/nqcore.html#newCursor.e,VTable,openArray[string]	nqcore: newCursor(table: VTable; args: openArray[string]): Cursor	
+next	nimternalsql/nqcore.html#next.e,Cursor,InstantRow,VarResolver	nqcore: next(cursor: Cursor; row: var InstantRow; varResolver: VarResolver = nil): bool	
+instantRows	nimternalsql/nqcore.html#instantRows.i,VTable,varargs[string]	nqcore: instantRows(rtable: VTable; args: varargs[string]): InstantRow	
+columnCount	nimternalsql/nqcore.html#columnCount.e,VTable	nqcore: columnCount(table: VTable): Natural	
+columnCount	nimternalsql/nqcore.html#columnCount,InstantRow	nqcore: columnCount(row: InstantRow): int	
+eval	nimternalsql/nqcore.html#eval.e,ScalarOpExp,VarResolver,AggrResolver	nqcore: eval(exp: ScalarOpExp; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
+getAggrs	nimternalsql/nqcore.html#getAggrs,seq[SelectElement]	nqcore: getAggrs(sels: seq[SelectElement]): seq[Expression]	
+eval	nimternalsql/nqcore.html#eval.e,QVarExp,VarResolver,AggrResolver	nqcore: eval(exp: QVarExp; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
+eval	nimternalsql/nqcore.html#eval.e,ListExp,VarResolver,AggrResolver	nqcore: eval(exp: ListExp; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
+eval	nimternalsql/nqcore.html#eval.e,VTable,VarResolver,AggrResolver	nqcore: eval(exp: VTable; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
+columnNo	nimternalsql/nqcore.html#columnNo.e,BaseTable,string	nqcore: columnNo(rtable: BaseTable; name: string): int	
+columnValueAt	nimternalsql/nqcore.html#columnValueAt,InstantRow,Natural	nqcore: columnValueAt(row: InstantRow; col: Natural): NqValue	
+newGroupTable	nimternalsql/nqcore.html#newGroupTable,VTable,seq[Expression],seq[QVarExp]	nqcore: newGroupTable(table: VTable; aggrs: seq[Expression]; groupBy: seq[QVarExp]): VTable	
+instantRows	nimternalsql/nqcore.html#instantRows.i,BaseTableRef	nqcore: instantRows(tableRef: BaseTableRef): InstantRow	
+isConst	nimternalsql/nqcore.html#isConst,Expression	nqcore: isConst(exp: Expression): bool	
+expKeyCols	nimternalsql/nqcore.html#expKeyCols,Expression,BaseTableRef,proc(Expression),openArray[string]	nqcore: expKeyCols(exp: Expression; tableRef: BaseTableRef;\n           isConstProc: proc (exp: Expression): bool; args: openArray[string]): seq[\n    tuple[colNo: Natural, exp: Expression]]	
+update	nimternalsql/nqcore.html#update,BaseTable,seq[ColumnAssignment],Expression,openArray[string]	nqcore: update(table: BaseTable; assignments: seq[ColumnAssignment];\n       whereExp: Expression; args: openArray[string]): int64	
+delete	nimternalsql/nqcore.html#delete,BaseTable,Expression,openArray[string]	nqcore: delete(table: BaseTable; whereExp: Expression; args: openArray[string]): int64	
+`$`	nimternalsql/nqcore.html#$,NqValue	nqcore: `$`(val: NqValue): string	

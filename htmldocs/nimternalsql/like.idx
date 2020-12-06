@@ -1,0 +1,2 @@
+matchesLike	nimternalsql/like.html#matchesLike,seq[Rune],seq[Rune],Natural	like: matchesLike(s: seq[Rune]; pattern: seq[Rune]; startAt: Natural = 0): bool	
+matchesLike	nimternalsql/like.html#matchesLike,string,string	like: matchesLike(s: string; pattern: string): bool	

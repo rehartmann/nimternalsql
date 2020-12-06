@@ -1,0 +1,3 @@
+raiseIoError	nimternalsql/snapshot.html#raiseIoError,string	snapshot: raiseIoError(msg: string)	
+save	nimternalsql/snapshot.html#save,Database,string	snapshot: save(db: Database; filename: string)	
+restore	nimternalsql/snapshot.html#restore,Database,string	snapshot: restore(db: var Database; filename: string)	

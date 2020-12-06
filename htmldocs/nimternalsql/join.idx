@@ -1,0 +1,2 @@
+JoinTable	nimternalsql/join.html#JoinTable	join: JoinTable	
+newJoinTable	nimternalsql/join.html#newJoinTable,VTable,VTable,Expression	join: newJoinTable(lchild: VTable; rchild: VTable; exp: Expression = nil): VTable	
