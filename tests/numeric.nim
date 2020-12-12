@@ -31,14 +31,35 @@ doAssert parseFloat(res[0][2]) == 2520.0084
 doAssert res[0][3] == "143.132"
 doAssert parseFloat(res[0][4]) == 1207.004
 
-res = getAllRows(db, sql"SELECT ? + ?, 5.5 + 200.25, 20 - ?, ? / ? FROM tst",
-                      "3", "2", "1.1", "5", "2")
+res = getAllRows(db,
+                 sql"""SELECT ? + ?, 5.5 + 200.25, 20 - ?, ? / ?,
+                              CASE
+                                WHEN tst.b > 1000 THEN 'Very high'
+                                WHEN tst.b > 100 THEN 'High'
+                                WHEN tst.b > 10 THEN 'Medium'
+                                WHEN tst.b > 1 THEN 'Low'
+                                ELSE 'Very low'
+                              END,
+                              CASE tst.f
+                                WHEN 6 THEN 'Six'
+                                WHEN 7 THEN 'Seven'
+                                WHEN 8 THEN 'Eight'
+                                ELSE 'Other'
+                              END,
+                              CASE tst.f
+                                WHEN 6 THEN 'Six'
+                              END
+                       FROM tst""",
+                 "3", "2", "1.1", "5", "2")
 
 doAssert res.len == 1
 doAssert res[0][0] == "5"
 doAssert res[0][1] == "205.75"
 doAssert res[0][2] == "18.9"
 doAssert res[0][3] == "2.5"
+doAssert res[0][4] == "Low"
+doAssert res[0][5] == "Seven"
+doAssert res[0][6] == ""
 
 exec(db, sql"CREATE TABLE tst2 (a decimal primary key, b decimal(10), c dec(18, 8))")
 

@@ -20,10 +20,10 @@ type
   Expression* = ref object of RootObj
   ScalarLit* = ref object of Expression
     val*: string
-  StringLit* = ref object of ScalarLit
-  NumericLit* = ref object of ScalarLit
-  BoolLit* = ref object of ScalarLit
-  NullLit* = ref object of Expression
+  StringLit* {.final.} = ref object of ScalarLit
+  NumericLit* {.final.} = ref object of ScalarLit
+  BoolLit* {.final.} = ref object of ScalarLit
+  NullLit* {.final.} = ref object of Expression
   ScalarOpExp* {.acyclic.} = ref object of Expression
     opName*: string
     args*: seq[Expression]
@@ -32,6 +32,10 @@ type
     tableName*: string
   ListExp* {.acyclic.} = ref object of Expression
     exps*: seq[Expression]
+  CaseExp* {.acyclic.} = ref object of Expression
+    exp*: Expression
+    whens*: seq[tuple[cond: Expression, exp: Expression]]
+    elseExp*: Expression
   SelectElement* {.acyclic.} = object
     colName*: string
     exp*: Expression
@@ -99,6 +103,11 @@ func newScalarOpExp*(name: string, args: varargs[Expression]): Expression =
 
 func newQVarExp*(name: string, tableName: string = ""): QVarExp =
   result = QVarExp(name: name, tableName: tableName)
+
+func newCaseExp*(exp: Expression,
+                 whens: seq[tuple[cond: Expression, exp: Expression]],
+                 elseExp: Expression): Expression =
+  result = CaseExp(exp: exp, whens: whens, elseExp: elseExp)
 
 method `$`*(exp: Expression): string {.base.} = nil
 

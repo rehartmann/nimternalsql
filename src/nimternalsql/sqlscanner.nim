@@ -4,10 +4,11 @@ import nqcommon
 type
   TokenKind* = enum
     tokAll, tokAnd, tokAny, tokAs, tokAsc, tokBy, tokChar, tokDefault, tokDrop,
-    tokVarchar, tokNumeric, tokCreate, tokCross, tokCount, tokDecimal,
-    tokDelete, tokDesc, tokDistinct, tokDouble, tokPrecision, tokExists,
-    tokFrom, tokGroup, tokIf, tokInsert, tokUpdate, tokSet, tokIn, tokIs,
-    tokInto, tokJoin, tokKey, tokLike, tokNot, tokOn, tokOr, tokOrder,
+    tokVarchar, tokNumeric, tokCase, tokWhen, tokThen, tokElse, tokEnd,
+    tokCreate, tokCross, tokCount, tokDecimal, tokDelete, tokDesc,
+    tokDistinct, tokDouble, tokPrecision, tokExists, tokFrom, tokGroup,
+    tokIf, tokInsert, tokUpdate, tokSet, tokIn, tokIs, tokInto, tokJoin,
+    tokKey, tokLike, tokNot, tokOn, tokOr, tokOrder,
     tokPrimary, tokSelect, tokTable, tokUnion, tokValues, tokWhere,
     tokAsterisk, tokDiv, tokPlus, tokNull, tokMinus, tokRightParen,
     tokLeftParen, tokComma, tokDot, tokEq, tokNeq, tokLt, tokLe, tokGt, tokGe,
@@ -91,6 +92,8 @@ proc toToken(s: string): Token =
       return Token(kind: tokAsc)
     of "BY":
       return Token(kind: tokBy)
+    of "CASE":
+      return Token(kind: tokCase)
     of "COUNT":
       return Token(kind: tokCount)
     of "CHARACTER", "CHAR":
@@ -113,12 +116,18 @@ proc toToken(s: string): Token =
       return Token(kind: tokDouble)
     of "DROP":
       return Token(kind: tokDrop)
+    of "ELSE":
+      return Token(kind: tokElse)
+    of "END":
+      return Token(kind: tokEnd)
     of "EXISTS":
       return Token(kind: tokExists)
     of "FALSE":
       return Token(kind: tokFalse)
     of "GROUP":
       return Token(kind: tokGroup)
+    of "THEN":
+      return Token(kind: tokThen)
     of "TRUE":
       return Token(kind: tokTrue)
     of "FROM":
@@ -171,6 +180,8 @@ proc toToken(s: string): Token =
       return Token(kind: tokUnion)
     of "VALUES":
       return Token(kind: tokValues)
+    of "WHEN":
+      return Token(kind: tokWhen)
     of "WHERE":
       return Token(kind: tokWhere)
   result = Token(kind: tokIdentifier, identifier: toUpperAscii(s))

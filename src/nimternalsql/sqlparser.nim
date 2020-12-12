@@ -109,6 +109,27 @@ proc parseOperand(scanner: Scanner, argCount: var int): Expression =
       result = newBoolLit(false)
     of tokNull:
       result = newNullLit()
+    of tokCase:
+      var exp, elseExp: Expression
+      var whens: seq[tuple[cond: Expression, exp: Expression]]
+      var t = nextToken(scanner)
+      if t.kind != tokWhen:
+        exp = parseExpression(scanner, argCount, false)
+        t = currentToken(scanner)
+      while t.kind == tokWhen:
+        let whenExp = parseExpression(scanner, argCount)
+        if currentToken(scanner).kind != tokThen:
+          raiseDbError("THEN expected")
+        let exp = parseExpression(scanner, argCount)
+        whens.add((cond: whenExp, exp: exp))
+        t = currentToken(scanner)
+      if t.kind == tokElse:
+        elseExp = parseExpression(scanner, argCount)
+      elif t.kind != tokEnd: 
+        raiseDbError("WHEN, ELSE, or END expected")
+      if currentToken(scanner).kind != tokEnd:
+        raiseDbError("END expected")
+      result = newCaseExp(exp, whens, elseExp)
     else:
       raiseDbError("unsupported primitive: " & $t.kind)
   discard nextToken(scanner) 

@@ -836,6 +836,24 @@ method eval*(exp: VTable, varResolver: VarResolver,
   if count == 0:
     result = NqValue(kind: tvkNull)
 
+method eval*(exp: CaseExp, varResolver: VarResolver,
+    aggrResolver: AggrResolver): NqValue =
+  if exp.exp != nil:
+    let val = eval(exp.exp, varResolver, aggrResolver)
+    for i in 0..<exp.whens.len:
+      let whenVal = eval(exp.whens[i].cond, varResolver, aggrResolver)
+      if whenVal == val:
+        return eval(exp.whens[i].exp, varResolver, aggrResolver)
+  else:
+    for i in 0..<exp.whens.len:
+      let cond = eval(exp.whens[i].cond, varResolver, aggrResolver)
+      if cond.kind != tvkBool:
+        raiseDbError("WHEN expression must be of type BOOLEAN")
+      if cond.boolVal:
+        return eval(exp.whens[i].exp, varResolver, aggrResolver)
+  result = if exp.elseExp != nil: eval(exp.elseExp, varResolver, aggrResolver)
+           else: NqValue(kind: tvkNull)
+
 method columnCount(table: BaseTableRef): Natural =
   result = HashBaseTable(table.table).def.len
 
