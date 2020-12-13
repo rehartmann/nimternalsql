@@ -40,30 +40,11 @@ type
     colName*: string
     exp*: Expression
 
-  MatValueKind* = enum kInt, kNumeric, kFloat, kString, kBool, kNull
-  ## A value in a base table.
-  ## The scale in the case of kNumeric is taken from the column definition.
-  MatValue* = object
-    case kind*: MatValueKind
-      of kInt:
-        intVal*: int32
-      of kNumeric:
-        numericVal*: int64
-      of kFloat:
-        floatVal*: float
-      of kString:
-        strVal*: string
-      of kBool:
-        boolVal*: bool
-      of kNull:
-        discard
   Record*[T] = seq[T]
   BaseTable* = ref object of RootObj
     name*: string
     def*: seq[ColumnDef]
     primaryKey*: seq[Natural]
-  HashBaseTable* = ref object of BaseTable
-    rows*: Table[Record[MatValue], Record[MatValue]]
   Database* = ref object
     tables*: Table[string, BaseTable]
   SqlTableRefKind* = enum trkSimpleTableRef, trkRelOp
