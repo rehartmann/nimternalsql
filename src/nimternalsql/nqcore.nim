@@ -29,24 +29,24 @@ type
 #  SqlError = object of DbError
 #    sqlState: string
 
-  NqValueKind* = enum tvkNull, tvkInt, tvkNumeric, tvkFloat, tvkString,
-                         tvkBool, tvkList
+  NqValueKind* = enum nqkNull, nqkInt, nqkNumeric, nqkFloat, nqkString,
+                         nqkBool, nqkList
   NqValue* = object
     case kind*: NqValueKind
-    of tvkNull:
+    of nqkNull:
       discard
-    of tvkInt:
+    of nqkInt:
       intVal*: int32
-    of tvkNumeric:
+    of nqkNumeric:
       numericVal*: int64
       scale*: Natural
-    of tvkFloat:
+    of nqkFloat:
       floatVal*: float
-    of tvkString:
+    of nqkString:
       strVal*: string
-    of tvkBool:
+    of nqkBool:
       boolVal*: bool
-    of tvkList:
+    of nqkList:
       listVal: seq[NqValue]
   VarResolver* = proc(name: string, rangeVar: string): NqValue
   AggrResolver = proc(exp: ScalarOpExp): NqValue
@@ -128,28 +128,28 @@ func hash(v: MatValue): Hash =
 
 func hash*(v: NqValue): Hash =
   case v.kind
-  of tvkInt: result = hash(v.intVal)
-  of tvkNumeric: result = hash(v.numericVal)
-  of tvkFloat: result = hash(v.floatVal)
-  of tvkString: result = hash(v.strVal)
-  of tvkBool: result = hash(v.boolVal)
-  of tvkNull: result = 17
-  of tvkList: result = if v.listVal.len == 0: 13 else: hash(v.listVal[0])
+  of nqkInt: result = hash(v.intVal)
+  of nqkNumeric: result = hash(v.numericVal)
+  of nqkFloat: result = hash(v.floatVal)
+  of nqkString: result = hash(v.strVal)
+  of nqkBool: result = hash(v.boolVal)
+  of nqkNull: result = 17
+  of nqkList: result = if v.listVal.len == 0: 13 else: hash(v.listVal[0])
 
 func toNum*(v: NqValue): NqValue =
   case v.kind
-    of tvkInt, tvkNumeric, tvkFloat:
+    of nqkInt, nqkNumeric, nqkFloat:
       result = v
-    of tvkString:
+    of nqkString:
       try:
         if v.strVal.len > maxPrecision + 1:
-          result = NqValue(kind: tvkFloat, floatVal: parseFloat(v.strVal))
+          result = NqValue(kind: nqkFloat, floatVal: parseFloat(v.strVal))
         else:
           let dotPos = find(v.strVal, ".")
           if dotPos == -1:
-            result = NqValue(kind: tvkNumeric, numericVal: parseInt(v.strVal))
+            result = NqValue(kind: nqkNumeric, numericVal: parseInt(v.strVal))
           else:
-            result = NqValue(kind: tvkNumeric,
+            result = NqValue(kind: nqkNumeric,
                         numericVal: parseInt(v.strVal[0 .. dotPos - 1] &
                             v.strVal[dotPos + 1 .. ^1]),
                         scale: v.strVal.len - 1 - dotPos)
@@ -159,22 +159,22 @@ func toNum*(v: NqValue): NqValue =
 
 func toNumeric*(v: NqValue): NqValue =
   case v.kind
-    of tvkInt:
-      result = NqValue(kind: tvkNumeric, scale: 0, numericVal: v.intVal)
-    of tvkNumeric:
+    of nqkInt:
+      result = NqValue(kind: nqkNumeric, scale: 0, numericVal: v.intVal)
+    of nqkNumeric:
       result = v
-    of tvkFloat:
-      result = NqValue(kind: tvkNumeric, scale: 0, numericVal: int64(round(v.floatVal)))
-    of tvkString:
+    of nqkFloat:
+      result = NqValue(kind: nqkNumeric, scale: 0, numericVal: int64(round(v.floatVal)))
+    of nqkString:
       try:
         if v.strVal.len > maxPrecision + 1:
-          result = NqValue(kind: tvkFloat, floatVal: parseFloat(v.strVal))
+          result = NqValue(kind: nqkFloat, floatVal: parseFloat(v.strVal))
         else:
           let dotPos = find(v.strVal, ".")
           if dotPos == -1:
-            result = NqValue(kind: tvkNumeric, numericVal: parseInt(v.strVal))
+            result = NqValue(kind: nqkNumeric, numericVal: parseInt(v.strVal))
           else:
-            result = NqValue(kind: tvkNumeric,
+            result = NqValue(kind: nqkNumeric,
                         numericVal: parseInt(v.strVal[0 .. dotPos - 1] &
                             v.strVal[dotPos + 1 .. ^1]),
                         scale: v.strVal.len - 1 - dotPos)
@@ -184,11 +184,11 @@ func toNumeric*(v: NqValue): NqValue =
 
 func toInt*(v: NqValue): int =
   case v.kind
-    of tvkInt:
+    of nqkInt:
       result = v.intVal
-    of tvkFloat:
+    of nqkFloat:
       result = int(round(v.floatVal))
-    of tvkNumeric:
+    of nqkNumeric:
       var scale = v.scale
       var num = v.numericVal
       while scale > 1:
@@ -199,7 +199,7 @@ func toInt*(v: NqValue): int =
       if num > int64(high(int)) or num < int64(low(int)):
         raiseDbError("numeric overflow")
       result = int(num)
-    of tvkString:
+    of nqkString:
       try:
         result = parseInt(v.strVal)
       except ValueError:
@@ -208,16 +208,16 @@ func toInt*(v: NqValue): int =
 
 func toFloat*(v: NqValue): float =
   case v.kind
-    of tvkInt:
+    of nqkInt:
       result = float(v.intVal)
-    of tvkNumeric:
+    of nqkNumeric:
       result = float(v.numericVal)
       var scale = v.scale
       while scale > 0:
         result /= 10.0
         scale -= 1
-    of tvkFloat: result = v.floatVal
-    of tvkString:
+    of nqkFloat: result = v.floatVal
+    of nqkString:
       try:
         result = parseFloat(v.strVal)
       except ValueError:
@@ -226,8 +226,8 @@ func toFloat*(v: NqValue): float =
 
 func toBool(v: NqValue): bool =
   case v.kind
-    of tvkBool: result = v.boolVal
-    of tvkString:
+    of nqkBool: result = v.boolVal
+    of nqkString:
       if toUpperAscii(v.strVal) == "TRUE":
         result = true
       elif toUpperAscii(v.strVal) == "FALSE":
@@ -253,16 +253,16 @@ proc adjustScale*(a: var NqValue, b: var NqValue) =
     adjustScaleFirstGreater(b, a)
 
 func `==`(v1: NqValue, v2: NqValue): bool =
-  if v1.kind == tvkInt and v2.kind == tvkInt:
+  if v1.kind == nqkInt and v2.kind == nqkInt:
     result = v1.intVal == v2.intVal
-  elif v1.kind == tvkFloat or v2.kind == tvkFloat:
+  elif v1.kind == nqkFloat or v2.kind == nqkFloat:
     result = toFloat(v1) == toFloat(v2)
-  elif v1.kind == tvkBool and v2.kind == tvkBool:
+  elif v1.kind == nqkBool and v2.kind == nqkBool:
     result = v1.boolVal == v2.boolVal
-  elif v1.kind == tvkString and v2.kind == tvkString:
+  elif v1.kind == nqkString and v2.kind == nqkString:
     return v1.strVal == v2.strVal
-  elif v1.kind == tvkInt or v1.kind == tvkNumeric or
-        v2.kind == tvkInt or v2.kind == tvkNumeric:
+  elif v1.kind == nqkInt or v1.kind == nqkNumeric or
+        v2.kind == nqkInt or v2.kind == nqkNumeric:
     var a = toNumeric(v1)
     var b = toNumeric(v2)
     adjustScale(a, b)
@@ -274,16 +274,16 @@ func `!=`(f1: NqValue, f2: NqValue): bool =
   result = not (f1 == f2)
 
 func `<=`(v1: NqValue, v2: NqValue): bool =
-  if v1.kind == tvkInt and v2.kind == tvkInt:
+  if v1.kind == nqkInt and v2.kind == nqkInt:
     result = v1.intVal <= v2.intVal
-  elif v1.kind == tvkFloat or v2.kind == tvkFloat:
+  elif v1.kind == nqkFloat or v2.kind == nqkFloat:
     result = toFloat(v1) <= toFloat(v2)
-  elif v1.kind == tvkBool and v2.kind == tvkBool:
+  elif v1.kind == nqkBool and v2.kind == nqkBool:
     result = v1.boolVal <= v2.boolVal
-  elif v1.kind == tvkString and v2.kind == tvkString:
+  elif v1.kind == nqkString and v2.kind == nqkString:
     result = v1.strVal <= v2.strVal
-  elif v1.kind == tvkInt or v1.kind == tvkNumeric or
-        v2.kind == tvkInt or v2.kind == tvkNumeric:
+  elif v1.kind == nqkInt or v1.kind == nqkNumeric or
+        v2.kind == nqkInt or v2.kind == nqkNumeric:
     var a = toNumeric(v1)
     var b = toNumeric(v2)
     adjustScale(a, b)
@@ -302,13 +302,13 @@ func `>`(f1: NqValue, f2: NqValue): bool =
 
 func toNqValue*(v: MatValue, colDef: ColumnDef): NqValue =
   case v.kind:
-    of kInt: return NqValue(kind: tvkInt, intVal: v.intVal)
-    of kNumeric: return NqValue(kind: tvkNumeric, numericVal: v.numericVal,
+    of kInt: return NqValue(kind: nqkInt, intVal: v.intVal)
+    of kNumeric: return NqValue(kind: nqkNumeric, numericVal: v.numericVal,
         scale: colDef.scale)
-    of kFloat: return NqValue(kind: tvkFloat, floatVal: v.floatVal)
-    of kString: return NqValue(kind: tvkString, strVal: v.strVal)
-    of kBool: return NqValue(kind: tvkBool, boolVal: v.boolVal)
-    of kNull: return NqValue(kind: tvkNull)
+    of kFloat: return NqValue(kind: nqkFloat, floatVal: v.floatVal)
+    of kString: return NqValue(kind: nqkString, strVal: v.strVal)
+    of kBool: return NqValue(kind: nqkBool, boolVal: v.boolVal)
+    of kNull: return NqValue(kind: nqkNull)
 
 func typeKind(def: ColumnDef): MatValueKind =
   case toUpperAscii(def.typ):
@@ -338,7 +338,7 @@ func setScale(v: NqValue, scale: Natural): NqValue =
 proc toMatValue*(v: NqValue, colDef: ColumnDef): MatValue =
   ## Converts a NqValue into a MatValue.
 
-  if v.kind == tvkNull:
+  if v.kind == nqkNull:
     if colDef.notNull:
       raiseDbError("destination is not nullable")
     return MatValue(kind: kNull)
@@ -348,18 +348,18 @@ proc toMatValue*(v: NqValue, colDef: ColumnDef): MatValue =
     of kNumeric:
       var val: int64
       case v.kind:
-        of tvkInt:
+        of nqkInt:
           val = toInt(v)
-        of tvkNumeric:
+        of nqkNumeric:
           val = v.setScale(colDef.scale).numericVal
-        of tvkFloat:
+        of nqkFloat:
           var v = v.floatVal
           var scale = colDef.scale
           while scale > 0:
             v *= 10
             scale -= 1
           val = int64(v)
-        of tvkString:
+        of nqkString:
           val = parseInt(v.strVal)
         else:
           raiseDbError("invalid value for type " & colDef.typ)
@@ -370,21 +370,21 @@ proc toMatValue*(v: NqValue, colDef: ColumnDef): MatValue =
     of kFloat:
       var val: float
       case v.kind:
-        of tvkNumeric:
+        of nqkNumeric:
           val = float(v.numericVal)
           var scale = v.scale
           while scale > 0:
             val /= 10.0
             scale -= 1
-        of tvkFloat:
+        of nqkFloat:
           val = v.floatVal
-        of tvkString:
+        of nqkString:
           val = parseFloat(v.strVal)
         else:
           raiseDbError("invalid value for type " & colDef.typ)
       result = MatValue(kind: kFloat, floatVal: val)
     of kString:
-      if v.kind != tvkString:
+      if v.kind != nqkString:
         raiseDbError("invalid value for type " & colDef.typ & $ord(v.kind))
       var s = v.strVal
       if colDef.typ == "CHAR" or colDef.typ == "VARCHAR":
@@ -397,9 +397,9 @@ proc toMatValue*(v: NqValue, colDef: ColumnDef): MatValue =
     of kBool:
       var val: bool
       case v.kind:
-        of tvkBool:
+        of nqkBool:
           val = v.boolVal
-        of tvkString:
+        of nqkString:
           if toUpperAscii(v.strVal) == "TRUE":
             val = true
           elif toUpperAscii(v.strVal) == "FALSE":
@@ -511,7 +511,7 @@ method eval*(exp: Expression, varResolver: VarResolver,
 
 method eval*(exp: StringLit, varResolver: VarResolver,
     aggrResolver: AggrResolver): NqValue =
-  result = NqValue(kind: tvkString, strVal: exp.val)
+  result = NqValue(kind: nqkString, strVal: exp.val)
 
 proc createBaseTable*(db: Database, name: string, columns: openArray[ColumnDef],
                    key: seq[string]): BaseTable =
@@ -544,49 +544,49 @@ proc dropBaseTable*(db: Database, name: string) =
 method eval*(exp: NumericLit, varResolver: VarResolver,
     aggrResolver: AggrResolver): NqValue =
   if contains(exp.val, "E"):
-    return NqValue(kind: tvkFloat,
+    return NqValue(kind: nqkFloat,
                       floatVal: parseFloat(exp.val))
   let dotPos = find(exp.val, ".")
   if dotPos >= 0:
-    result = NqValue(kind: tvkNumeric,
+    result = NqValue(kind: nqkNumeric,
                         numericVal: parseInt(exp.val[0 .. dotPos - 1] & exp.val[
                             dotPos + 1 .. ^1]),
                         scale: exp.val.len - 1 - dotPos)
   else:
-    result = NqValue(kind: tvkNumeric, numericVal: parseInt(exp.val))
+    result = NqValue(kind: nqkNumeric, numericVal: parseInt(exp.val))
 
 method eval*(exp: BoolLit, varResolver: VarResolver,
     aggrResolver: AggrResolver): NqValue =
-  result = NqValue(kind: tvkBool, boolVal: if exp.val ==
+  result = NqValue(kind: nqkBool, boolVal: if exp.val ==
       "TRUE": true else: false)
 
 method eval*(exp: NullLit, varResolver: VarResolver,
     aggrResolver: AggrResolver): NqValue =
-  result = NqValue(kind: tvkNull)
+  result = NqValue(kind: nqkNull)
 
 proc `+`(a: NqValue, b: NqValue): NqValue =
-  if a.kind == tvkInt and b.kind == tvkInt:
-    result = NqValue(kind: tvkInt, intVal: a.intVal + b.intVal)
-  if a.kind == tvkFloat or b.kind == tvkFloat:
-    result = NqValue(kind: tvkFloat, floatVal: a.toFloat() + b.toFloat())
+  if a.kind == nqkInt and b.kind == nqkInt:
+    result = NqValue(kind: nqkInt, intVal: a.intVal + b.intVal)
+  if a.kind == nqkFloat or b.kind == nqkFloat:
+    result = NqValue(kind: nqkFloat, floatVal: a.toFloat() + b.toFloat())
   else:
     var adja = toNumeric(a)
     var adjb = toNumeric(b)
     adjustScale(adja, adjb)
-    result = NqValue(kind: tvkNumeric,
+    result = NqValue(kind: nqkNumeric,
                         numericVal: adja.numericVal + adjb.numericVal,
                         scale: adja.scale)
 
 proc `-`(a: NqValue, b: NqValue): NqValue =
-  if a.kind == tvkInt and b.kind == tvkInt:
-    result = NqValue(kind: tvkInt, intVal: a.intVal - b.intVal)
-  if a.kind == tvkFloat or b.kind == tvkFloat:
-    result = NqValue(kind: tvkFloat, floatVal: a.toFloat() - b.toFloat())
+  if a.kind == nqkInt and b.kind == nqkInt:
+    result = NqValue(kind: nqkInt, intVal: a.intVal - b.intVal)
+  if a.kind == nqkFloat or b.kind == nqkFloat:
+    result = NqValue(kind: nqkFloat, floatVal: a.toFloat() - b.toFloat())
   else:
     var adja = toNumeric(a)
     var adjb = toNumeric(b)
     adjustScale(adja, adjb)
-    result = NqValue(kind: tvkNumeric,
+    result = NqValue(kind: nqkNumeric,
                         numericVal: adja.numericVal - adjb.numericVal,
                         scale: adja.scale)
 
@@ -634,15 +634,15 @@ func evalCmpAllOrAny(arg0: NqValue, exp: ScalarOpExp,
   if columnCount(VTable(exp.args[0])) != 1:
     raiseDbError("subquery must have exactly one column")
   if exp.opName == "ALL":
-    result = NqValue(kind: tvkBool, boolVal: true)
+    result = NqValue(kind: nqkBool, boolVal: true)
     for row in instantRows(VTable(exp.args[0]), varResolver):
       if not cmp(arg0, row.columnValueAt(0)):
-        return NqValue(kind: tvkBool, boolVal: false)
+        return NqValue(kind: nqkBool, boolVal: false)
   else:
-    result = NqValue(kind: tvkBool, boolVal: false)
+    result = NqValue(kind: nqkBool, boolVal: false)
     for row in instantRows(VTable(exp.args[0]), varResolver):
       if cmp(arg0, row.columnValueAt(0)):
-        return NqValue(kind: tvkBool, boolVal: true)
+        return NqValue(kind: nqkBool, boolVal: true)
 
 method eval*(exp: ScalarOpExp, varResolver: VarResolver,
     aggrResolver: AggrResolver): NqValue =
@@ -653,76 +653,76 @@ method eval*(exp: ScalarOpExp, varResolver: VarResolver,
       if not (exp.args[0] of VTable):
         raiseDbError("argument of EXISTS must be a table expression")
       for row in instantRows(VTable(exp.args[0]), varResolver):
-        return NqValue(kind: tvkBool, boolVal: true)
-      return NqValue(kind: tvkBool, boolVal: false)
+        return NqValue(kind: nqkBool, boolVal: true)
+      return NqValue(kind: nqkBool, boolVal: false)
   let arg0 = eval(exp.args[0], varResolver, aggrResolver)
   if exp.opName == "isNull":
-    return NqValue(kind: tvkBool, boolVal: arg0.kind == tvkNull)
-  if arg0.kind == tvkNull:
-    return NqValue(kind: tvkNull)
+    return NqValue(kind: nqkBool, boolVal: arg0.kind == nqkNull)
+  if arg0.kind == nqkNull:
+    return NqValue(kind: nqkNull)
   case exp.opName:
     of "AND":
       let arg1 = eval(exp.args[1], varResolver, aggrResolver)
-      if arg1.kind == tvkNull:
-        return NqValue(kind: tvkNull)
-      result = NqValue(kind: tvkBool,
+      if arg1.kind == nqkNull:
+        return NqValue(kind: nqkNull)
+      result = NqValue(kind: nqkBool,
           boolVal: arg0.toBool and arg1.toBool)
     of "OR":
       let arg1 = eval(exp.args[1], varResolver, aggrResolver)
-      if arg1.kind == tvkNull:
-        return NqValue(kind: tvkNull)
-      result = NqValue(kind: tvkBool,
+      if arg1.kind == nqkNull:
+        return NqValue(kind: nqkNull)
+      result = NqValue(kind: nqkBool,
           boolVal: arg0.toBool or arg1.toBool)
     of "NOT":
-      result = NqValue(kind: tvkBool, boolVal: not arg0.toBool)
+      result = NqValue(kind: nqkBool, boolVal: not arg0.toBool)
     of "=":
       if isAllOrAny(exp.args[1]):
         result = evalCmpAllOrAny(arg0, (ScalarOpExp)exp.args[1], `==`, varResolver)
       else:
         let arg1 = eval(exp.args[1], varResolver, aggrResolver)
-        if arg1.kind == tvkNull:
-          return NqValue(kind: tvkNull)
-        result = NqValue(kind: tvkBool, boolVal: arg0 == arg1)
+        if arg1.kind == nqkNull:
+          return NqValue(kind: nqkNull)
+        result = NqValue(kind: nqkBool, boolVal: arg0 == arg1)
     of "<>":
       if isAllOrAny(exp.args[1]):
         result = evalCmpAllOrAny(arg0, (ScalarOpExp)exp.args[1], `!=`, varResolver)
       else:
         let arg1 = eval(exp.args[1], varResolver, aggrResolver)
-        if arg1.kind == tvkNull:
-          return NqValue(kind: tvkNull)
-        result = NqValue(kind: tvkBool, boolVal: arg0 != arg1)
+        if arg1.kind == nqkNull:
+          return NqValue(kind: nqkNull)
+        result = NqValue(kind: nqkBool, boolVal: arg0 != arg1)
     of "<":
       if isAllOrAny(exp.args[1]):
         result = evalCmpAllOrAny(arg0, (ScalarOpExp)exp.args[1], `<`, varResolver)
       else:
         let arg1 = eval(exp.args[1], varResolver, aggrResolver)
-        if arg1.kind == tvkNull:
-          return NqValue(kind: tvkNull)
-        result = NqValue(kind: tvkBool, boolVal: arg0 < arg1)
+        if arg1.kind == nqkNull:
+          return NqValue(kind: nqkNull)
+        result = NqValue(kind: nqkBool, boolVal: arg0 < arg1)
     of "<=":
       if isAllOrAny(exp.args[1]):
         result = evalCmpAllOrAny(arg0, (ScalarOpExp)exp.args[1], `<=`, varResolver)
       else:
         let arg1 = eval(exp.args[1], varResolver, aggrResolver)
-        if arg1.kind == tvkNull:
-          return NqValue(kind: tvkNull)
-        result = NqValue(kind: tvkBool, boolVal: arg0 <= arg1)
+        if arg1.kind == nqkNull:
+          return NqValue(kind: nqkNull)
+        result = NqValue(kind: nqkBool, boolVal: arg0 <= arg1)
     of ">":
       if isAllOrAny(exp.args[1]):
         result = evalCmpAllOrAny(arg0, (ScalarOpExp)exp.args[1], `>`, varResolver)
       else:
         let arg1 = eval(exp.args[1], varResolver, aggrResolver)
-        if arg1.kind == tvkNull:
-          return NqValue(kind: tvkNull)
-        result = NqValue(kind: tvkBool, boolVal: arg0 > arg1)
+        if arg1.kind == nqkNull:
+          return NqValue(kind: nqkNull)
+        result = NqValue(kind: nqkBool, boolVal: arg0 > arg1)
     of ">=":
       if isAllOrAny(exp.args[1]):
         result = evalCmpAllOrAny(arg0, (ScalarOpExp)exp.args[1], `>=`, varResolver)
       else:
         let arg1 = eval(exp.args[1], varResolver, aggrResolver)
-        if arg1.kind == tvkNull:
-          return NqValue(kind: tvkNull)
-        result = NqValue(kind: tvkBool,
+        if arg1.kind == nqkNull:
+          return NqValue(kind: nqkNull)
+        result = NqValue(kind: nqkBool,
             boolVal: arg0 >= arg1)
     of "IN":
       if exp.args[1] of VTable:
@@ -730,66 +730,66 @@ method eval*(exp: ScalarOpExp, varResolver: VarResolver,
           raiseDbError("subquery must have exactly one column")
         for row in instantRows(VTable(exp.args[1]), varResolver):
           if row.columnValueAt(0) == arg0:
-            return NqValue(kind: tvkBool, boolVal: true)
-        return NqValue(kind: tvkBool, boolVal: false)
+            return NqValue(kind: nqkBool, boolVal: true)
+        return NqValue(kind: nqkBool, boolVal: false)
       let lv = eval(exp.args[1], varResolver, aggrResolver)
-      if lv.kind == tvkNull:
-        return NqValue(kind: tvkNull)
-      if lv.kind == tvkList:
-        result = NqValue(kind: tvkBool,
+      if lv.kind == nqkNull:
+        return NqValue(kind: nqkNull)
+      if lv.kind == nqkList:
+        result = NqValue(kind: nqkBool,
             boolVal: any(lv.listVal, proc(v: NqValue): bool = return v == arg0))
       else:
         raiseDbError("Invalid argument to IN")
     of "+":
       let arg1 = eval(exp.args[1], varResolver, aggrResolver).toNum()
-      if arg1.kind == tvkNull:
-        return NqValue(kind: tvkNull)
+      if arg1.kind == nqkNull:
+        return NqValue(kind: nqkNull)
       result = arg0 + arg1
     of "-":
       if exp.args.len == 1:
-        if arg0.kind == tvkNumeric:
-          result = NqValue(kind: tvkNumeric, numericVal: -arg0.numericVal)
+        if arg0.kind == nqkNumeric:
+          result = NqValue(kind: nqkNumeric, numericVal: -arg0.numericVal)
         else:
-          result = NqValue(kind: tvkFloat, floatVal: -arg0.floatVal)
+          result = NqValue(kind: nqkFloat, floatVal: -arg0.floatVal)
       else:
         let arg1 = eval(exp.args[1], varResolver, aggrResolver).toNum()
-        if arg1.kind == tvkNull:
-          return NqValue(kind: tvkNull)
+        if arg1.kind == nqkNull:
+          return NqValue(kind: nqkNull)
         result = arg0 - arg1
     of "*":
       let arg1 = eval(exp.args[1], varResolver, aggrResolver).toNum()
-      if arg1.kind == tvkNull:
-        return NqValue(kind: tvkNull)
+      if arg1.kind == nqkNull:
+        return NqValue(kind: nqkNull)
 
-      if arg0.kind == tvkNumeric and arg1.kind == tvkNumeric and
+      if arg0.kind == nqkNumeric and arg1.kind == nqkNumeric and
           arg0.scale + arg1.scale <= maxPrecision and
           arg0.numericVal <= high(int64) div arg1.numericVal:
-        result = NqValue(kind: tvkNumeric, numericVal: arg0.numericVal * arg1.numericVal,
+        result = NqValue(kind: nqkNumeric, numericVal: arg0.numericVal * arg1.numericVal,
                             scale: arg0.scale + arg1.scale)
       else:
-        result = NqValue(kind: tvkFloat, floatVal: toFloat(arg0) * toFloat(arg1))
+        result = NqValue(kind: nqkFloat, floatVal: toFloat(arg0) * toFloat(arg1))
     of "/":
       let farg0 = toFloat(arg0)
       let arg1 = eval(exp.args[1], varResolver, aggrResolver).toNum()
-      if arg1.kind == tvkNull:
-        return NqValue(kind: tvkNull)
+      if arg1.kind == nqkNull:
+        return NqValue(kind: nqkNull)
       let farg1 = toFloat(arg1)
-      result = NqValue(kind: tvkFloat, floatVal: farg0 / farg1)
+      result = NqValue(kind: nqkFloat, floatVal: farg0 / farg1)
     of "||":
       let arg1 = eval(exp.args[1], varResolver, aggrResolver)
-      if arg1.kind == tvkNull:
-        return NqValue(kind: tvkNull)
-      result = NqValue(kind: tvkString,
+      if arg1.kind == nqkNull:
+        return NqValue(kind: nqkNull)
+      result = NqValue(kind: nqkString,
           strVal: arg0.strVal & arg1.strVal)
     of "LOWER":
-      result = NqValue(kind: tvkString, strVal: toLowerAscii(arg0.strVal))
+      result = NqValue(kind: nqkString, strVal: toLowerAscii(arg0.strVal))
     of "UPPER":
-      result = NqValue(kind: tvkString, strVal: toUpperAscii(arg0.strVal))
+      result = NqValue(kind: nqkString, strVal: toUpperAscii(arg0.strVal))
     of "LIKE":
       let arg1 = eval(exp.args[1], varResolver, aggrResolver)
-      if arg1.kind == tvkNull:
-        return NqValue(kind: tvkNull)
-      result = NqValue(kind: tvkBool,
+      if arg1.kind == nqkNull:
+        return NqValue(kind: nqkNull)
+      result = NqValue(kind: nqkBool,
           boolVal: matchesLike(arg0.strVal, arg1.strVal))
     else:
       raiseDbError("Unknown operator: " & exp.opName)
@@ -821,7 +821,7 @@ method eval*(exp: ListExp, varResolver: VarResolver,
   var vals: seq[NqValue]
   for e in exp.exps:
     vals.add(eval(e, varResolver))
-  return NqValue(kind: tvkList, listVal: vals)
+  return NqValue(kind: nqkList, listVal: vals)
 
 method eval*(exp: VTable, varResolver: VarResolver,
     aggrResolver: AggrResolver): NqValue =
@@ -834,7 +834,7 @@ method eval*(exp: VTable, varResolver: VarResolver,
     result = columnValueAt(row, 0)
     count += 1
   if count == 0:
-    result = NqValue(kind: tvkNull)
+    result = NqValue(kind: nqkNull)
 
 method eval*(exp: CaseExp, varResolver: VarResolver,
     aggrResolver: AggrResolver): NqValue =
@@ -847,12 +847,12 @@ method eval*(exp: CaseExp, varResolver: VarResolver,
   else:
     for i in 0..<exp.whens.len:
       let cond = eval(exp.whens[i].cond, varResolver, aggrResolver)
-      if cond.kind != tvkBool:
+      if cond.kind != nqkBool:
         raiseDbError("WHEN expression must be of type BOOLEAN")
       if cond.boolVal:
         return eval(exp.whens[i].exp, varResolver, aggrResolver)
   result = if exp.elseExp != nil: eval(exp.elseExp, varResolver, aggrResolver)
-           else: NqValue(kind: tvkNull)
+           else: NqValue(kind: nqkNull)
 
 method columnCount(table: BaseTableRef): Natural =
   result = HashBaseTable(table.table).def.len
@@ -907,7 +907,7 @@ func columnValueAt*(row: InstantRow; col: Natural): NqValue =
         if i == col:
           return toNqValue(table.rows[row.keyRecord][vi], table.def[col])
         vi = vi + 1
-    result = NqValue(kind: tvkNull)
+    result = NqValue(kind: nqkNull)
   else:
     result = row.vals[col]
 
@@ -1013,7 +1013,7 @@ proc expKeyColVals(exp: Expression, tableRef: BaseTableRef, isConstProc: proc(ex
       let arg = QVarExp(c.exp)
       if arg.name[0] != '$':
         raiseDbError("column " & arg.name & " does not exist")
-      val = NqValue(kind: tvkString,
+      val = NqValue(kind: nqkString,
                         strVal: args[parseInt(arg.name[1..arg.name.high]) - 1])
     else:
       val = eval(c.exp, nil, nil)
@@ -1053,7 +1053,7 @@ method next(cursor: WhereTableCursor, row: var InstantRow,
       let val = eval(cursor.table.whereExp, proc(name: string,
           rangeVar: string): NqValue =
         if name[0] == '$':
-          return NqValue(kind: tvkString,
+          return NqValue(kind: nqkString,
                           strVal: cursor.args[parseInt(name[1..name.high]) - 1])
         let col = columnNo(cursor.table, name, rangeVar)
         if col == -1:
@@ -1062,7 +1062,7 @@ method next(cursor: WhereTableCursor, row: var InstantRow,
           raiseDbError("column " & (if rangeVar != "": rangeVar &
               "." else: "") & name & " does not exist")
         return columnValueAt(rowCopy, col))
-      return val.kind != tvkNull and val.boolVal
+      return val.kind != nqkNull and val.boolVal
     else:
       return false
   if (not cursor.cursor.next(row, varResolver)):
@@ -1072,7 +1072,7 @@ method next(cursor: WhereTableCursor, row: var InstantRow,
     let val = eval(cursor.table.whereExp, proc(name: string,
         rangeVar: string): NqValue =
       if name[0] == '$':
-        return NqValue(kind: tvkString,
+        return NqValue(kind: nqkString,
                          strVal: cursor.args[parseInt(name[1..name.high]) - 1])
       let col = columnNo(cursor.table, name, rangeVar)
       if col == -1:
@@ -1081,7 +1081,7 @@ method next(cursor: WhereTableCursor, row: var InstantRow,
         raiseDbError("column " & (if rangeVar != "": rangeVar & "." else: "") &
             name & " does not exist")
       return columnValueAt(rowCopy, col))
-    if val.kind != tvkNull and val.boolVal:
+    if val.kind != nqkNull and val.boolVal:
       return true
     if not cursor.cursor.next(row):
       return false
@@ -1100,7 +1100,7 @@ method next(cursor: ProjectTableCursor, row: var InstantRow,
     if getAggrs(col.exp).len == 0:
       vals.add(eval(col.exp, proc(name: string, rangeVar: string): NqValue =
         if name[0] == '$':
-          return NqValue(kind: tvkString,
+          return NqValue(kind: nqkString,
                            strVal: cursor.args[parseInt(name[1..name.high]) - 1])
         let col = columnNo(cursor.table.child, name, rangeVar)
         if col == -1:
@@ -1108,7 +1108,7 @@ method next(cursor: ProjectTableCursor, row: var InstantRow,
               "." else: "") & name & " does not exist")
         return columnValueAt(baseRow, col)))
     else:
-      vals.add(NqValue(kind: tvkNull))
+      vals.add(NqValue(kind: nqkNull))
   row = InstantRow(table: cursor.table, material: false, vals: vals)
   result = true
 
@@ -1133,7 +1133,7 @@ proc aggrCount(table: VTable, groupBy: seq[QVarExp],
   for row in instantRows(table, args):
     if groupByVals == groupVals(groupBy, columns, row):
       cnt += 1
-  result = NqValue(kind: tvkNumeric, numericVal: cnt)
+  result = NqValue(kind: nqkNumeric, numericVal: cnt)
 
 proc aggrMax(table: VTable, groupBy: seq[QVarExp],
              columns: seq[SelectElement],
@@ -1144,25 +1144,25 @@ proc aggrMax(table: VTable, groupBy: seq[QVarExp],
   if col == -1:
     raiseDbError("column " & (if colRef.tableName != "": colRef.tableName &
         "." else: "") & colRef.name & " does not exist")
-  result = NqValue(kind: tvkNull)
+  result = NqValue(kind: nqkNull)
   for row in instantRows(table, args):
     if groupByVals == groupVals(groupBy, columns, row):
       let val = columnValueAt(row, col)
-      if val.kind != tvkNull:
-        if val.kind != tvkNumeric and val.kind != tvkFloat and val.kind != tvkInt:
+      if val.kind != nqkNull:
+        if val.kind != nqkNumeric and val.kind != nqkFloat and val.kind != nqkInt:
           raiseDbError("column is not numeric")
-        if result.kind == tvkNull:
+        if result.kind == nqkNull:
           result = val
-        elif result.kind == tvkInt:
-          result = NqValue(kind: tvkInt,
+        elif result.kind == nqkInt:
+          result = NqValue(kind: nqkInt,
                               intVal: max(result.intVal, val.intVal))
-        elif result.kind == tvkNumeric:
+        elif result.kind == nqkNumeric:
           let scale = max(result.scale, val.scale)
-          result = NqValue(kind: tvkNumeric,
+          result = NqValue(kind: nqkNumeric,
                               numericVal: max(result.setScale(scale).numericVal,
                                           val.setScale(scale).numericVal))
         else:
-          result = NqValue(kind: tvkFloat, floatVal: max(result.floatVal, val.floatVal))
+          result = NqValue(kind: nqkFloat, floatVal: max(result.floatVal, val.floatVal))
 
 func aggrMin(table: VTable, groupBy: seq[QVarExp],
              columns: seq[SelectElement],
@@ -1173,26 +1173,26 @@ func aggrMin(table: VTable, groupBy: seq[QVarExp],
   if col == -1:
     raiseDbError("column " & (if colRef.tableName != "": colRef.tableName &
         "." else: "") & colRef.name & " does not exist")
-  result = NqValue(kind: tvkNull)
+  result = NqValue(kind: nqkNull)
   for row in instantRows(table, args):
     if groupByVals == groupVals(groupBy, columns, row):
       let val = columnValueAt(row, col)
-      if val.kind != tvkNull:
-        if val.kind != tvkNumeric and val.kind != tvkFloat and val.kind != tvkInt:
+      if val.kind != nqkNull:
+        if val.kind != nqkNumeric and val.kind != nqkFloat and val.kind != nqkInt:
           raiseDbError("column is not numeric")
-        if result.kind == tvkNull:
+        if result.kind == nqkNull:
           result = val
-        elif result.kind == tvkInt:
-          result = NqValue(kind: tvkInt,
+        elif result.kind == nqkInt:
+          result = NqValue(kind: nqkInt,
                               intVal: max(result.intVal,
                                           val.intVal))
-        elif result.kind == tvkNumeric:
+        elif result.kind == nqkNumeric:
           let scale = max(result.scale, val.scale)
-          result = NqValue(kind: tvkNumeric,
+          result = NqValue(kind: nqkNumeric,
                               numericVal: min(result.setScale(scale).numericVal,
                                           val.setScale(scale).numericVal))
         else:
-          result = NqValue(kind: tvkFloat, floatVal: max(result.floatVal, val.floatVal))
+          result = NqValue(kind: nqkFloat, floatVal: max(result.floatVal, val.floatVal))
 
 func aggrSum(table: VTable, groupBy: seq[QVarExp],
              columns: seq[SelectElement],
@@ -1203,14 +1203,14 @@ func aggrSum(table: VTable, groupBy: seq[QVarExp],
   if col == -1:
     raiseDbError("column " & (if colRef.tableName != "": colRef.tableName &
         "." else: "") & colRef.name & " does not exist")
-  result = NqValue(kind: tvkNull)
+  result = NqValue(kind: nqkNull)
   for row in instantRows(table, args):
     if groupByVals == groupVals(groupBy, columns, row):
       let val = columnValueAt(row, col)
-      if val.kind != tvkNull:
-        if val.kind != tvkNumeric and val.kind != tvkFloat and val.kind != tvkInt:
+      if val.kind != nqkNull:
+        if val.kind != nqkNumeric and val.kind != nqkFloat and val.kind != nqkInt:
           raiseDbError("column is not numeric")
-        if result.kind == tvkNull:
+        if result.kind == nqkNull:
           result = val
         else:
           result = result + val
@@ -1229,13 +1229,13 @@ func aggrAvg(table: VTable, groupBy: seq[QVarExp],
   for row in instantRows(table, args):
     if groupByVals == groupVals(groupBy, columns, row):
       let val = columnValueAt(row, col)
-      if val.kind != tvkNull:
-        if val.kind != tvkNumeric and val.kind != tvkFloat and val.kind != tvkInt:
+      if val.kind != nqkNull:
+        if val.kind != nqkNumeric and val.kind != nqkFloat and val.kind != nqkInt:
           raiseDbError("column is not numeric")
         n += 1
         avg += (toFloat(val) - avg) / float(n)
-  result = if n == 0: NqValue(kind: tvkNull)
-           else: NqValue(kind: tvkFloat, floatVal: avg)
+  result = if n == 0: NqValue(kind: nqkNull)
+           else: NqValue(kind: nqkFloat, floatVal: avg)
 
 iterator groupKeys(groupTable: Table[Record[NqValue], Record[NqValue]]
                    ): Record[NqValue] {.closure.} =
@@ -1348,7 +1348,7 @@ proc update*(table: BaseTable, assignments: seq[ColumnAssignment],
           let val = eval(assignment.src, proc(name: string,
               rangeVar: string): NqValue =
             if name[0] == '$':
-              return NqValue(kind: tvkString,
+              return NqValue(kind: nqkString,
                                 strVal: evargs[parseInt(name[1..name.high]) - 1])
             let col = columnNo(table, name)
             if col == -1:
@@ -1362,7 +1362,7 @@ proc update*(table: BaseTable, assignments: seq[ColumnAssignment],
           let val = eval(assignment.src, proc(name: string,
               rangeVar: string): NqValue =
             if name[0] == '$':
-              return NqValue(kind: tvkString,
+              return NqValue(kind: nqkString,
                               strVal: evargs[parseInt(name[1..name.high]) - 1])
             let col = columnNo(table, name)
             if col == -1:
@@ -1380,7 +1380,7 @@ proc update*(table: BaseTable, assignments: seq[ColumnAssignment],
         let val = eval(assignment.src, proc(name: string,
             rangeVar: string): NqValue =
           if name[0] == '$':
-            return NqValue(kind: tvkString,
+            return NqValue(kind: nqkString,
                               strVal: evargs[parseInt(name[1..name.high]) - 1])
           let col = columnNo(table, name)
           if col == -1:
@@ -1408,18 +1408,18 @@ proc delete*(table: BaseTable, whereExp: Expression, args: openArray[
 
 func `$`*(val: NqValue): string =
   case val.kind
-    of tvkInt:
+    of nqkInt:
       result = $val.intVal
-    of tvkNumeric:
+    of nqkNumeric:
       result = $val.numericVal
       if val.scale > 0:
         result = result[0 .. result.len - 1 - val.scale] & "." &
             result[result.len - val.scale .. ^1]
-    of tvkFloat: result = $val.floatVal
-    of tvkString: result = $val.strVal
-    of tvkBool: result = if val.boolVal: "TRUE" else: "FALSE"
-    of tvkNull: result = ""
-    of tvkList: raiseDbError("conversion of list to string not supported")
+    of nqkFloat: result = $val.floatVal
+    of nqkString: result = $val.strVal
+    of nqkBool: result = if val.boolVal: "TRUE" else: "FALSE"
+    of nqkNull: result = ""
+    of nqkList: raiseDbError("conversion of list to string not supported")
 
 method `$`(vtable: VTable): string = nil
 

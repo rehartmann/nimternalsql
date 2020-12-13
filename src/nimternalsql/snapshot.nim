@@ -175,15 +175,15 @@ proc readRecord(f: File): Record[MatValue] =
 
 func toExpr(v: NqValue): Expression =
   case v.kind:
-    of tvkInt, tvkNumeric, tvkFloat:
+    of nqkInt, nqkNumeric, nqkFloat:
       result = NumericLit(val: $v)
-    of tvkString:
+    of nqkString:
       result = StringLit(val: v.strVal)
-    of tvkBool:
+    of nqkBool:
       result = BoolLit(val: if v.boolVal: "TRUE" else: "FALSE")
-    of tvkNull:
+    of nqkNull:
       result = NullLit()
-    of tvkList:
+    of nqkList:
       raiseDbError("internal error: list value is invalid")
 
 proc readTable(f: File): BaseTable =

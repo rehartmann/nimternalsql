@@ -121,7 +121,7 @@ method execute(stmt: SqlInsert, db: Database, args: varargs[string]): int64 =
   for val in stmt.values:
     vals.add(val.eval(proc (name: string, rangeVar: string): NqValue =
       if name[0] == '$':
-        return NqValue(kind: tvkString, strVal: argv[parseInt(name[
+        return NqValue(kind: nqkString, strVal: argv[parseInt(name[
             1..name.high]) - 1])
       raise newException(KeyError, "variables not supported")))
   let table = getTable(db, stmt.tableName)
@@ -145,7 +145,7 @@ method execute(stmt: SqlInsert, db: Database, args: varargs[string]): int64 =
         if table.def[i].defaultValue != nil:
           insvals[i] = eval(table.def[i].defaultValue, nil, nil)
         else:
-          insvals[i] = NqValue(kind: tvkNull)
+          insvals[i] = NqValue(kind: nqkNull)
     insert(table, insvals)
   result = 1
 

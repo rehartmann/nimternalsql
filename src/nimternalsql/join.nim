@@ -83,7 +83,7 @@ func evalJoinCond(cursor: JoinTableCursor, row: InstantRow): bool =
   result = cursor.table.exp == nil or
       eval(cursor.table.exp, proc(name: string, rangeVar: string): NqValue =
           if name[0] == '$':
-            return NqValue(kind: tvkString,
+            return NqValue(kind: nqkString,
                            strVal: cursor.args[parseInt(name[1..name.high]) - 1])
           let col = columnNo(cursor.table, name, rangeVar)
           if col == -1:
@@ -99,7 +99,7 @@ proc nextByKey(cursor: JoinTableCursor, row: var InstantRow, varResolver: VarRes
       if c.exp of QVarExp:
         let colRef = QVarExp(c.exp)
         if colRef.name[0] == '$':
-          val = NqValue(kind: tvkString,
+          val = NqValue(kind: nqkString,
               strVal: cursor.args[parseInt(colRef.name[1..colRef.name.high]) - 1])
         else:
           let col = columnNo(cursor.table.children[1 - cursor.keyTableNo],

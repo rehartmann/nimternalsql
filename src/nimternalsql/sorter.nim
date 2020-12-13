@@ -21,18 +21,18 @@ method columnNo(table: SortedTable, name: string, tableName: string): int =
   return table.child.columnNo(name, tableName)
 
 proc cmp*(v1: NqValue, v2:NqValue): int =
-  if v1.kind == tvkNull or v2.kind == tvkNull:
+  if v1.kind == nqkNull or v2.kind == nqkNull:
     return ord(v1.kind) - ord(v2.kind)
-  elif v1.kind == tvkInt and v2.kind == tvkInt:
+  elif v1.kind == nqkInt and v2.kind == nqkInt:
     return cmp(v1.intVal, v2.intVal)
-  elif v1.kind == tvkFloat or v2.kind == tvkFloat:
+  elif v1.kind == nqkFloat or v2.kind == nqkFloat:
     return cmp(toFloat(v1), toFloat(v2))
-  elif v1.kind == tvkBool and v2.kind == tvkBool:
+  elif v1.kind == nqkBool and v2.kind == nqkBool:
     return cmp(v1.boolVal, v2.boolVal)
-  elif v1.kind == tvkString and v2.kind == tvkString:
+  elif v1.kind == nqkString and v2.kind == nqkString:
     return cmp(v1.strVal, v2.strVal)
-  elif v1.kind == tvkInt or v1.kind == tvkNumeric or
-        v2.kind == tvkInt or v2.kind == tvkNumeric:
+  elif v1.kind == nqkInt or v1.kind == nqkNumeric or
+        v2.kind == nqkInt or v2.kind == nqkNumeric:
     var a = toNumeric(v1)
     var b = toNumeric(v2)
     adjustScale(a, b)
