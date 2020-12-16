@@ -131,24 +131,37 @@ function main() {
     title="save(conn: DbConn; filename: string)">save,DbConn,string<span class="attachedType">DbConn</span></a></li>
 
   </ul>
+  <ul class="simple nested-toc-section">prepare
+      <li><a class="reference" href="#prepare%2CDbConn%2CSqlQuery"
+    title="prepare(conn: DbConn; sql: SqlQuery): SqlPrepared">prepare,DbConn,SqlQuery<span class="attachedType">DbConn</span></a></li>
+
+  </ul>
   <ul class="simple nested-toc-section">getValue
       <li><a class="reference" href="#getValue%2CDbConn%2CSqlQuery%2Cvarargs%5Bstring%2C%5D"
     title="getValue(conn: DbConn; query: SqlQuery; args: varargs[string, `$`]): string">getValue,DbConn,SqlQuery,varargs[string,]<span class="attachedType">DbConn</span></a></li>
+  <li><a class="reference" href="#getValue%2CDbConn%2CSqlPrepared%2Cvarargs%5Bstring%2C%5D"
+    title="getValue(conn: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]): string">getValue,DbConn,SqlPrepared,varargs[string,]<span class="attachedType">DbConn</span></a></li>
 
   </ul>
   <ul class="simple nested-toc-section">getAllRows
       <li><a class="reference" href="#getAllRows%2CDbConn%2CSqlQuery%2Cvarargs%5Bstring%2C%5D"
     title="getAllRows(db: DbConn; query: SqlQuery; args: varargs[string, `$`]): seq[Row]">getAllRows,DbConn,SqlQuery,varargs[string,]<span class="attachedType">DbConn</span></a></li>
+  <li><a class="reference" href="#getAllRows%2CDbConn%2CSqlPrepared%2Cvarargs%5Bstring%2C%5D"
+    title="getAllRows(db: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]): seq[Row]">getAllRows,DbConn,SqlPrepared,varargs[string,]<span class="attachedType">DbConn</span></a></li>
 
   </ul>
   <ul class="simple nested-toc-section">execAffectedRows
       <li><a class="reference" href="#execAffectedRows%2CDbConn%2CSqlQuery%2Cvarargs%5Bstring%2C%5D"
     title="execAffectedRows(conn: DbConn; sql: SqlQuery; args: varargs[string, `$`]): int64">execAffectedRows,DbConn,SqlQuery,varargs[string,]<span class="attachedType">DbConn</span></a></li>
+  <li><a class="reference" href="#execAffectedRows%2CDbConn%2CSqlPrepared%2Cvarargs%5Bstring%2C%5D"
+    title="execAffectedRows(conn: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]): int64">execAffectedRows,DbConn,SqlPrepared,varargs[string,]<span class="attachedType">DbConn</span></a></li>
 
   </ul>
   <ul class="simple nested-toc-section">exec
       <li><a class="reference" href="#exec%2CDbConn%2CSqlQuery%2Cvarargs%5Bstring%2C%5D"
     title="exec(conn: DbConn; sql: SqlQuery; args: varargs[string, `$`])">exec,DbConn,SqlQuery,varargs[string,]<span class="attachedType">DbConn</span></a></li>
+  <li><a class="reference" href="#exec%2CDbConn%2CSqlPrepared%2Cvarargs%5Bstring%2C%5D"
+    title="exec(conn: DbConn; stmt: SqlPrepared; args: varargs[string, `$`])">exec,DbConn,SqlPrepared,varargs[string,]<span class="attachedType">DbConn</span></a></li>
 
   </ul>
   <ul class="simple nested-toc-section">dbError
@@ -159,11 +172,15 @@ function main() {
   <ul class="simple nested-toc-section">getRow
       <li><a class="reference" href="#getRow%2CDbConn%2CSqlQuery%2Cvarargs%5Bstring%2C%5D"
     title="getRow(conn: DbConn; query: SqlQuery; args: varargs[string, `$`]): Row">getRow,DbConn,SqlQuery,varargs[string,]<span class="attachedType">DbConn</span></a></li>
+  <li><a class="reference" href="#getRow%2CDbConn%2CSqlPrepared%2Cvarargs%5Bstring%2C%5D"
+    title="getRow(conn: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]): Row">getRow,DbConn,SqlPrepared,varargs[string,]<span class="attachedType">DbConn</span></a></li>
 
   </ul>
   <ul class="simple nested-toc-section">tryExec
       <li><a class="reference" href="#tryExec%2CDbConn%2CSqlQuery%2Cvarargs%5Bstring%2C%5D"
     title="tryExec(db: DbConn; query: SqlQuery; args: varargs[string, `$`]): bool">tryExec,DbConn,SqlQuery,varargs[string,]<span class="attachedType">DbConn</span></a></li>
+  <li><a class="reference" href="#tryExec%2CDbConn%2CSqlPrepared%2Cvarargs%5Bstring%2C%5D"
+    title="tryExec(db: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]): bool">tryExec,DbConn,SqlPrepared,varargs[string,]<span class="attachedType">DbConn</span></a></li>
 
   </ul>
   <ul class="simple nested-toc-section">restore
@@ -195,8 +212,12 @@ function main() {
   <ul class="simple simple-toc-section">
       <li><a class="reference" href="#instantRows.i%2CDbConn%2CSqlQuery%2Cvarargs%5Bstring%2C%5D"
     title="instantRows(conn: DbConn; sql: SqlQuery; args: varargs[string, `$`]): InstantRow"><wbr />instant<wbr />Rows<span class="attachedType">DbConn</span></a></li>
+  <li><a class="reference" href="#instantRows.i%2CDbConn%2CSqlPrepared%2Cvarargs%5Bstring%2C%5D"
+    title="instantRows(conn: DbConn; sql: SqlPrepared; args: varargs[string, `$`]): InstantRow"><wbr />instant<wbr />Rows<span class="attachedType">DbConn</span></a></li>
   <li><a class="reference" href="#rows.i%2CDbConn%2CSqlQuery%2Cvarargs%5Bstring%2C%5D"
     title="rows(db: DbConn; query: SqlQuery; args: varargs[string, `$`]): Row"><wbr />rows<span class="attachedType">DbConn</span></a></li>
+  <li><a class="reference" href="#rows.i%2CDbConn%2CSqlPrepared%2Cvarargs%5Bstring%2C%5D"
+    title="rows(db: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]): Row"><wbr />rows<span class="attachedType">DbConn</span></a></li>
 
   </ul>
 </li>
@@ -285,12 +306,28 @@ Raises a DbError exception.
 Executes the query and raises DbError if not successful.
 
 </dd>
+<a id="exec,DbConn,SqlPrepared,varargs[string,]"></a>
+<dt><pre><span class="Keyword">proc</span> <a href="#exec%2CDbConn%2CSqlPrepared%2Cvarargs%5Bstring%2C%5D"><span class="Identifier">exec</span></a><span class="Other">(</span><span class="Identifier">conn</span><span class="Other">:</span> <a href="db_nimternalsql.html#DbConn"><span class="Identifier">DbConn</span></a><span class="Other">;</span> <span class="Identifier">stmt</span><span class="Other">:</span> <span class="Identifier">SqlPrepared</span><span class="Other">;</span> <span class="Identifier">args</span><span class="Other">:</span> <span class="Identifier">varargs</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Other">`</span><span class="Operator">$</span><span class="Other">`</span><span class="Other">]</span><span class="Other">)</span> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma">
+    <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
+<dd>
+
+Executes the prepared query and raises DbError if not successful.
+
+</dd>
 <a id="tryExec,DbConn,SqlQuery,varargs[string,]"></a>
 <dt><pre><span class="Keyword">proc</span> <a href="#tryExec%2CDbConn%2CSqlQuery%2Cvarargs%5Bstring%2C%5D"><span class="Identifier">tryExec</span></a><span class="Other">(</span><span class="Identifier">db</span><span class="Other">:</span> <a href="db_nimternalsql.html#DbConn"><span class="Identifier">DbConn</span></a><span class="Other">;</span> <span class="Identifier">query</span><span class="Other">:</span> <span class="Identifier">SqlQuery</span><span class="Other">;</span> <span class="Identifier">args</span><span class="Other">:</span> <span class="Identifier">varargs</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Other">`</span><span class="Operator">$</span><span class="Other">`</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">bool</span> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma">
     <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
 <dd>
 
-Tries to execute the query and returns true if successful, false otherwise.
+Tries to execute the prepared query and returns true if successful, false otherwise.
+
+</dd>
+<a id="tryExec,DbConn,SqlPrepared,varargs[string,]"></a>
+<dt><pre><span class="Keyword">proc</span> <a href="#tryExec%2CDbConn%2CSqlPrepared%2Cvarargs%5Bstring%2C%5D"><span class="Identifier">tryExec</span></a><span class="Other">(</span><span class="Identifier">db</span><span class="Other">:</span> <a href="db_nimternalsql.html#DbConn"><span class="Identifier">DbConn</span></a><span class="Other">;</span> <span class="Identifier">stmt</span><span class="Other">:</span> <span class="Identifier">SqlPrepared</span><span class="Other">;</span> <span class="Identifier">args</span><span class="Other">:</span> <span class="Identifier">varargs</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Other">`</span><span class="Operator">$</span><span class="Other">`</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">bool</span> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma">
+    <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
+<dd>
+
+Tries to execute the prepared query and returns true if successful, false otherwise.
 
 </dd>
 <a id="execAffectedRows,DbConn,SqlQuery,varargs[string,]"></a>
@@ -299,6 +336,22 @@ Tries to execute the query and returns true if successful, false otherwise.
 <dd>
 
 Executes the query (typically &quot;UPDATE&quot;) and returns the number of affected rows.
+
+</dd>
+<a id="execAffectedRows,DbConn,SqlPrepared,varargs[string,]"></a>
+<dt><pre><span class="Keyword">proc</span> <a href="#execAffectedRows%2CDbConn%2CSqlPrepared%2Cvarargs%5Bstring%2C%5D"><span class="Identifier">execAffectedRows</span></a><span class="Other">(</span><span class="Identifier">conn</span><span class="Other">:</span> <a href="db_nimternalsql.html#DbConn"><span class="Identifier">DbConn</span></a><span class="Other">;</span> <span class="Identifier">stmt</span><span class="Other">:</span> <span class="Identifier">SqlPrepared</span><span class="Other">;</span>
+                      <span class="Identifier">args</span><span class="Other">:</span> <span class="Identifier">varargs</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Other">`</span><span class="Operator">$</span><span class="Other">`</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">int64</span> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
+<dd>
+
+Executes the prepared query (typically &quot;UPDATE&quot;) and returns the number of affected rows.
+
+</dd>
+<a id="prepare,DbConn,SqlQuery"></a>
+<dt><pre><span class="Keyword">proc</span> <a href="#prepare%2CDbConn%2CSqlQuery"><span class="Identifier">prepare</span></a><span class="Other">(</span><span class="Identifier">conn</span><span class="Other">:</span> <a href="db_nimternalsql.html#DbConn"><span class="Identifier">DbConn</span></a><span class="Other">;</span> <span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">SqlQuery</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">SqlPrepared</span> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma">
+    <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">DbError</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">,</span> <span class="Identifier">Exception</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
+<dd>
+
+Creates a new <tt class="docutils literal"><span class="pre">SqlPrepared</span></tt> statement. Parameter substitution is done via <tt class="docutils literal"><span class="pre">$1</span></tt>, <tt class="docutils literal"><span class="pre">$2</span></tt>, <tt class="docutils literal"><span class="pre">$3</span></tt>, etc.
 
 </dd>
 <a id="getAllRows,DbConn,SqlQuery,varargs[string,]"></a>
@@ -310,6 +363,14 @@ Executes the query (typically &quot;UPDATE&quot;) and returns the number of affe
 Executes the query and returns the whole result dataset.
 
 </dd>
+<a id="getAllRows,DbConn,SqlPrepared,varargs[string,]"></a>
+<dt><pre><span class="Keyword">proc</span> <a href="#getAllRows%2CDbConn%2CSqlPrepared%2Cvarargs%5Bstring%2C%5D"><span class="Identifier">getAllRows</span></a><span class="Other">(</span><span class="Identifier">db</span><span class="Other">:</span> <a href="db_nimternalsql.html#DbConn"><span class="Identifier">DbConn</span></a><span class="Other">;</span> <span class="Identifier">stmt</span><span class="Other">:</span> <span class="Identifier">SqlPrepared</span><span class="Other">;</span> <span class="Identifier">args</span><span class="Other">:</span> <span class="Identifier">varargs</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Other">`</span><span class="Operator">$</span><span class="Other">`</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span>
+    <a href="db_nimternalsql.html#Row"><span class="Identifier">Row</span></a><span class="Other">]</span> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">DbError</span><span class="Other">,</span> <span class="Identifier">KeyError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
+<dd>
+
+Executes the prepared query and returns the whole result dataset.
+
+</dd>
 <a id="getRow,DbConn,SqlQuery,varargs[string,]"></a>
 <dt><pre><span class="Keyword">proc</span> <a href="#getRow%2CDbConn%2CSqlQuery%2Cvarargs%5Bstring%2C%5D"><span class="Identifier">getRow</span></a><span class="Other">(</span><span class="Identifier">conn</span><span class="Other">:</span> <a href="db_nimternalsql.html#DbConn"><span class="Identifier">DbConn</span></a><span class="Other">;</span> <span class="Identifier">query</span><span class="Other">:</span> <span class="Identifier">SqlQuery</span><span class="Other">;</span> <span class="Identifier">args</span><span class="Other">:</span> <span class="Identifier">varargs</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Other">`</span><span class="Operator">$</span><span class="Other">`</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <a href="db_nimternalsql.html#Row"><span class="Identifier">Row</span></a> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma">
     <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">DbError</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">,</span> <span class="Identifier">Exception</span><span class="Other">,</span> <span class="Identifier">KeyError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
@@ -318,12 +379,28 @@ Executes the query and returns the whole result dataset.
 Retrieves a single row. If the query doesn't return any rows, this proc will return a Row with empty strings for each column.
 
 </dd>
+<a id="getRow,DbConn,SqlPrepared,varargs[string,]"></a>
+<dt><pre><span class="Keyword">proc</span> <a href="#getRow%2CDbConn%2CSqlPrepared%2Cvarargs%5Bstring%2C%5D"><span class="Identifier">getRow</span></a><span class="Other">(</span><span class="Identifier">conn</span><span class="Other">:</span> <a href="db_nimternalsql.html#DbConn"><span class="Identifier">DbConn</span></a><span class="Other">;</span> <span class="Identifier">stmt</span><span class="Other">:</span> <span class="Identifier">SqlPrepared</span><span class="Other">;</span> <span class="Identifier">args</span><span class="Other">:</span> <span class="Identifier">varargs</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Other">`</span><span class="Operator">$</span><span class="Other">`</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <a href="db_nimternalsql.html#Row"><span class="Identifier">Row</span></a> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma">
+    <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">DbError</span><span class="Other">,</span> <span class="Identifier">KeyError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
+<dd>
+
+
+
+</dd>
 <a id="getValue,DbConn,SqlQuery,varargs[string,]"></a>
 <dt><pre><span class="Keyword">proc</span> <a href="#getValue%2CDbConn%2CSqlQuery%2Cvarargs%5Bstring%2C%5D"><span class="Identifier">getValue</span></a><span class="Other">(</span><span class="Identifier">conn</span><span class="Other">:</span> <a href="db_nimternalsql.html#DbConn"><span class="Identifier">DbConn</span></a><span class="Other">;</span> <span class="Identifier">query</span><span class="Other">:</span> <span class="Identifier">SqlQuery</span><span class="Other">;</span> <span class="Identifier">args</span><span class="Other">:</span> <span class="Identifier">varargs</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Other">`</span><span class="Operator">$</span><span class="Other">`</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">string</span> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma">
     <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">DbError</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">,</span> <span class="Identifier">Exception</span><span class="Other">,</span> <span class="Identifier">KeyError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
 <dd>
 
 Executes the query and returns the first column of the first row of the result dataset. Returns &quot;&quot; if the dataset contains no rows or the database value is NULL.
+
+</dd>
+<a id="getValue,DbConn,SqlPrepared,varargs[string,]"></a>
+<dt><pre><span class="Keyword">proc</span> <a href="#getValue%2CDbConn%2CSqlPrepared%2Cvarargs%5Bstring%2C%5D"><span class="Identifier">getValue</span></a><span class="Other">(</span><span class="Identifier">conn</span><span class="Other">:</span> <a href="db_nimternalsql.html#DbConn"><span class="Identifier">DbConn</span></a><span class="Other">;</span> <span class="Identifier">stmt</span><span class="Other">:</span> <span class="Identifier">SqlPrepared</span><span class="Other">;</span> <span class="Identifier">args</span><span class="Other">:</span> <span class="Identifier">varargs</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Other">`</span><span class="Operator">$</span><span class="Other">`</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">string</span> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma">
+    <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">DbError</span><span class="Other">,</span> <span class="Identifier">KeyError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
+<dd>
+
+Executes the prepared query and returns the first column of the first row of the result dataset. Returns &quot;&quot; if the dataset contains no rows or the database value is NULL.
 
 </dd>
 <a id="save,DbConn,string"></a>
@@ -375,9 +452,25 @@ Returns number of columns in a row.
 Executes the query and iterates over the result dataset. The InstantRows instance returned is not guaranteed to be valid outside the iterator body.
 
 </dd>
+<a id="instantRows.i,DbConn,SqlPrepared,varargs[string,]"></a>
+<dt><pre><span class="Keyword">iterator</span> <a href="#instantRows.i%2CDbConn%2CSqlPrepared%2Cvarargs%5Bstring%2C%5D"><span class="Identifier">instantRows</span></a><span class="Other">(</span><span class="Identifier">conn</span><span class="Other">:</span> <a href="db_nimternalsql.html#DbConn"><span class="Identifier">DbConn</span></a><span class="Other">;</span> <span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">SqlPrepared</span><span class="Other">;</span> <span class="Identifier">args</span><span class="Other">:</span> <span class="Identifier">varargs</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Other">`</span><span class="Operator">$</span><span class="Other">`</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <a href="nimternalsql/nqcore.html#InstantRow"><span class="Identifier">InstantRow</span></a> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma">
+    <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">DbError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
+<dd>
+
+Executes the prepared query and iterates over the result dataset.
+
+</dd>
 <a id="rows.i,DbConn,SqlQuery,varargs[string,]"></a>
 <dt><pre><span class="Keyword">iterator</span> <a href="#rows.i%2CDbConn%2CSqlQuery%2Cvarargs%5Bstring%2C%5D"><span class="Identifier">rows</span></a><span class="Other">(</span><span class="Identifier">db</span><span class="Other">:</span> <a href="db_nimternalsql.html#DbConn"><span class="Identifier">DbConn</span></a><span class="Other">;</span> <span class="Identifier">query</span><span class="Other">:</span> <span class="Identifier">SqlQuery</span><span class="Other">;</span> <span class="Identifier">args</span><span class="Other">:</span> <span class="Identifier">varargs</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Other">`</span><span class="Operator">$</span><span class="Other">`</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <a href="db_nimternalsql.html#Row"><span class="Identifier">Row</span></a> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma">
     <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">DbError</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">,</span> <span class="Identifier">Exception</span><span class="Other">,</span> <span class="Identifier">KeyError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
+<dd>
+
+Executes the query and iterates over the result dataset.
+
+</dd>
+<a id="rows.i,DbConn,SqlPrepared,varargs[string,]"></a>
+<dt><pre><span class="Keyword">iterator</span> <a href="#rows.i%2CDbConn%2CSqlPrepared%2Cvarargs%5Bstring%2C%5D"><span class="Identifier">rows</span></a><span class="Other">(</span><span class="Identifier">db</span><span class="Other">:</span> <a href="db_nimternalsql.html#DbConn"><span class="Identifier">DbConn</span></a><span class="Other">;</span> <span class="Identifier">stmt</span><span class="Other">:</span> <span class="Identifier">SqlPrepared</span><span class="Other">;</span> <span class="Identifier">args</span><span class="Other">:</span> <span class="Identifier">varargs</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Other">`</span><span class="Operator">$</span><span class="Other">`</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <a href="db_nimternalsql.html#Row"><span class="Identifier">Row</span></a> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma">
+    <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">DbError</span><span class="Other">,</span> <span class="Identifier">KeyError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
 <dd>
 
 Executes the query and iterates over the result dataset.
@@ -398,7 +491,7 @@ Executes the query and iterates over the result dataset.
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2020-12-06 21:34:02 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2020-12-16 22:49:02 UTC</small>
       </div>
     </div>
   </div>

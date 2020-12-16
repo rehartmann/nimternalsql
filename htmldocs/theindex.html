@@ -94,6 +94,10 @@ function main() {
 <li><a class="reference external"
           data-doc-search-tag="nqcommon: BoolLit" href="nimternalsql/nqcommon.html#BoolLit">nqcommon: BoolLit</a></li>
           </ul></dd>
+<dt><a name="CaseExp" href="#CaseExp"><span>CaseExp:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="nqcommon: CaseExp" href="nimternalsql/nqcommon.html#CaseExp">nqcommon: CaseExp</a></li>
+          </ul></dd>
 <dt><a name="close" href="#close"><span>close:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="db_nimternalsql: close(db: DbConn)" href="db_nimternalsql.html#close%2CDbConn">db_nimternalsql: close(db: DbConn)</a></li>
@@ -166,6 +170,8 @@ function main() {
 <li><a class="reference external"
           data-doc-search-tag="nqcore: eval(exp: BoolLit; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue" href="nimternalsql/nqcore.html#eval.e%2CBoolLit%2CVarResolver%2CAggrResolver">nqcore: eval(exp: BoolLit; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue</a></li>
           <li><a class="reference external"
+          data-doc-search-tag="nqcore: eval(exp: CaseExp; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue" href="nimternalsql/nqcore.html#eval.e%2CCaseExp%2CVarResolver%2CAggrResolver">nqcore: eval(exp: CaseExp; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue</a></li>
+          <li><a class="reference external"
           data-doc-search-tag="nqcore: eval(exp: Expression; varResolver: VarResolver; aggrResolver: AggrResolver = proc (
     exp: ScalarOpExp): NqValue = raiseDbError(exp.opName &amp; &quot; not supported&quot;)): NqValue" href="nimternalsql/nqcore.html#eval.e%2CExpression%2CVarResolver%2CAggrResolver">nqcore: eval(exp: Expression; varResolver: VarResolver; aggrResolver: AggrResolver = proc (
     exp: ScalarOpExp): NqValue = raiseDbError(exp.opName &amp; &quot; not supported&quot;)): NqValue</a></li>
@@ -186,10 +192,14 @@ function main() {
           </ul></dd>
 <dt><a name="exec" href="#exec"><span>exec:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
+          data-doc-search-tag="db_nimternalsql: exec(conn: DbConn; stmt: SqlPrepared; args: varargs[string, `$`])" href="db_nimternalsql.html#exec%2CDbConn%2CSqlPrepared%2Cvarargs%5Bstring%2C%5D">db_nimternalsql: exec(conn: DbConn; stmt: SqlPrepared; args: varargs[string, `$`])</a></li>
+          <li><a class="reference external"
           data-doc-search-tag="db_nimternalsql: exec(conn: DbConn; sql: SqlQuery; args: varargs[string, `$`])" href="db_nimternalsql.html#exec%2CDbConn%2CSqlQuery%2Cvarargs%5Bstring%2C%5D">db_nimternalsql: exec(conn: DbConn; sql: SqlQuery; args: varargs[string, `$`])</a></li>
           </ul></dd>
 <dt><a name="execAffectedRows" href="#execAffectedRows"><span>execAffectedRows:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
+          data-doc-search-tag="db_nimternalsql: execAffectedRows(conn: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]): int64" href="db_nimternalsql.html#execAffectedRows%2CDbConn%2CSqlPrepared%2Cvarargs%5Bstring%2C%5D">db_nimternalsql: execAffectedRows(conn: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]): int64</a></li>
+          <li><a class="reference external"
           data-doc-search-tag="db_nimternalsql: execAffectedRows(conn: DbConn; sql: SqlQuery; args: varargs[string, `$`]): int64" href="db_nimternalsql.html#execAffectedRows%2CDbConn%2CSqlQuery%2Cvarargs%5Bstring%2C%5D">db_nimternalsql: execAffectedRows(conn: DbConn; sql: SqlQuery; args: varargs[string, `$`]): int64</a></li>
           </ul></dd>
 <dt><a name="expKeyCols" href="#expKeyCols"><span>expKeyCols:</span></a></dt><dd><ul class="simple">
@@ -214,10 +224,14 @@ function main() {
           </ul></dd>
 <dt><a name="getAllRows" href="#getAllRows"><span>getAllRows:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
+          data-doc-search-tag="db_nimternalsql: getAllRows(db: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]): seq[Row]" href="db_nimternalsql.html#getAllRows%2CDbConn%2CSqlPrepared%2Cvarargs%5Bstring%2C%5D">db_nimternalsql: getAllRows(db: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]): seq[Row]</a></li>
+          <li><a class="reference external"
           data-doc-search-tag="db_nimternalsql: getAllRows(db: DbConn; query: SqlQuery; args: varargs[string, `$`]): seq[Row]" href="db_nimternalsql.html#getAllRows%2CDbConn%2CSqlQuery%2Cvarargs%5Bstring%2C%5D">db_nimternalsql: getAllRows(db: DbConn; query: SqlQuery; args: varargs[string, `$`]): seq[Row]</a></li>
           </ul></dd>
 <dt><a name="getRow" href="#getRow"><span>getRow:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
+          data-doc-search-tag="db_nimternalsql: getRow(conn: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]): Row" href="db_nimternalsql.html#getRow%2CDbConn%2CSqlPrepared%2Cvarargs%5Bstring%2C%5D">db_nimternalsql: getRow(conn: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]): Row</a></li>
+          <li><a class="reference external"
           data-doc-search-tag="db_nimternalsql: getRow(conn: DbConn; query: SqlQuery; args: varargs[string, `$`]): Row" href="db_nimternalsql.html#getRow%2CDbConn%2CSqlQuery%2Cvarargs%5Bstring%2C%5D">db_nimternalsql: getRow(conn: DbConn; query: SqlQuery; args: varargs[string, `$`]): Row</a></li>
           </ul></dd>
 <dt><a name="getTable" href="#getTable"><span>getTable:</span></a></dt><dd><ul class="simple">
@@ -226,6 +240,8 @@ function main() {
           </ul></dd>
 <dt><a name="getValue" href="#getValue"><span>getValue:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
+          data-doc-search-tag="db_nimternalsql: getValue(conn: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]): string" href="db_nimternalsql.html#getValue%2CDbConn%2CSqlPrepared%2Cvarargs%5Bstring%2C%5D">db_nimternalsql: getValue(conn: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]): string</a></li>
+          <li><a class="reference external"
           data-doc-search-tag="db_nimternalsql: getValue(conn: DbConn; query: SqlQuery; args: varargs[string, `$`]): string" href="db_nimternalsql.html#getValue%2CDbConn%2CSqlQuery%2Cvarargs%5Bstring%2C%5D">db_nimternalsql: getValue(conn: DbConn; query: SqlQuery; args: varargs[string, `$`]): string</a></li>
           </ul></dd>
 <dt><a name="hash" href="#hash"><span>hash:</span></a></dt><dd><ul class="simple">
@@ -234,7 +250,7 @@ function main() {
           </ul></dd>
 <dt><a name="HashBaseTable" href="#HashBaseTable"><span>HashBaseTable:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="nqcommon: HashBaseTable" href="nimternalsql/nqcommon.html#HashBaseTable">nqcommon: HashBaseTable</a></li>
+          data-doc-search-tag="nqcore: HashBaseTable" href="nimternalsql/nqcore.html#HashBaseTable">nqcore: HashBaseTable</a></li>
           </ul></dd>
 <dt><a name="insert" href="#insert"><span>insert:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -246,6 +262,8 @@ function main() {
           </ul></dd>
 <dt><a name="instantRows" href="#instantRows"><span>instantRows:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
+          data-doc-search-tag="db_nimternalsql: instantRows(conn: DbConn; sql: SqlPrepared; args: varargs[string, `$`]): InstantRow" href="db_nimternalsql.html#instantRows.i%2CDbConn%2CSqlPrepared%2Cvarargs%5Bstring%2C%5D">db_nimternalsql: instantRows(conn: DbConn; sql: SqlPrepared; args: varargs[string, `$`]): InstantRow</a></li>
+          <li><a class="reference external"
           data-doc-search-tag="db_nimternalsql: instantRows(conn: DbConn; sql: SqlQuery; args: varargs[string, `$`]): InstantRow" href="db_nimternalsql.html#instantRows.i%2CDbConn%2CSqlQuery%2Cvarargs%5Bstring%2C%5D">db_nimternalsql: instantRows(conn: DbConn; sql: SqlQuery; args: varargs[string, `$`]): InstantRow</a></li>
           <li><a class="reference external"
           data-doc-search-tag="nqcore: instantRows(tableRef: BaseTableRef): InstantRow" href="nimternalsql/nqcore.html#instantRows.i%2CBaseTableRef">nqcore: instantRows(tableRef: BaseTableRef): InstantRow</a></li>
@@ -266,27 +284,27 @@ function main() {
           </ul></dd>
 <dt><a name="kBool" href="#kBool"><span>kBool:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="MatValueKind.kBool" href="nimternalsql/nqcommon.html#kBool">MatValueKind.kBool</a></li>
+          data-doc-search-tag="MatValueKind.kBool" href="nimternalsql/nqcore.html#kBool">MatValueKind.kBool</a></li>
           </ul></dd>
 <dt><a name="kFloat" href="#kFloat"><span>kFloat:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="MatValueKind.kFloat" href="nimternalsql/nqcommon.html#kFloat">MatValueKind.kFloat</a></li>
+          data-doc-search-tag="MatValueKind.kFloat" href="nimternalsql/nqcore.html#kFloat">MatValueKind.kFloat</a></li>
           </ul></dd>
 <dt><a name="kInt" href="#kInt"><span>kInt:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="MatValueKind.kInt" href="nimternalsql/nqcommon.html#kInt">MatValueKind.kInt</a></li>
+          data-doc-search-tag="MatValueKind.kInt" href="nimternalsql/nqcore.html#kInt">MatValueKind.kInt</a></li>
           </ul></dd>
 <dt><a name="kNull" href="#kNull"><span>kNull:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="MatValueKind.kNull" href="nimternalsql/nqcommon.html#kNull">MatValueKind.kNull</a></li>
+          data-doc-search-tag="MatValueKind.kNull" href="nimternalsql/nqcore.html#kNull">MatValueKind.kNull</a></li>
           </ul></dd>
 <dt><a name="kNumeric" href="#kNumeric"><span>kNumeric:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="MatValueKind.kNumeric" href="nimternalsql/nqcommon.html#kNumeric">MatValueKind.kNumeric</a></li>
+          data-doc-search-tag="MatValueKind.kNumeric" href="nimternalsql/nqcore.html#kNumeric">MatValueKind.kNumeric</a></li>
           </ul></dd>
 <dt><a name="kString" href="#kString"><span>kString:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="MatValueKind.kString" href="nimternalsql/nqcommon.html#kString">MatValueKind.kString</a></li>
+          data-doc-search-tag="MatValueKind.kString" href="nimternalsql/nqcore.html#kString">MatValueKind.kString</a></li>
           </ul></dd>
 <dt><a name="len" href="#len"><span>len:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -304,11 +322,11 @@ function main() {
           </ul></dd>
 <dt><a name="MatValue" href="#MatValue"><span>MatValue:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="nqcommon: MatValue" href="nimternalsql/nqcommon.html#MatValue">nqcommon: MatValue</a></li>
+          data-doc-search-tag="nqcore: MatValue" href="nimternalsql/nqcore.html#MatValue">nqcore: MatValue</a></li>
           </ul></dd>
 <dt><a name="MatValueKind" href="#MatValueKind"><span>MatValueKind:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="nqcommon: MatValueKind" href="nimternalsql/nqcommon.html#MatValueKind">nqcommon: MatValueKind</a></li>
+          data-doc-search-tag="nqcore: MatValueKind" href="nimternalsql/nqcore.html#MatValueKind">nqcore: MatValueKind</a></li>
           </ul></dd>
 <dt><a name="maxPrecision" href="#maxPrecision"><span>maxPrecision:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -317,6 +335,14 @@ function main() {
 <dt><a name="newBoolLit" href="#newBoolLit"><span>newBoolLit:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="nqcommon: newBoolLit(v: bool): Expression" href="nimternalsql/nqcommon.html#newBoolLit%2Cbool">nqcommon: newBoolLit(v: bool): Expression</a></li>
+          </ul></dd>
+<dt><a name="newCaseExp" href="#newCaseExp"><span>newCaseExp:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="nqcommon: newCaseExp(exp: Expression;
+           whens: seq[tuple[cond: Expression, exp: Expression]];
+           elseExp: Expression): Expression" href="nimternalsql/nqcommon.html#newCaseExp%2CExpression%2Cseq%5Btuple%5BExpression%2CExpression%5D%5D%2CExpression">nqcommon: newCaseExp(exp: Expression;
+           whens: seq[tuple[cond: Expression, exp: Expression]];
+           elseExp: Expression): Expression</a></li>
           </ul></dd>
 <dt><a name="newCursor" href="#newCursor"><span>newCursor:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -406,6 +432,34 @@ function main() {
 <li><a class="reference external"
           data-doc-search-tag="sqlscanner: nextToken(s: Scanner): Token" href="nimternalsql/sqlscanner.html#nextToken%2CScanner">sqlscanner: nextToken(s: Scanner): Token</a></li>
           </ul></dd>
+<dt><a name="nqkBool" href="#nqkBool"><span>nqkBool:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="NqValueKind.nqkBool" href="nimternalsql/nqcore.html#nqkBool">NqValueKind.nqkBool</a></li>
+          </ul></dd>
+<dt><a name="nqkFloat" href="#nqkFloat"><span>nqkFloat:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="NqValueKind.nqkFloat" href="nimternalsql/nqcore.html#nqkFloat">NqValueKind.nqkFloat</a></li>
+          </ul></dd>
+<dt><a name="nqkInt" href="#nqkInt"><span>nqkInt:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="NqValueKind.nqkInt" href="nimternalsql/nqcore.html#nqkInt">NqValueKind.nqkInt</a></li>
+          </ul></dd>
+<dt><a name="nqkList" href="#nqkList"><span>nqkList:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="NqValueKind.nqkList" href="nimternalsql/nqcore.html#nqkList">NqValueKind.nqkList</a></li>
+          </ul></dd>
+<dt><a name="nqkNull" href="#nqkNull"><span>nqkNull:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="NqValueKind.nqkNull" href="nimternalsql/nqcore.html#nqkNull">NqValueKind.nqkNull</a></li>
+          </ul></dd>
+<dt><a name="nqkNumeric" href="#nqkNumeric"><span>nqkNumeric:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="NqValueKind.nqkNumeric" href="nimternalsql/nqcore.html#nqkNumeric">NqValueKind.nqkNumeric</a></li>
+          </ul></dd>
+<dt><a name="nqkString" href="#nqkString"><span>nqkString:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="NqValueKind.nqkString" href="nimternalsql/nqcore.html#nqkString">NqValueKind.nqkString</a></li>
+          </ul></dd>
 <dt><a name="NqValue" href="#NqValue"><span>NqValue:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="nqcore: NqValue" href="nimternalsql/nqcore.html#NqValue">nqcore: NqValue</a></li>
@@ -433,6 +487,10 @@ function main() {
 <dt><a name="parseStatement" href="#parseStatement"><span>parseStatement:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="sqlparser: parseStatement(reader: Reader): SqlStatement" href="nimternalsql/sqlparser.html#parseStatement%2CReader">sqlparser: parseStatement(reader: Reader): SqlStatement</a></li>
+          </ul></dd>
+<dt><a name="prepare" href="#prepare"><span>prepare:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="db_nimternalsql: prepare(conn: DbConn; sql: SqlQuery): SqlPrepared" href="db_nimternalsql.html#prepare%2CDbConn%2CSqlQuery">db_nimternalsql: prepare(conn: DbConn; sql: SqlQuery): SqlPrepared</a></li>
           </ul></dd>
 <dt><a name="QueryExp" href="#QueryExp"><span>QueryExp:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -470,6 +528,8 @@ function main() {
           </ul></dd>
 <dt><a name="rows" href="#rows"><span>rows:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
+          data-doc-search-tag="db_nimternalsql: rows(db: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]): Row" href="db_nimternalsql.html#rows.i%2CDbConn%2CSqlPrepared%2Cvarargs%5Bstring%2C%5D">db_nimternalsql: rows(db: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]): Row</a></li>
+          <li><a class="reference external"
           data-doc-search-tag="db_nimternalsql: rows(db: DbConn; query: SqlQuery; args: varargs[string, `$`]): Row" href="db_nimternalsql.html#rows.i%2CDbConn%2CSqlQuery%2Cvarargs%5Bstring%2C%5D">db_nimternalsql: rows(db: DbConn; query: SqlQuery; args: varargs[string, `$`]): Row</a></li>
           </ul></dd>
 <dt><a name="save" href="#save"><span>save:</span></a></dt><dd><ul class="simple">
@@ -590,6 +650,10 @@ function main() {
 <li><a class="reference external"
           data-doc-search-tag="TokenKind.tokBy" href="nimternalsql/sqlscanner.html#tokBy">TokenKind.tokBy</a></li>
           </ul></dd>
+<dt><a name="tokCase" href="#tokCase"><span>tokCase:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="TokenKind.tokCase" href="nimternalsql/sqlscanner.html#tokCase">TokenKind.tokCase</a></li>
+          </ul></dd>
 <dt><a name="tokChar" href="#tokChar"><span>tokChar:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="TokenKind.tokChar" href="nimternalsql/sqlscanner.html#tokChar">TokenKind.tokChar</a></li>
@@ -650,9 +714,17 @@ function main() {
 <li><a class="reference external"
           data-doc-search-tag="TokenKind.tokDrop" href="nimternalsql/sqlscanner.html#tokDrop">TokenKind.tokDrop</a></li>
           </ul></dd>
+<dt><a name="tokElse" href="#tokElse"><span>tokElse:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="TokenKind.tokElse" href="nimternalsql/sqlscanner.html#tokElse">TokenKind.tokElse</a></li>
+          </ul></dd>
 <dt><a name="Token" href="#Token"><span>Token:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="sqlscanner: Token" href="nimternalsql/sqlscanner.html#Token">sqlscanner: Token</a></li>
+          </ul></dd>
+<dt><a name="tokEnd" href="#tokEnd"><span>tokEnd:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="TokenKind.tokEnd" href="nimternalsql/sqlscanner.html#tokEnd">TokenKind.tokEnd</a></li>
           </ul></dd>
 <dt><a name="tokEndOfInput" href="#tokEndOfInput"><span>tokEndOfInput:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -762,6 +834,10 @@ function main() {
 <li><a class="reference external"
           data-doc-search-tag="TokenKind.tokNumeric" href="nimternalsql/sqlscanner.html#tokNumeric">TokenKind.tokNumeric</a></li>
           </ul></dd>
+<dt><a name="tokNumPlaceholder" href="#tokNumPlaceholder"><span>tokNumPlaceholder:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="TokenKind.tokNumPlaceholder" href="nimternalsql/sqlscanner.html#tokNumPlaceholder">TokenKind.tokNumPlaceholder</a></li>
+          </ul></dd>
 <dt><a name="tokOn" href="#tokOn"><span>tokOn:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="TokenKind.tokOn" href="nimternalsql/sqlscanner.html#tokOn">TokenKind.tokOn</a></li>
@@ -814,6 +890,10 @@ function main() {
 <li><a class="reference external"
           data-doc-search-tag="TokenKind.tokTable" href="nimternalsql/sqlscanner.html#tokTable">TokenKind.tokTable</a></li>
           </ul></dd>
+<dt><a name="tokThen" href="#tokThen"><span>tokThen:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="TokenKind.tokThen" href="nimternalsql/sqlscanner.html#tokThen">TokenKind.tokThen</a></li>
+          </ul></dd>
 <dt><a name="tokTrue" href="#tokTrue"><span>tokTrue:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="TokenKind.tokTrue" href="nimternalsql/sqlscanner.html#tokTrue">TokenKind.tokTrue</a></li>
@@ -833,6 +913,10 @@ function main() {
 <dt><a name="tokVarchar" href="#tokVarchar"><span>tokVarchar:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="TokenKind.tokVarchar" href="nimternalsql/sqlscanner.html#tokVarchar">TokenKind.tokVarchar</a></li>
+          </ul></dd>
+<dt><a name="tokWhen" href="#tokWhen"><span>tokWhen:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="TokenKind.tokWhen" href="nimternalsql/sqlscanner.html#tokWhen">TokenKind.tokWhen</a></li>
           </ul></dd>
 <dt><a name="tokWhere" href="#tokWhere"><span>tokWhere:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -864,35 +948,9 @@ function main() {
           </ul></dd>
 <dt><a name="tryExec" href="#tryExec"><span>tryExec:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
+          data-doc-search-tag="db_nimternalsql: tryExec(db: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]): bool" href="db_nimternalsql.html#tryExec%2CDbConn%2CSqlPrepared%2Cvarargs%5Bstring%2C%5D">db_nimternalsql: tryExec(db: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]): bool</a></li>
+          <li><a class="reference external"
           data-doc-search-tag="db_nimternalsql: tryExec(db: DbConn; query: SqlQuery; args: varargs[string, `$`]): bool" href="db_nimternalsql.html#tryExec%2CDbConn%2CSqlQuery%2Cvarargs%5Bstring%2C%5D">db_nimternalsql: tryExec(db: DbConn; query: SqlQuery; args: varargs[string, `$`]): bool</a></li>
-          </ul></dd>
-<dt><a name="tvkBool" href="#tvkBool"><span>tvkBool:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="NqValueKind.tvkBool" href="nimternalsql/nqcore.html#tvkBool">NqValueKind.tvkBool</a></li>
-          </ul></dd>
-<dt><a name="tvkFloat" href="#tvkFloat"><span>tvkFloat:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="NqValueKind.tvkFloat" href="nimternalsql/nqcore.html#tvkFloat">NqValueKind.tvkFloat</a></li>
-          </ul></dd>
-<dt><a name="tvkInt" href="#tvkInt"><span>tvkInt:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="NqValueKind.tvkInt" href="nimternalsql/nqcore.html#tvkInt">NqValueKind.tvkInt</a></li>
-          </ul></dd>
-<dt><a name="tvkList" href="#tvkList"><span>tvkList:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="NqValueKind.tvkList" href="nimternalsql/nqcore.html#tvkList">NqValueKind.tvkList</a></li>
-          </ul></dd>
-<dt><a name="tvkNull" href="#tvkNull"><span>tvkNull:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="NqValueKind.tvkNull" href="nimternalsql/nqcore.html#tvkNull">NqValueKind.tvkNull</a></li>
-          </ul></dd>
-<dt><a name="tvkNumeric" href="#tvkNumeric"><span>tvkNumeric:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="NqValueKind.tvkNumeric" href="nimternalsql/nqcore.html#tvkNumeric">NqValueKind.tvkNumeric</a></li>
-          </ul></dd>
-<dt><a name="tvkString" href="#tvkString"><span>tvkString:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="NqValueKind.tvkString" href="nimternalsql/nqcore.html#tvkString">NqValueKind.tvkString</a></li>
           </ul></dd>
 <dt><a name="update" href="#update"><span>update:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -917,7 +975,7 @@ function main() {
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2020-12-06 21:34:02 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2020-12-16 22:49:02 UTC</small>
       </div>
     </div>
   </div>

@@ -103,6 +103,12 @@ proc parseOperand(scanner: Scanner, argCount: var int): Expression =
       argCount = argCount + 1
       discard nextToken(scanner)
       return newQVarExp("$" & $argCount)
+    of tokNumPlaceholder:
+      t = nextToken(scanner)
+      if t.kind != tokInt:
+        raiseDbError("number expected after \"$\"")
+      discard nextToken(scanner)
+      return newQVarExp("$" & t.value)
     of tokTrue:
       result = newBoolLit(true)
     of tokFalse:

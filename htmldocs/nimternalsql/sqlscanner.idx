@@ -9,6 +9,11 @@ tokDefault	nimternalsql/sqlscanner.html#tokDefault	TokenKind.tokDefault
 tokDrop	nimternalsql/sqlscanner.html#tokDrop	TokenKind.tokDrop	
 tokVarchar	nimternalsql/sqlscanner.html#tokVarchar	TokenKind.tokVarchar	
 tokNumeric	nimternalsql/sqlscanner.html#tokNumeric	TokenKind.tokNumeric	
+tokCase	nimternalsql/sqlscanner.html#tokCase	TokenKind.tokCase	
+tokWhen	nimternalsql/sqlscanner.html#tokWhen	TokenKind.tokWhen	
+tokThen	nimternalsql/sqlscanner.html#tokThen	TokenKind.tokThen	
+tokElse	nimternalsql/sqlscanner.html#tokElse	TokenKind.tokElse	
+tokEnd	nimternalsql/sqlscanner.html#tokEnd	TokenKind.tokEnd	
 tokCreate	nimternalsql/sqlscanner.html#tokCreate	TokenKind.tokCreate	
 tokCross	nimternalsql/sqlscanner.html#tokCross	TokenKind.tokCross	
 tokCount	nimternalsql/sqlscanner.html#tokCount	TokenKind.tokCount	
@@ -64,6 +69,7 @@ tokRat	nimternalsql/sqlscanner.html#tokRat	TokenKind.tokRat
 tokTrue	nimternalsql/sqlscanner.html#tokTrue	TokenKind.tokTrue	
 tokFalse	nimternalsql/sqlscanner.html#tokFalse	TokenKind.tokFalse	
 tokPlaceholder	nimternalsql/sqlscanner.html#tokPlaceholder	TokenKind.tokPlaceholder	
+tokNumPlaceholder	nimternalsql/sqlscanner.html#tokNumPlaceholder	TokenKind.tokNumPlaceholder	
 tokEndOfInput	nimternalsql/sqlscanner.html#tokEndOfInput	TokenKind.tokEndOfInput	
 TokenKind	nimternalsql/sqlscanner.html#TokenKind	sqlscanner: TokenKind	
 Token	nimternalsql/sqlscanner.html#Token	sqlscanner: Token	

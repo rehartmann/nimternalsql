@@ -84,3 +84,5 @@ try:
   raiseAssert("UPDATE succeded although value was too large")
 except DbError:
   discard
+
+close(db)

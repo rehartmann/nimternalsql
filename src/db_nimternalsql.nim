@@ -58,6 +58,8 @@ type
     db: Database
     errorMsg: string
   Row* = seq[string]
+  SqlPrepared = distinct SqlStatement
+
   ## A row of a dataset. NULL database values will be converted to empty strings.
 
 proc open*(connection, user, password, database: string): DbConn =
@@ -68,8 +70,7 @@ proc open*(connection, user, password, database: string): DbConn =
 
 proc close*(db: DbConn) =
   ## Closes the database.
-  # Nothing to do
-  discard
+  db.db = nil
 
 proc dbError*(db: DbConn) {.noreturn.} =
   ## Raises a DbError exception.
@@ -158,18 +159,30 @@ method execute(stmt: SqlUpdate, db: Database, args: varargs[string]): int64 =
   result = update(table, assignments, stmt.whereExp, args)
 
 method execute(stmt: SqlDelete, db: Database, args: varargs[string]): int64 =
-  let table = getTable(db, stmt.tableName)
-  result = delete(table, stmt.whereExp, args)
+  result = delete(getTable(db, stmt.tableName), stmt.whereExp, args)
 
 proc exec*(conn: DbConn; sql: SqlQuery; args: varargs[string, `$`]) =
   ## Executes the query and raises DbError if not successful.
   let stmt = parseStatement(newStringReader(string(sql)))
   discard stmt.execute(conn.db, args)
 
+proc exec*(conn: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]) =
+  ## Executes the prepared query and raises DbError if not successful.
+  discard SqlStatement(stmt).execute(conn.db, args)
+
 proc tryExec*(db: DbConn; query: SqlQuery; args: varargs[string, `$`]): bool =
-  ## Tries to execute the query and returns true if successful, false otherwise.
+  ## Tries to execute the prepared query and returns true if successful, false otherwise.
   try:
     exec(db, query, args)
+    return true
+  except DbError:
+    db.errorMsg = getCurrentExceptionMsg()
+    return false
+
+proc tryExec*(db: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]): bool =
+  ## Tries to execute the prepared query and returns true if successful, false otherwise.
+  try:
+    exec(db, stmt, args)
     return true
   except DbError:
     db.errorMsg = getCurrentExceptionMsg()
@@ -179,6 +192,10 @@ proc execAffectedRows*(conn: DbConn; sql: SqlQuery; args: varargs[string, `$`]):
   ## Executes the query (typically "UPDATE") and returns the number of affected rows.
   let stmt = parseStatement(newStringReader(string(sql)))
   result = stmt.execute(conn.db, args)
+
+proc execAffectedRows*(conn: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]): int64 =
+  ## Executes the prepared query (typically "UPDATE") and returns the number of affected rows.
+  result = SqlStatement(stmt).execute(conn.db, args)
 
 func toVTable(tableRef: SqlTableRef, db: Database): VTable =
   case tableRef.kind:
@@ -263,6 +280,17 @@ iterator instantRows*(conn: DbConn; sql: SqlQuery; args: varargs[string,
   for r in instantRows(toVTable(stmt, conn.db), args):
     yield r
 
+proc prepare*(conn: DbConn; sql: SqlQuery): SqlPrepared =
+  ## Creates a new ``SqlPrepared`` statement. Parameter substitution is done
+  ## via ``$1``, ``$2``, ``$3``, etc.
+  result = SqlPrepared(parseStatement(newStringReader(string(sql))))
+
+iterator instantRows*(conn: DbConn; sql: SqlPrepared; args: varargs[string,
+    `$`]): InstantRow =
+  ## Executes the prepared query and iterates over the result dataset.
+  for r in instantRows(toVTable(SqlStatement(sql), conn.db), args):
+    yield r
+
 func `[]`*(row: InstantRow; col: int): string =
   ## Returns text for given column of the row.
   result = $columnValueAt(row, col)
@@ -279,9 +307,25 @@ iterator rows*(db: DbConn; query: SqlQuery; args: varargs[string, `$`]): Row =
       row.add(ir[i])
     yield row
 
+iterator rows*(db: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]): Row =
+  ## Executes the query and iterates over the result dataset.
+  for ir in instantRows(db, stmt, args):
+    var row: Row
+    for i in 0..<ir.len:
+      row.add(ir[i])
+    yield row
+
 proc getAllRows*(db: DbConn; query: SqlQuery; args: varargs[string, `$`]): seq[Row] =
   ## Executes the query and returns the whole result dataset.
   for r in instantRows(db, query, args):
+    var resultRow: Row = @[]
+    for i in 0..<r.len:
+      resultRow.add(r[i])
+    result.add(resultRow)
+
+proc getAllRows*(db: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]): seq[Row] =
+  ## Executes the prepared query and returns the whole result dataset.
+  for r in instantRows(db, stmt, args):
     var resultRow: Row = @[]
     for i in 0..<r.len:
       resultRow.add(r[i])
@@ -299,11 +343,26 @@ proc getRow*(conn: DbConn; query: SqlQuery; args: varargs[string, `$`]): Row =
   for i in 0..<vtable.columnCount():
     result.add("")
 
+proc getRow*(conn: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]): Row =
+  let vtable = toVTable(SqlStatement(stmt), conn.db)
+  for r in instantRows(vtable, args):
+    for i in 0..<r.len:
+      result.add(r[i])
+    return
+  for i in 0..<vtable.columnCount():
+    result.add("")
+
 proc getValue*(conn: DbConn; query: SqlQuery; args: varargs[string,
     `$`]): string =
   ## Executes the query and returns the first column of the first row of the result dataset.
   ## Returns "" if the dataset contains no rows or the database value is NULL.
   result = getRow(conn, query, args)[0]
+
+proc getValue*(conn: DbConn; stmt: SqlPrepared; args: varargs[string,
+    `$`]): string =
+  ## Executes the prepared query and returns the first column of the first row of the result dataset.
+  ## Returns "" if the dataset contains no rows or the database value is NULL.
+  result = getRow(conn, stmt, args)[0]
 
 proc save*(conn: DbConn, filename: string) =
   ## Saves a snapshot of the database to a file named `filename`.

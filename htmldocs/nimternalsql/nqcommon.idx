@@ -8,18 +8,10 @@ NullLit	nimternalsql/nqcommon.html#NullLit	nqcommon: NullLit
 ScalarOpExp	nimternalsql/nqcommon.html#ScalarOpExp	nqcommon: ScalarOpExp	
 QVarExp	nimternalsql/nqcommon.html#QVarExp	nqcommon: QVarExp	
 ListExp	nimternalsql/nqcommon.html#ListExp	nqcommon: ListExp	
+CaseExp	nimternalsql/nqcommon.html#CaseExp	nqcommon: CaseExp	
 SelectElement	nimternalsql/nqcommon.html#SelectElement	nqcommon: SelectElement	
-kInt	nimternalsql/nqcommon.html#kInt	MatValueKind.kInt	
-kNumeric	nimternalsql/nqcommon.html#kNumeric	MatValueKind.kNumeric	
-kFloat	nimternalsql/nqcommon.html#kFloat	MatValueKind.kFloat	
-kString	nimternalsql/nqcommon.html#kString	MatValueKind.kString	
-kBool	nimternalsql/nqcommon.html#kBool	MatValueKind.kBool	
-kNull	nimternalsql/nqcommon.html#kNull	MatValueKind.kNull	
-MatValueKind	nimternalsql/nqcommon.html#MatValueKind	nqcommon: MatValueKind	
-MatValue	nimternalsql/nqcommon.html#MatValue	nqcommon: MatValue	
 Record	nimternalsql/nqcommon.html#Record	nqcommon: Record	
 BaseTable	nimternalsql/nqcommon.html#BaseTable	nqcommon: BaseTable	
-HashBaseTable	nimternalsql/nqcommon.html#HashBaseTable	nqcommon: HashBaseTable	
 Database	nimternalsql/nqcommon.html#Database	nqcommon: Database	
 trkSimpleTableRef	nimternalsql/nqcommon.html#trkSimpleTableRef	SqlTableRefKind.trkSimpleTableRef	
 trkRelOp	nimternalsql/nqcommon.html#trkRelOp	SqlTableRefKind.trkRelOp	
@@ -33,4 +25,5 @@ newNullLit	nimternalsql/nqcommon.html#newNullLit	nqcommon: newNullLit(): Express
 newListExp	nimternalsql/nqcommon.html#newListExp,seq[Expression]	nqcommon: newListExp(v: seq[Expression]): Expression	
 newScalarOpExp	nimternalsql/nqcommon.html#newScalarOpExp,string,varargs[Expression]	nqcommon: newScalarOpExp(name: string; args: varargs[Expression]): Expression	
 newQVarExp	nimternalsql/nqcommon.html#newQVarExp,string,string	nqcommon: newQVarExp(name: string; tableName: string = &quot;&quot;): QVarExp	
+newCaseExp	nimternalsql/nqcommon.html#newCaseExp,Expression,seq[tuple[Expression,Expression]],Expression	nqcommon: newCaseExp(exp: Expression;\n           whens: seq[tuple[cond: Expression, exp: Expression]];\n           elseExp: Expression): Expression	
 `$`	nimternalsql/nqcommon.html#$.e,Expression	nqcommon: `$`(exp: Expression): string	

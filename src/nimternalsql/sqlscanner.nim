@@ -13,7 +13,7 @@ type
     tokAsterisk, tokDiv, tokPlus, tokNull, tokMinus, tokRightParen,
     tokLeftParen, tokComma, tokDot, tokEq, tokNeq, tokLt, tokLe, tokGt, tokGe,
     tokConcat, tokIdentifier, tokString, tokInt, tokRat, tokTrue, tokFalse,
-    tokPlaceholder, tokEndOfInput
+    tokPlaceholder, tokNumPlaceholder, tokEndOfInput
   Token* = object
     case kind*: TokenKind
     of tokIdentifier:
@@ -282,6 +282,8 @@ proc readNextToken(s: Scanner): Token =
       return Token(kind: tokString, value: str)
     of '?':
       return Token(kind: tokPlaceholder)
+    of '$':
+      return Token(kind: tokNumPlaceholder)
     else:
       raiseDbError("Invalid character: " & c)
 

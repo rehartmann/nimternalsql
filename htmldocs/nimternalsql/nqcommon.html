@@ -110,13 +110,13 @@ function main() {
     title="ScalarLit = ref object of Expression
   val*: string"><wbr />Scalar<wbr />Lit<span class="attachedType"></span></a></li>
   <li><a class="reference" href="#StringLit"
-    title="StringLit = ref object of ScalarLit"><wbr />String<wbr />Lit<span class="attachedType"></span></a></li>
+    title="StringLit {.final.} = ref object of ScalarLit"><wbr />String<wbr />Lit<span class="attachedType"></span></a></li>
   <li><a class="reference" href="#NumericLit"
-    title="NumericLit = ref object of ScalarLit"><wbr />Numeric<wbr />Lit<span class="attachedType"></span></a></li>
+    title="NumericLit {.final.} = ref object of ScalarLit"><wbr />Numeric<wbr />Lit<span class="attachedType"></span></a></li>
   <li><a class="reference" href="#BoolLit"
-    title="BoolLit = ref object of ScalarLit"><wbr />Bool<wbr />Lit<span class="attachedType"></span></a></li>
+    title="BoolLit {.final.} = ref object of ScalarLit"><wbr />Bool<wbr />Lit<span class="attachedType"></span></a></li>
   <li><a class="reference" href="#NullLit"
-    title="NullLit = ref object of Expression"><wbr />Null<wbr />Lit<span class="attachedType"></span></a></li>
+    title="NullLit {.final.} = ref object of Expression"><wbr />Null<wbr />Lit<span class="attachedType"></span></a></li>
   <li><a class="reference" href="#ScalarOpExp"
     title="ScalarOpExp {.acyclic.} = ref object of Expression
   opName*: string
@@ -128,33 +128,15 @@ function main() {
   <li><a class="reference" href="#ListExp"
     title="ListExp {.acyclic.} = ref object of Expression
   exps*: seq[Expression]"><wbr />List<wbr />Exp<span class="attachedType"></span></a></li>
+  <li><a class="reference" href="#CaseExp"
+    title="CaseExp {.acyclic.} = ref object of Expression
+  exp*: Expression
+  whens*: seq[tuple[cond: Expression, exp: Expression]]
+  elseExp*: Expression"><wbr />Case<wbr />Exp<span class="attachedType"></span></a></li>
   <li><a class="reference" href="#SelectElement"
     title="SelectElement {.acyclic.} = object
   colName*: string
   exp*: Expression"><wbr />Select<wbr />Element<span class="attachedType"></span></a></li>
-  <li><a class="reference" href="#MatValueKind"
-    title="MatValueKind = enum
-  kInt, kNumeric, kFloat, kString, kBool, kNull"><wbr />Mat<wbr />Value<wbr />Kind<span class="attachedType"></span></a></li>
-  <li><a class="reference" href="#MatValue"
-    title="MatValue = object
-  case kind*: MatValueKind
-  of kInt:
-      intVal*: int32
-
-  of kNumeric:
-      numericVal*: int64
-
-  of kFloat:
-      floatVal*: float
-
-  of kString:
-      strVal*: string
-
-  of kBool:
-      boolVal*: bool
-
-  of kNull:
-      nil"><wbr />Mat<wbr />Value<span class="attachedType"></span></a></li>
   <li><a class="reference" href="#Record"
     title="Record[T] = seq[T]"><wbr />Record<span class="attachedType"></span></a></li>
   <li><a class="reference" href="#BaseTable"
@@ -162,9 +144,6 @@ function main() {
   name*: string
   def*: seq[ColumnDef]
   primaryKey*: seq[Natural]"><wbr />Base<wbr />Table<span class="attachedType"></span></a></li>
-  <li><a class="reference" href="#HashBaseTable"
-    title="HashBaseTable = ref object of BaseTable
-  rows*: Table[Record[MatValue], Record[MatValue]]"><wbr />Hash<wbr />Base<wbr />Table<span class="attachedType"></span></a></li>
   <li><a class="reference" href="#Database"
     title="Database = ref object
   tables*: Table[string, BaseTable]"><wbr />Database<span class="attachedType"></span></a></li>
@@ -198,7 +177,14 @@ function main() {
 <li>
   <a class="reference reference-toplevel" href="#13" id="63">Funcs</a>
   <ul class="simple simple-toc-section">
-      <ul class="simple nested-toc-section">newListExp
+      <ul class="simple nested-toc-section">newCaseExp
+      <li><a class="reference" href="#newCaseExp%2CExpression%2Cseq%5Btuple%5BExpression%2CExpression%5D%5D%2CExpression"
+    title="newCaseExp(exp: Expression;
+           whens: seq[tuple[cond: Expression, exp: Expression]];
+           elseExp: Expression): Expression">newCaseExp,Expression,seq[tuple[Expression,Expression]],Expression<span class="attachedType">Expression</span></a></li>
+
+  </ul>
+  <ul class="simple nested-toc-section">newListExp
       <li><a class="reference" href="#newListExp%2Cseq%5BExpression%5D"
     title="newListExp(v: seq[Expression]): Expression">newListExp,seq[Expression]<span class="attachedType">Expression</span></a></li>
 
@@ -288,28 +274,28 @@ function main() {
 
 </dd>
 <a id="StringLit"></a>
-<dt><pre><a href="nqcommon.html#StringLit"><span class="Identifier">StringLit</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span> <span class="Keyword">of</span> <a href="nqcommon.html#ScalarLit"><span class="Identifier">ScalarLit</span></a></pre></dt>
+<dt><pre><a href="nqcommon.html#StringLit"><span class="Identifier">StringLit</span></a> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma"><span class="Identifier">final</span></span><span class="Other">.}</span></span> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span> <span class="Keyword">of</span> <a href="nqcommon.html#ScalarLit"><span class="Identifier">ScalarLit</span></a></pre></dt>
 <dd>
 
 
 
 </dd>
 <a id="NumericLit"></a>
-<dt><pre><a href="nqcommon.html#NumericLit"><span class="Identifier">NumericLit</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span> <span class="Keyword">of</span> <a href="nqcommon.html#ScalarLit"><span class="Identifier">ScalarLit</span></a></pre></dt>
+<dt><pre><a href="nqcommon.html#NumericLit"><span class="Identifier">NumericLit</span></a> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma"><span class="Identifier">final</span></span><span class="Other">.}</span></span> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span> <span class="Keyword">of</span> <a href="nqcommon.html#ScalarLit"><span class="Identifier">ScalarLit</span></a></pre></dt>
 <dd>
 
 
 
 </dd>
 <a id="BoolLit"></a>
-<dt><pre><a href="nqcommon.html#BoolLit"><span class="Identifier">BoolLit</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span> <span class="Keyword">of</span> <a href="nqcommon.html#ScalarLit"><span class="Identifier">ScalarLit</span></a></pre></dt>
+<dt><pre><a href="nqcommon.html#BoolLit"><span class="Identifier">BoolLit</span></a> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma"><span class="Identifier">final</span></span><span class="Other">.}</span></span> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span> <span class="Keyword">of</span> <a href="nqcommon.html#ScalarLit"><span class="Identifier">ScalarLit</span></a></pre></dt>
 <dd>
 
 
 
 </dd>
 <a id="NullLit"></a>
-<dt><pre><a href="nqcommon.html#NullLit"><span class="Identifier">NullLit</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span> <span class="Keyword">of</span> <a href="nqcommon.html#Expression"><span class="Identifier">Expression</span></a></pre></dt>
+<dt><pre><a href="nqcommon.html#NullLit"><span class="Identifier">NullLit</span></a> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma"><span class="Identifier">final</span></span><span class="Other">.}</span></span> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span> <span class="Keyword">of</span> <a href="nqcommon.html#Expression"><span class="Identifier">Expression</span></a></pre></dt>
 <dd>
 
 
@@ -344,46 +330,22 @@ function main() {
 
 
 </dd>
-<a id="SelectElement"></a>
-<dt><pre><a href="nqcommon.html#SelectElement"><span class="Identifier">SelectElement</span></a> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma"><span class="Identifier">acyclic</span></span><span class="Other">.}</span></span> <span class="Other">=</span> <span class="Keyword">object</span>
-  <span class="Identifier">colName</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>
+<a id="CaseExp"></a>
+<dt><pre><a href="nqcommon.html#CaseExp"><span class="Identifier">CaseExp</span></a> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma"><span class="Identifier">acyclic</span></span><span class="Other">.}</span></span> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span> <span class="Keyword">of</span> <a href="nqcommon.html#Expression"><span class="Identifier">Expression</span></a>
   <span class="Identifier">exp</span><span class="Operator">*</span><span class="Other">:</span> <a href="nqcommon.html#Expression"><span class="Identifier">Expression</span></a>
+  <span class="Identifier">whens</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Keyword">tuple</span><span class="Other">[</span><span class="Identifier">cond</span><span class="Other">:</span> <a href="nqcommon.html#Expression"><span class="Identifier">Expression</span></a><span class="Other">,</span> <span class="Identifier">exp</span><span class="Other">:</span> <a href="nqcommon.html#Expression"><span class="Identifier">Expression</span></a><span class="Other">]</span><span class="Other">]</span>
+  <span class="Identifier">elseExp</span><span class="Operator">*</span><span class="Other">:</span> <a href="nqcommon.html#Expression"><span class="Identifier">Expression</span></a>
 </pre></dt>
 <dd>
 
 
 
 </dd>
-<a id="MatValueKind"></a>
-<dt><pre><a href="nqcommon.html#MatValueKind"><span class="Identifier">MatValueKind</span></a> <span class="Other">=</span> <span class="Keyword">enum</span>
-  <span class="Identifier">kInt</span><span class="Other">,</span> <span class="Identifier">kNumeric</span><span class="Other">,</span> <span class="Identifier">kFloat</span><span class="Other">,</span> <span class="Identifier">kString</span><span class="Other">,</span> <span class="Identifier">kBool</span><span class="Other">,</span> <span class="Identifier">kNull</span></pre></dt>
-<dd>
-
-
-
-</dd>
-<a id="MatValue"></a>
-<dt><pre><a href="nqcommon.html#MatValue"><span class="Identifier">MatValue</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
-  <span class="Keyword">case</span> <span class="Identifier">kind</span><span class="Operator">*</span><span class="Other">:</span> <a href="nqcommon.html#MatValueKind"><span class="Identifier">MatValueKind</span></a>
-  <span class="Keyword">of</span> <span class="Identifier">kInt</span><span class="Other">:</span>
-      <span class="Identifier">intVal</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int32</span>
-
-  <span class="Keyword">of</span> <span class="Identifier">kNumeric</span><span class="Other">:</span>
-      <span class="Identifier">numericVal</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int64</span>
-
-  <span class="Keyword">of</span> <span class="Identifier">kFloat</span><span class="Other">:</span>
-      <span class="Identifier">floatVal</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">float</span>
-
-  <span class="Keyword">of</span> <span class="Identifier">kString</span><span class="Other">:</span>
-      <span class="Identifier">strVal</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>
-
-  <span class="Keyword">of</span> <span class="Identifier">kBool</span><span class="Other">:</span>
-      <span class="Identifier">boolVal</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">bool</span>
-
-  <span class="Keyword">of</span> <span class="Identifier">kNull</span><span class="Other">:</span>
-      <span class="Keyword">nil</span>
-
-  </pre></dt>
+<a id="SelectElement"></a>
+<dt><pre><a href="nqcommon.html#SelectElement"><span class="Identifier">SelectElement</span></a> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma"><span class="Identifier">acyclic</span></span><span class="Other">.}</span></span> <span class="Other">=</span> <span class="Keyword">object</span>
+  <span class="Identifier">colName</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>
+  <span class="Identifier">exp</span><span class="Operator">*</span><span class="Other">:</span> <a href="nqcommon.html#Expression"><span class="Identifier">Expression</span></a>
+</pre></dt>
 <dd>
 
 
@@ -401,15 +363,6 @@ function main() {
   <span class="Identifier">name</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>
   <span class="Identifier">def</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><a href="nqcommon.html#ColumnDef"><span class="Identifier">ColumnDef</span></a><span class="Other">]</span>
   <span class="Identifier">primaryKey</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">Natural</span><span class="Other">]</span>
-</pre></dt>
-<dd>
-
-
-
-</dd>
-<a id="HashBaseTable"></a>
-<dt><pre><a href="nqcommon.html#HashBaseTable"><span class="Identifier">HashBaseTable</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span> <span class="Keyword">of</span> <a href="nqcommon.html#BaseTable"><span class="Identifier">BaseTable</span></a>
-  <span class="Identifier">rows</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">Table</span><span class="Other">[</span><a href="nqcommon.html#Record"><span class="Identifier">Record</span></a><span class="Other">[</span><a href="nqcommon.html#MatValue"><span class="Identifier">MatValue</span></a><span class="Other">]</span><span class="Other">,</span> <a href="nqcommon.html#Record"><span class="Identifier">Record</span></a><span class="Other">[</span><a href="nqcommon.html#MatValue"><span class="Identifier">MatValue</span></a><span class="Other">]</span><span class="Other">]</span>
 </pre></dt>
 <dd>
 
@@ -518,6 +471,15 @@ function main() {
 
 
 </dd>
+<a id="newCaseExp,Expression,seq[tuple[Expression,Expression]],Expression"></a>
+<dt><pre><span class="Keyword">func</span> <a href="#newCaseExp%2CExpression%2Cseq%5Btuple%5BExpression%2CExpression%5D%5D%2CExpression"><span class="Identifier">newCaseExp</span></a><span class="Other">(</span><span class="Identifier">exp</span><span class="Other">:</span> <a href="nqcommon.html#Expression"><span class="Identifier">Expression</span></a><span class="Other">;</span>
+                <span class="Identifier">whens</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Keyword">tuple</span><span class="Other">[</span><span class="Identifier">cond</span><span class="Other">:</span> <a href="nqcommon.html#Expression"><span class="Identifier">Expression</span></a><span class="Other">,</span> <span class="Identifier">exp</span><span class="Other">:</span> <a href="nqcommon.html#Expression"><span class="Identifier">Expression</span></a><span class="Other">]</span><span class="Other">]</span><span class="Other">;</span>
+                <span class="Identifier">elseExp</span><span class="Other">:</span> <a href="nqcommon.html#Expression"><span class="Identifier">Expression</span></a><span class="Other">)</span><span class="Other">:</span> <a href="nqcommon.html#Expression"><span class="Identifier">Expression</span></a> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
+<dd>
+
+
+
+</dd>
 
 </dl></div>
 <div class="section" id="14">
@@ -540,7 +502,7 @@ function main() {
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2020-12-06 21:34:01 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2020-12-16 22:49:02 UTC</small>
       </div>
     </div>
   </div>
