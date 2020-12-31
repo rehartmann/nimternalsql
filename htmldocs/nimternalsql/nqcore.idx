@@ -39,6 +39,7 @@ toNqValue	nimternalsql/nqcore.html#toNqValue,MatValue,ColumnDef	nqcore: toNqValu
 toMatValue	nimternalsql/nqcore.html#toMatValue,NqValue,ColumnDef	nqcore: toMatValue(v: NqValue; colDef: ColumnDef): MatValue	
 `==`	nimternalsql/nqcore.html#==,seq,seq	nqcore: `==`(r1: seq; r2: seq): bool	
 newDatabase	nimternalsql/nqcore.html#newDatabase	nqcore: newDatabase(): Database	
+isKey	nimternalsql/nqcore.html#isKey,BaseTable,int	nqcore: isKey(table: BaseTable; col: int): bool	
 insert	nimternalsql/nqcore.html#insert,BaseTable,seq[NqValue]	nqcore: insert(table: BaseTable; values: seq[NqValue])	
 getTable	nimternalsql/nqcore.html#getTable,Database,string	nqcore: getTable(db: Database; tableName: string): BaseTable	
 eval	nimternalsql/nqcore.html#eval.e,Expression,VarResolver,AggrResolver	nqcore: eval(exp: Expression; varResolver: VarResolver; aggrResolver: AggrResolver = proc (\n    exp: ScalarOpExp): NqValue = raiseDbError(exp.opName &amp; &quot; not supported&quot;)): NqValue	

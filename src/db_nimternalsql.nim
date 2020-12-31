@@ -23,9 +23,9 @@
 ##
 ## .. code-block:: Nim
 ##      db.exec(sql"DROP TABLE IF EXISTS my_table")
-##      db.exec(sql("""CREATE TABLE my_table (
+##      db.exec(sql"""CREATE TABLE my_table (
 ##                       id integer PRIMARY KEY,
-##                       name varchar(50) not null)"""))
+##                       name varchar(50) not null)""")
 ##
 ## Because tables are implemented using hash tables,
 ## specifying a primary key is required.

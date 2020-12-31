@@ -276,6 +276,11 @@ function main() {
     title="isQVarExp(exp: Expression): bool">isQVarExp,Expression<span class="attachedType"></span></a></li>
 
   </ul>
+  <ul class="simple nested-toc-section">isKey
+      <li><a class="reference" href="#isKey%2CBaseTable%2Cint"
+    title="isKey(table: BaseTable; col: int): bool">isKey,BaseTable,int<span class="attachedType"></span></a></li>
+
+  </ul>
   <ul class="simple nested-toc-section">getAggrs
       <li><a class="reference" href="#getAggrs%2Cseq%5BSelectElement%5D"
     title="getAggrs(sels: seq[SelectElement]): seq[Expression]">getAggrs,seq[SelectElement]<span class="attachedType"></span></a></li>
@@ -732,6 +737,13 @@ Converts a NqValue into a MatValue.
 
 
 </dd>
+<a id="isKey,BaseTable,int"></a>
+<dt><pre><span class="Keyword">func</span> <a href="#isKey%2CBaseTable%2Cint"><span class="Identifier">isKey</span></a><span class="Other">(</span><span class="Identifier">table</span><span class="Other">:</span> <a href="nqcommon.html#BaseTable"><span class="Identifier">BaseTable</span></a><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Identifier">int</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">bool</span> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
+<dd>
+
+
+
+</dd>
 <a id="getTable,Database,string"></a>
 <dt><pre><span class="Keyword">func</span> <a href="#getTable%2CDatabase%2Cstring"><span class="Identifier">getTable</span></a><span class="Other">(</span><span class="Identifier">db</span><span class="Other">:</span> <a href="nqcommon.html#Database"><span class="Identifier">Database</span></a><span class="Other">;</span> <span class="Identifier">tableName</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <a href="nqcommon.html#BaseTable"><span class="Identifier">BaseTable</span></a> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">DbError</span><span class="Other">]</span><span class="Other">,</span>
     <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
@@ -942,7 +954,7 @@ Reads the next row from the cursor. If a row could be read, true is returned and
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2020-12-16 22:49:02 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2020-12-31 19:02:25 UTC</small>
       </div>
     </div>
   </div>
