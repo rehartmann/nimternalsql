@@ -1,0 +1,7 @@
+Tx	nimternalsql/tx.html#Tx	tx: Tx	
+newTx	nimternalsql/tx.html#newTx	tx: newTx(): Tx	
+insert	nimternalsql/tx.html#insert,Tx,BaseTable,seq[NqValue]	tx: insert(tx: Tx; table: BaseTable; values: seq[NqValue])	
+delete	nimternalsql/tx.html#delete,Tx,BaseTable,Expression,openArray[string]	tx: delete(tx: Tx; table: BaseTable; whereExp: Expression; args: openArray[string]): int64	
+update	nimternalsql/tx.html#update,Tx,BaseTable,seq[ColumnAssignment],Expression,openArray[string]	tx: update(tx: Tx; table: BaseTable; assignments: seq[ColumnAssignment];\n       whereExp: Expression; args: openArray[string]): int64	
+commit	nimternalsql/tx.html#commit,Tx	tx: commit(tx: Tx)	
+rollback	nimternalsql/tx.html#rollback,Tx	tx: rollback(tx: Tx)	
