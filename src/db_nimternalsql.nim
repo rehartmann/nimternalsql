@@ -46,6 +46,7 @@ import nimternalsql/duprem
 import nimternalsql/union
 import nimternalsql/sorter
 import nimternalsql/snapshot
+import nimternalsql/tx
 import strutils
 
 export db_common.sql
@@ -57,6 +58,8 @@ type
     ## A NimternalSQL SQL database.
     db: Database
     errorMsg: string
+    tx: Tx
+    autocommit: bool
   Row* = seq[string]
   SqlPrepared = distinct SqlStatement
 
@@ -66,11 +69,14 @@ proc open*(connection, user, password, database: string): DbConn =
   ## Opens a database, creating a new database in memory.
   ## All arguments are currently ignored.
   ## For compatibility with future versions, empty strings should be passed.
-  return DbConn(db: newDatabase(), errorMsg: "")
+  return DbConn(db: newDatabase(), errorMsg: "", tx: newTx(), autocommit: true)
 
 proc close*(db: DbConn) =
   ## Closes the database.
   db.db = nil
+
+proc setAutocommit*(db: DbConn, ac: bool) =
+  db.autocommit = ac
 
 proc dbError*(db: DbConn) {.noreturn.} =
   ## Raises a DbError exception.
@@ -97,15 +103,15 @@ proc getKey(stmt: SqlCreateTable): seq[string] =
     raiseDbError("multiple primary keys are not allowed")
   return @[pkey]
 
-method execute(stmt: SqlStatement, db: Database, args: varargs[
+method execute(stmt: SqlStatement, db: Database, tx: Tx, args: varargs[
     string]): int64 {.base.} = nil
 
-method execute(stmt: SqlCreateTable, db: Database, args: varargs[
+method execute(stmt: SqlCreateTable, db: Database, tx: Tx, args: varargs[
     string]): int64 =
   discard createBaseTable(db, stmt.tableName, stmt.columns, getKey(stmt))
   result = 0
 
-method execute(stmt: SqlDropTable, db: Database, args: varargs[string]): int64 =
+method execute(stmt: SqlDropTable, db: Database, tx: Tx, args: varargs[string]): int64 =
   try:
     dropBaseTable(db, stmt.tableName)
   except DbError:
@@ -113,7 +119,7 @@ method execute(stmt: SqlDropTable, db: Database, args: varargs[string]): int64 =
       raise getCurrentException()
   result = 0
 
-method execute(stmt: SqlInsert, db: Database, args: varargs[string]): int64 =
+method execute(stmt: SqlInsert, db: Database, tx: Tx, args: varargs[string]): int64 =
   if stmt.columns.len > 0:
     if stmt.columns.len != stmt.values.len:
       raiseDbError("number of expressions differs from number of target columns")
@@ -127,7 +133,7 @@ method execute(stmt: SqlInsert, db: Database, args: varargs[string]): int64 =
       raise newException(KeyError, "variables not supported")))
   let table = getTable(db, stmt.tableName)
   if stmt.columns.len == 0 and stmt.values.len > 0:
-    insert(table, vals)
+    insert(tx, table, vals)
   else:
     var insvals: seq[NqValue]
     var valSet: seq[bool]
@@ -147,28 +153,50 @@ method execute(stmt: SqlInsert, db: Database, args: varargs[string]): int64 =
           insvals[i] = eval(table.def[i].defaultValue, nil, nil)
         else:
           insvals[i] = NqValue(kind: nqkNull)
-    insert(table, insvals)
+    insert(tx, table, insvals)
   result = 1
 
-method execute(stmt: SqlUpdate, db: Database, args: varargs[string]): int64 =
+method execute(stmt: SqlUpdate, db: Database, tx: Tx, args: varargs[string]): int64 =
   let table = getTable(db, stmt.tableName)
   var assignments: seq[ColumnAssignment]
   for a in stmt.updateAssignments:
     let col = columnNo(table, a.column)
     assignments.add(ColumnAssignment(col: col, src: a.src))
-  result = update(table, assignments, stmt.whereExp, args)
+  result = update(tx, table, assignments, stmt.whereExp, args)
 
-method execute(stmt: SqlDelete, db: Database, args: varargs[string]): int64 =
-  result = delete(getTable(db, stmt.tableName), stmt.whereExp, args)
+method execute(stmt: SqlDelete, db: Database, tx: Tx, args: varargs[string]): int64 =
+  result = delete(tx, getTable(db, stmt.tableName), stmt.whereExp, args)
+
+method execute(stmt: SqlCommit, db: Database, tx: Tx, args: varargs[string]): int64 =
+  tx.commit()
+
+method execute(stmt: SqlRollback, db: Database, tx: Tx, args: varargs[string]): int64 =
+  tx.rollback()
 
 proc exec*(conn: DbConn; sql: SqlQuery; args: varargs[string, `$`]) =
   ## Executes the query and raises DbError if not successful.
   let stmt = parseStatement(newStringReader(string(sql)))
-  discard stmt.execute(conn.db, args)
+  if conn.autocommit:
+    try:
+      discard stmt.execute(conn.db, conn.tx, args)
+      conn.tx.commit()
+    except:
+      conn.tx.rollback()
+      raise
+  else:
+    discard stmt.execute(conn.db, conn.tx, args)
 
 proc exec*(conn: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]) =
   ## Executes the prepared query and raises DbError if not successful.
-  discard SqlStatement(stmt).execute(conn.db, args)
+  if conn.autocommit:
+    try:
+      discard SqlStatement(stmt).execute(conn.db, conn.tx, args)
+      conn.tx.commit()
+    except:
+      conn.tx.rollback()
+      raise
+  else:
+    discard SqlStatement(stmt).execute(conn.db, conn.tx, args)
 
 proc tryExec*(db: DbConn; query: SqlQuery; args: varargs[string, `$`]): bool =
   ## Tries to execute the prepared query and returns true if successful, false otherwise.
@@ -191,11 +219,27 @@ proc tryExec*(db: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]): bool =
 proc execAffectedRows*(conn: DbConn; sql: SqlQuery; args: varargs[string, `$`]): int64 =
   ## Executes the query (typically "UPDATE") and returns the number of affected rows.
   let stmt = parseStatement(newStringReader(string(sql)))
-  result = stmt.execute(conn.db, args)
+  if conn.autocommit:
+    try:
+      result = stmt.execute(conn.db, conn.tx, args)
+      conn.tx.commit()
+    except:
+      conn.tx.rollback()
+      raise
+  else:
+    result = stmt.execute(conn.db, conn.tx, args)
 
 proc execAffectedRows*(conn: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]): int64 =
   ## Executes the prepared query (typically "UPDATE") and returns the number of affected rows.
-  result = SqlStatement(stmt).execute(conn.db, args)
+  if conn.autocommit:
+    try:
+      result = SqlStatement(stmt).execute(conn.db, conn.tx, args)
+      conn.tx.commit()
+    except:
+      conn.tx.rollback()
+      raise
+  else:
+    result = SqlStatement(stmt).execute(conn.db, conn.tx, args)
 
 func toVTable(tableRef: SqlTableRef, db: Database): VTable =
   case tableRef.kind:

@@ -5,10 +5,10 @@ type
   TokenKind* = enum
     tokAll, tokAnd, tokAny, tokAs, tokAsc, tokBy, tokChar, tokDefault, tokDrop,
     tokVarchar, tokNumeric, tokCase, tokWhen, tokThen, tokElse, tokEnd,
-    tokCreate, tokCross, tokCount, tokDecimal, tokDelete, tokDesc,
-    tokDistinct, tokDouble, tokPrecision, tokExists, tokFrom, tokGroup,
-    tokIf, tokInsert, tokUpdate, tokSet, tokIn, tokIs, tokInto, tokJoin,
-    tokKey, tokLike, tokNot, tokOn, tokOr, tokOrder,
+    tokCommit, tokRollback, tokCreate, tokCross, tokCount, tokDecimal,
+    tokDelete, tokDesc, tokDistinct, tokDouble, tokPrecision, tokExists,
+    tokFrom, tokGroup, tokIf, tokInsert, tokUpdate, tokSet, tokIn, tokIs,
+    tokInto, tokJoin, tokKey, tokLike, tokNot, tokOn, tokOr, tokOrder,
     tokPrimary, tokSelect, tokTable, tokUnion, tokValues, tokWhere,
     tokAsterisk, tokDiv, tokPlus, tokNull, tokMinus, tokRightParen,
     tokLeftParen, tokComma, tokDot, tokEq, tokNeq, tokLt, tokLe, tokGt, tokGe,
@@ -94,6 +94,8 @@ proc toToken(s: string): Token =
       return Token(kind: tokBy)
     of "CASE":
       return Token(kind: tokCase)
+    of "COMMIT":
+      return Token(kind: tokCommit)
     of "COUNT":
       return Token(kind: tokCount)
     of "CHARACTER", "CHAR":
@@ -166,10 +168,8 @@ proc toToken(s: string): Token =
       return Token(kind: tokPrecision)
     of "TABLE":
       return Token(kind: tokTable)
-    of "UPDATE":
-      return Token(kind: tokUpdate)
-    of "VARCHAR":
-      return Token(kind: tokVarchar)
+    of "ROLLBACK":
+      return Token(kind: tokRollback)
     of "SELECT":
       return Token(kind: tokSelect)
     of "SET":
@@ -178,8 +178,12 @@ proc toToken(s: string): Token =
       return Token(kind: tokAny)
     of "UNION":
       return Token(kind: tokUnion)
+    of "UPDATE":
+      return Token(kind: tokUpdate)
     of "VALUES":
       return Token(kind: tokValues)
+    of "VARCHAR":
+      return Token(kind: tokVarchar)
     of "WHEN":
       return Token(kind: tokWhen)
     of "WHERE":

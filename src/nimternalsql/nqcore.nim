@@ -75,9 +75,9 @@ type
   BaseTableRef* = ref object of VTable
     table*: BaseTable
     rangeVar*: string
-  WhereTable = ref object of VTable
-    child: VTable
-    whereExp: Expression
+  WhereTable* = ref object of VTable
+    child*: VTable
+    whereExp*: Expression
   ProjectTable = ref object of VTable
     child: VTable
     columns: seq[SelectElement]
@@ -92,10 +92,10 @@ type
 
   InstantRow* = object
     ## Holds a row's column values.
-    table: VTable
-    case material: bool
+    table*: VTable
+    case material*: bool
       of true:
-        keyRecord: Record[MatValue]
+        keyRecord*: Record[MatValue]
       of false:
         vals: seq[NqValue]
 
@@ -490,30 +490,14 @@ proc newHashBaseTable(name: string, columns: openArray[ColumnDef],
 func newDatabase*(): Database =
   result = Database(tables: initTable[string, BaseTable]())
 
-func keyIndex(table: BaseTable, col: int): int =
+func keyIndex*(table: BaseTable, col: int): int =
   for i in 0..<table.primaryKey.len:
     if table.primaryKey[i] == col:
       return i
   result = -1
 
-func isKey(table: BaseTable, col: int): bool =
+func isKey*(table: BaseTable, col: int): bool =
   result = keyIndex(table, col) != -1
-
-proc insert*(table: BaseTable, values: seq[NqValue]) =
-  if values.len != table.def.len:
-    raiseDbError("invalid # of values")
-
-  let htable = HashBaseTable(table)
-  var keyRec: Record[MatValue]
-  var valRec: Record[MatValue]
-  for i in 0..<values.len:
-    if isKey(htable, i):
-      keyRec.add(toMatValue(values[i], table.def[i]))
-    else:
-      valRec.add(toMatValue(values[i], table.def[i]))
-  if htable.rows.hasKey(keyRec):
-    raiseDbError("duplicate key")
-  htable.rows[keyRec] = valRec
 
 func getTable*(db: Database, tableName: string): BaseTable =
   try:
@@ -946,19 +930,27 @@ func newGroupTable*(table: VTable, aggrs: seq[Expression], groupBy: seq[
   else:
     result = GroupTable(child: table, groupBy: groupBy, columns: @[])
 
-proc setColumnValueAt(row: var InstantRow; col: Natural, val: NqValue) =
-  let table = HashBaseTable(BaseTableRef(row.table).table)
+proc setColumnValueAt*(table: HashBaseTable; keyRecord: var Record[MatValue],
+    col: Natural, val: MatValue) =
   let ki = keyIndex(table, col)
   if ki != -1:
-    row.keyRecord[ki] = toMatValue(val, table.def[col])
+    keyRecord[ki] = val
     return
   var vi = 0
   for i in 0..<table.def.len:
     if not isKey(table, i):
       if i == col:
-        table.rows[row.keyRecord][vi] = toMatValue(val, table.def[col])
+        table.rows[keyRecord][vi] = val
         return
       vi = vi + 1
+
+proc setColumnValueAt(table: HashBaseTable; keyRecord: var Record[MatValue],
+    col: Natural, val: NqValue) =
+  setColumnValueAt(table, keyRecord, col, toMatValue(val, table.def[col]))
+
+proc setColumnValueAt*(row: var InstantRow; col: Natural, val: NqValue) =
+  setColumnValueAt(HashBaseTable(BaseTableRef(row.table).table), row.keyRecord,
+                   col, val)
 
 iterator instantRows*(tableRef: BaseTableRef): InstantRow {.closure.} =
   for k in HashBaseTable(tableRef.table).rows.keys():
@@ -1339,92 +1331,12 @@ method next(cursor: GroupTableCursor, row: var InstantRow,
   row = InstantRow(table: cursor.table, material: false, vals: vals)
   result = true
 
-func isKeyUpdate(table: BaseTable, assignments: seq[ColumnAssignment]): bool =
+func isKeyUpdate*(table: BaseTable, assignments: seq[ColumnAssignment]): bool =
   for a in assignments:
     for k in table.primaryKey:
       if a.col == k:
         return true
   result = false
-
-proc update*(table: BaseTable, assignments: seq[ColumnAssignment],
-             whereExp: Expression, args: openArray[string]): int64 =
-  var vtable: VTable = BaseTableRef(table: table, rangeVar: "")
-  if whereExp != nil:
-    vtable = WhereTable(child: vtable, whereExp: whereExp)
-  let cursor = newCursor(vtable, args)
-  let evargs = @args
-  var row: InstantRow
-  if isKeyUpdate(table, assignments):
-    var keys: seq[Record[MatValue]]
-    while cursor.next(row):
-      keys.add(row.keyRecord)
-    for key in keys:
-      row = InstantRow(table: BaseTableRef(table: table, rangeVar: ""),
-                       material: true,
-                       keyRecord: key)
-      # Update non-key columns
-      for assignment in assignments:
-        if not isKey(table, assignment.col):
-          let val = eval(assignment.src, proc(name: string,
-              rangeVar: string): NqValue =
-            if name[0] == '$':
-              return NqValue(kind: nqkString,
-                                strVal: evargs[parseInt(name[1..name.high]) - 1])
-            let col = columnNo(table, name)
-            if col == -1:
-              raiseDbError("column \"" & name & "\" does not exist")
-            return columnValueAt(row, col))
-          setColumnValueAt(row, assignment.col, val)
-      let valRec = HashBaseTable(table).rows[key]
-      # Update key columns
-      for assignment in assignments:
-        if isKey(table, assignment.col):
-          let val = eval(assignment.src, proc(name: string,
-              rangeVar: string): NqValue =
-            if name[0] == '$':
-              return NqValue(kind: nqkString,
-                              strVal: evargs[parseInt(name[1..name.high]) - 1])
-            let col = columnNo(table, name)
-            if col == -1:
-              raiseDbError("column \"" & name & "\" does not exist")
-            return columnValueAt(row, col))
-          setColumnValueAt(row, assignment.col, val)
-      # Delete old key and value
-      HashBaseTable(table).rows.del(key)
-      # Insert new values
-      HashBaseTable(table).rows[row.keyRecord] = valRec
-      result += 1
-  else:
-    while cursor.next(row):
-      for assignment in assignments:
-        let val = eval(assignment.src, proc(name: string,
-            rangeVar: string): NqValue =
-          if name[0] == '$':
-            return NqValue(kind: nqkString,
-                              strVal: evargs[parseInt(name[1..name.high]) - 1])
-          let col = columnNo(table, name)
-          if col == -1:
-            raiseDbError("column \"" & name & "\" does not exist")
-          return columnValueAt(row, col))
-        setColumnValueAt(row, assignment.col, val)
-      result += 1
-
-proc delete*(table: BaseTable, whereExp: Expression, args: openArray[
-    string]): int64 =
-  var vtable: VTable = BaseTableRef(table: table, rangeVar: "")
-  if whereExp == nil:
-    result = len(HashBaseTable(table).rows)
-    clear(HashBaseTable(table).rows)
-  else:
-    vtable = WhereTable(child: vtable, whereExp: whereExp)
-    let cursor = newCursor(vtable, args)
-    var row: InstantRow
-    var keys: seq[Record[MatValue]]
-    while cursor.next(row):
-      keys.add(row.keyRecord)
-    for key in keys:
-      HashBaseTable(table).rows.del(key)
-      result += 1
 
 func `$`*(val: NqValue): string =
   case val.kind

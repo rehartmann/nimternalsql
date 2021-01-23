@@ -28,14 +28,11 @@ Persistence is supported through snapshots.
 
 Support for restoring a database from a transaction log is intended for the near future.
 
-## Transactions
-
-By default, NimternalSQL is in autocommit mode. Autocommit mode can be
-enabled or disabled using DbConn.setAutocommit().
-
 ## Unimplemented SQL features
 
 A number of SQL features is not implemented, most notably:
+
+Transactions
 
 OUTER JOIN (JOIN .. ON and CROSS JOIN are supported)
 

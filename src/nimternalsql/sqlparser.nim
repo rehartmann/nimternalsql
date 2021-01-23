@@ -25,6 +25,8 @@ type
   SqlDelete* = ref object of SqlStatement
     tableName*: string
     whereExp*: Expression
+  SqlCommit* = ref object of SqlStatement
+  SqlRollback* = ref object of SqlStatement
   OrderByElement* = object
     name*: string
     tableName*: string
@@ -732,6 +734,12 @@ proc parseDelete(scanner: Scanner): SqlStatement =
     whereExp = parseExpression(scanner, argCount, true)
   result = SqlDelete(tableName: nameTok.identifier, whereExp: whereExp)
 
+proc parseCommit(scanner: Scanner): SqlStatement =
+  result = SqlCommit()
+
+proc parseRollback(scanner: Scanner): SqlStatement =
+  result = SqlRollback()
+
 proc parseStatement*(reader: Reader): SqlStatement =
   let scanner = newScanner(reader)
   let t = nextToken(scanner)
@@ -748,5 +756,9 @@ proc parseStatement*(reader: Reader): SqlStatement =
       return parseDelete(scanner)
     of tokSelect:
       return parseQueryExp(scanner)
+    of tokCommit:
+      return parseCommit(scanner);
+    of tokRollback:
+      return parseRollback(scanner);
     else:
       raiseDbError("invalid statement")
