@@ -63,7 +63,7 @@ function main() {
 <div class="document" id="documentId">
   <div class="container">
     <h1 class="title">Index</h1>
-    Modules: <a href="db_nimternalsql.html">db_nimternalsql</a>, <a href="nimternalsql/duprem.html">nimternalsql/duprem</a>, <a href="nimternalsql/join.html">nimternalsql/join</a>, <a href="nimternalsql/like.html">nimternalsql/like</a>, <a href="nimternalsql/nqcommon.html">nimternalsql/nqcommon</a>, <a href="nimternalsql/nqcore.html">nimternalsql/nqcore</a>, <a href="nimternalsql/snapshot.html">nimternalsql/snapshot</a>, <a href="nimternalsql/sorter.html">nimternalsql/sorter</a>, <a href="nimternalsql/sqlparser.html">nimternalsql/sqlparser</a>, <a href="nimternalsql/sqlscanner.html">nimternalsql/sqlscanner</a>, <a href="nimternalsql/union.html">nimternalsql/union</a>.<br/><p /><h2>API symbols</h2>
+    Modules: <a href="db_nimternalsql.html">db_nimternalsql</a>, <a href="nimternalsql/duprem.html">nimternalsql/duprem</a>, <a href="nimternalsql/join.html">nimternalsql/join</a>, <a href="nimternalsql/like.html">nimternalsql/like</a>, <a href="nimternalsql/nqcommon.html">nimternalsql/nqcommon</a>, <a href="nimternalsql/nqcore.html">nimternalsql/nqcore</a>, <a href="nimternalsql/snapshot.html">nimternalsql/snapshot</a>, <a href="nimternalsql/sorter.html">nimternalsql/sorter</a>, <a href="nimternalsql/sqlparser.html">nimternalsql/sqlparser</a>, <a href="nimternalsql/sqlscanner.html">nimternalsql/sqlscanner</a>, <a href="nimternalsql/tx.html">nimternalsql/tx</a>, <a href="nimternalsql/union.html">nimternalsql/union</a>.<br/><p /><h2>API symbols</h2>
 <dl><dt><a name="%60%24%60" href="#%60%24%60"><span>`$`:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="nqcommon: `$`(exp: Expression): string" href="nimternalsql/nqcommon.html#%24.e%2CExpression">nqcommon: `$`(exp: Expression): string</a></li>
@@ -132,6 +132,10 @@ function main() {
 <li><a class="reference external"
           data-doc-search-tag="nqcore: columnValueAt(row: InstantRow; col: Natural): NqValue" href="nimternalsql/nqcore.html#columnValueAt%2CInstantRow%2CNatural">nqcore: columnValueAt(row: InstantRow; col: Natural): NqValue</a></li>
           </ul></dd>
+<dt><a name="commit" href="#commit"><span>commit:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="tx: commit(tx: Tx)" href="nimternalsql/tx.html#commit%2CTx">tx: commit(tx: Tx)</a></li>
+          </ul></dd>
 <dt><a name="createBaseTable" href="#createBaseTable"><span>createBaseTable:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="nqcore: createBaseTable(db: Database; name: string; columns: openArray[ColumnDef];
@@ -160,7 +164,7 @@ function main() {
           </ul></dd>
 <dt><a name="delete" href="#delete"><span>delete:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="nqcore: delete(table: BaseTable; whereExp: Expression; args: openArray[string]): int64" href="nimternalsql/nqcore.html#delete%2CBaseTable%2CExpression%2CopenArray%5Bstring%5D">nqcore: delete(table: BaseTable; whereExp: Expression; args: openArray[string]): int64</a></li>
+          data-doc-search-tag="tx: delete(tx: Tx; table: BaseTable; whereExp: Expression; args: openArray[string]): int64" href="nimternalsql/tx.html#delete%2CTx%2CBaseTable%2CExpression%2CopenArray%5Bstring%5D">tx: delete(tx: Tx; table: BaseTable; whereExp: Expression; args: openArray[string]): int64</a></li>
           </ul></dd>
 <dt><a name="dropBaseTable" href="#dropBaseTable"><span>dropBaseTable:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -254,7 +258,7 @@ function main() {
           </ul></dd>
 <dt><a name="insert" href="#insert"><span>insert:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="nqcore: insert(table: BaseTable; values: seq[NqValue])" href="nimternalsql/nqcore.html#insert%2CBaseTable%2Cseq%5BNqValue%5D">nqcore: insert(table: BaseTable; values: seq[NqValue])</a></li>
+          data-doc-search-tag="tx: insert(tx: Tx; table: BaseTable; values: seq[NqValue])" href="nimternalsql/tx.html#insert%2CTx%2CBaseTable%2Cseq%5BNqValue%5D">tx: insert(tx: Tx; table: BaseTable; values: seq[NqValue])</a></li>
           </ul></dd>
 <dt><a name="InstantRow" href="#InstantRow"><span>InstantRow:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -278,6 +282,10 @@ function main() {
 <li><a class="reference external"
           data-doc-search-tag="nqcore: isKey(table: BaseTable; col: int): bool" href="nimternalsql/nqcore.html#isKey%2CBaseTable%2Cint">nqcore: isKey(table: BaseTable; col: int): bool</a></li>
           </ul></dd>
+<dt><a name="isKeyUpdate" href="#isKeyUpdate"><span>isKeyUpdate:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="nqcore: isKeyUpdate(table: BaseTable; assignments: seq[ColumnAssignment]): bool" href="nimternalsql/nqcore.html#isKeyUpdate%2CBaseTable%2Cseq%5BColumnAssignment%5D">nqcore: isKeyUpdate(table: BaseTable; assignments: seq[ColumnAssignment]): bool</a></li>
+          </ul></dd>
 <dt><a name="isQVarExp" href="#isQVarExp"><span>isQVarExp:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="nqcore: isQVarExp(exp: Expression): bool" href="nimternalsql/nqcore.html#isQVarExp%2CExpression">nqcore: isQVarExp(exp: Expression): bool</a></li>
@@ -289,6 +297,10 @@ function main() {
 <dt><a name="kBool" href="#kBool"><span>kBool:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="MatValueKind.kBool" href="nimternalsql/nqcore.html#kBool">MatValueKind.kBool</a></li>
+          </ul></dd>
+<dt><a name="keyIndex" href="#keyIndex"><span>keyIndex:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="nqcore: keyIndex(table: BaseTable; col: int): int" href="nimternalsql/nqcore.html#keyIndex%2CBaseTable%2Cint">nqcore: keyIndex(table: BaseTable; col: int): int</a></li>
           </ul></dd>
 <dt><a name="kFloat" href="#kFloat"><span>kFloat:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -420,6 +432,10 @@ function main() {
 <li><a class="reference external"
           data-doc-search-tag="sqlscanner: newStringReader(s: string): StringReader" href="nimternalsql/sqlscanner.html#newStringReader%2Cstring">sqlscanner: newStringReader(s: string): StringReader</a></li>
           </ul></dd>
+<dt><a name="newTx" href="#newTx"><span>newTx:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="tx: newTx(): Tx" href="nimternalsql/tx.html#newTx">tx: newTx(): Tx</a></li>
+          </ul></dd>
 <dt><a name="newUnionTable" href="#newUnionTable"><span>newUnionTable:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="union: newUnionTable(lchild: VTable; rchild: VTable): VTable" href="nimternalsql/union.html#newUnionTable%2CVTable%2CVTable">union: newUnionTable(lchild: VTable; rchild: VTable): VTable</a></li>
@@ -526,6 +542,10 @@ function main() {
           <li><a class="reference external"
           data-doc-search-tag="snapshot: restore(db: var Database; filename: string)" href="nimternalsql/snapshot.html#restore%2CDatabase%2Cstring">snapshot: restore(db: var Database; filename: string)</a></li>
           </ul></dd>
+<dt><a name="rollback" href="#rollback"><span>rollback:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="tx: rollback(tx: Tx)" href="nimternalsql/tx.html#rollback%2CTx">tx: rollback(tx: Tx)</a></li>
+          </ul></dd>
 <dt><a name="Row" href="#Row"><span>Row:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="db_nimternalsql: Row" href="db_nimternalsql.html#Row">db_nimternalsql: Row</a></li>
@@ -558,6 +578,22 @@ function main() {
 <li><a class="reference external"
           data-doc-search-tag="nqcommon: SelectElement" href="nimternalsql/nqcommon.html#SelectElement">nqcommon: SelectElement</a></li>
           </ul></dd>
+<dt><a name="setAutocommit" href="#setAutocommit"><span>setAutocommit:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="db_nimternalsql: setAutocommit(db: DbConn; ac: bool)" href="db_nimternalsql.html#setAutocommit%2CDbConn%2Cbool">db_nimternalsql: setAutocommit(db: DbConn; ac: bool)</a></li>
+          </ul></dd>
+<dt><a name="setColumnValueAt" href="#setColumnValueAt"><span>setColumnValueAt:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="nqcore: setColumnValueAt(table: HashBaseTable; keyRecord: var Record[MatValue];
+                 col: Natural; val: MatValue)" href="nimternalsql/nqcore.html#setColumnValueAt%2CHashBaseTable%2CRecord%5BMatValue%5D%2CNatural%2CMatValue">nqcore: setColumnValueAt(table: HashBaseTable; keyRecord: var Record[MatValue];
+                 col: Natural; val: MatValue)</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="nqcore: setColumnValueAt(row: var InstantRow; col: Natural; val: NqValue)" href="nimternalsql/nqcore.html#setColumnValueAt%2CInstantRow%2CNatural%2CNqValue">nqcore: setColumnValueAt(row: var InstantRow; col: Natural; val: NqValue)</a></li>
+          </ul></dd>
+<dt><a name="SqlCommit" href="#SqlCommit"><span>SqlCommit:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="sqlparser: SqlCommit" href="nimternalsql/sqlparser.html#SqlCommit">sqlparser: SqlCommit</a></li>
+          </ul></dd>
 <dt><a name="SqlCreateTable" href="#SqlCreateTable"><span>SqlCreateTable:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="sqlparser: SqlCreateTable" href="nimternalsql/sqlparser.html#SqlCreateTable">sqlparser: SqlCreateTable</a></li>
@@ -573,6 +609,10 @@ function main() {
 <dt><a name="SqlInsert" href="#SqlInsert"><span>SqlInsert:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="sqlparser: SqlInsert" href="nimternalsql/sqlparser.html#SqlInsert">sqlparser: SqlInsert</a></li>
+          </ul></dd>
+<dt><a name="SqlRollback" href="#SqlRollback"><span>SqlRollback:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="sqlparser: SqlRollback" href="nimternalsql/sqlparser.html#SqlRollback">sqlparser: SqlRollback</a></li>
           </ul></dd>
 <dt><a name="SqlSelect" href="#SqlSelect"><span>SqlSelect:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -665,6 +705,10 @@ function main() {
 <dt><a name="tokComma" href="#tokComma"><span>tokComma:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="TokenKind.tokComma" href="nimternalsql/sqlscanner.html#tokComma">TokenKind.tokComma</a></li>
+          </ul></dd>
+<dt><a name="tokCommit" href="#tokCommit"><span>tokCommit:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="TokenKind.tokCommit" href="nimternalsql/sqlscanner.html#tokCommit">TokenKind.tokCommit</a></li>
           </ul></dd>
 <dt><a name="tokConcat" href="#tokConcat"><span>tokConcat:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -878,6 +922,10 @@ function main() {
 <li><a class="reference external"
           data-doc-search-tag="TokenKind.tokRightParen" href="nimternalsql/sqlscanner.html#tokRightParen">TokenKind.tokRightParen</a></li>
           </ul></dd>
+<dt><a name="tokRollback" href="#tokRollback"><span>tokRollback:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="TokenKind.tokRollback" href="nimternalsql/sqlscanner.html#tokRollback">TokenKind.tokRollback</a></li>
+          </ul></dd>
 <dt><a name="tokSelect" href="#tokSelect"><span>tokSelect:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="TokenKind.tokSelect" href="nimternalsql/sqlscanner.html#tokSelect">TokenKind.tokSelect</a></li>
@@ -956,10 +1004,14 @@ function main() {
           <li><a class="reference external"
           data-doc-search-tag="db_nimternalsql: tryExec(db: DbConn; query: SqlQuery; args: varargs[string, `$`]): bool" href="db_nimternalsql.html#tryExec%2CDbConn%2CSqlQuery%2Cvarargs%5Bstring%2C%5D">db_nimternalsql: tryExec(db: DbConn; query: SqlQuery; args: varargs[string, `$`]): bool</a></li>
           </ul></dd>
+<dt><a name="Tx" href="#Tx"><span>Tx:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="tx: Tx" href="nimternalsql/tx.html#Tx">tx: Tx</a></li>
+          </ul></dd>
 <dt><a name="update" href="#update"><span>update:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="nqcore: update(table: BaseTable; assignments: seq[ColumnAssignment];
-       whereExp: Expression; args: openArray[string]): int64" href="nimternalsql/nqcore.html#update%2CBaseTable%2Cseq%5BColumnAssignment%5D%2CExpression%2CopenArray%5Bstring%5D">nqcore: update(table: BaseTable; assignments: seq[ColumnAssignment];
+          data-doc-search-tag="tx: update(tx: Tx; table: BaseTable; assignments: seq[ColumnAssignment];
+       whereExp: Expression; args: openArray[string]): int64" href="nimternalsql/tx.html#update%2CTx%2CBaseTable%2Cseq%5BColumnAssignment%5D%2CExpression%2CopenArray%5Bstring%5D">tx: update(tx: Tx; table: BaseTable; assignments: seq[ColumnAssignment];
        whereExp: Expression; args: openArray[string]): int64</a></li>
           </ul></dd>
 <dt><a name="UpdateAssignment" href="#UpdateAssignment"><span>UpdateAssignment:</span></a></dt><dd><ul class="simple">
@@ -974,12 +1026,16 @@ function main() {
 <li><a class="reference external"
           data-doc-search-tag="nqcore: VTable" href="nimternalsql/nqcore.html#VTable">nqcore: VTable</a></li>
           </ul></dd>
+<dt><a name="WhereTable" href="#WhereTable"><span>WhereTable:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="nqcore: WhereTable" href="nimternalsql/nqcore.html#WhereTable">nqcore: WhereTable</a></li>
+          </ul></dd>
 </dl>
     <div class="row">
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2020-12-31 19:02:25 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2021-01-23 17:38:54 UTC</small>
       </div>
     </div>
   </div>

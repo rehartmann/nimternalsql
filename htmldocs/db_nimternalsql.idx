@@ -6,6 +6,7 @@ DbConn	db_nimternalsql.html#DbConn	db_nimternalsql: DbConn
 Row	db_nimternalsql.html#Row	db_nimternalsql: Row	
 open	db_nimternalsql.html#open,string,string,string,string	db_nimternalsql: open(connection, user, password, database: string): DbConn	
 close	db_nimternalsql.html#close,DbConn	db_nimternalsql: close(db: DbConn)	
+setAutocommit	db_nimternalsql.html#setAutocommit,DbConn,bool	db_nimternalsql: setAutocommit(db: DbConn; ac: bool)	
 dbError	db_nimternalsql.html#dbError,DbConn	db_nimternalsql: dbError(db: DbConn)	
 exec	db_nimternalsql.html#exec,DbConn,SqlQuery,varargs[string,]	db_nimternalsql: exec(conn: DbConn; sql: SqlQuery; args: varargs[string, `$`])	
 exec	db_nimternalsql.html#exec,DbConn,SqlPrepared,varargs[string,]	db_nimternalsql: exec(conn: DbConn; stmt: SqlPrepared; args: varargs[string, `$`])	

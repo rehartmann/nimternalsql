@@ -5,6 +5,8 @@ SqlInsert	nimternalsql/sqlparser.html#SqlInsert	sqlparser: SqlInsert
 UpdateAssignment	nimternalsql/sqlparser.html#UpdateAssignment	sqlparser: UpdateAssignment	
 SqlUpdate	nimternalsql/sqlparser.html#SqlUpdate	sqlparser: SqlUpdate	
 SqlDelete	nimternalsql/sqlparser.html#SqlDelete	sqlparser: SqlDelete	
+SqlCommit	nimternalsql/sqlparser.html#SqlCommit	sqlparser: SqlCommit	
+SqlRollback	nimternalsql/sqlparser.html#SqlRollback	sqlparser: SqlRollback	
 OrderByElement	nimternalsql/sqlparser.html#OrderByElement	sqlparser: OrderByElement	
 SqlSelect	nimternalsql/sqlparser.html#SqlSelect	sqlparser: SqlSelect	
 tekSelect	nimternalsql/sqlparser.html#tekSelect	TableExpKind.tekSelect	

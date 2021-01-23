@@ -161,16 +161,20 @@ function main() {
     title="BaseTableRef = ref object of VTable
   table*: BaseTable
   rangeVar*: string"><wbr />Base<wbr />Table<wbr />Ref<span class="attachedType"></span></a></li>
+  <li><a class="reference" href="#WhereTable"
+    title="WhereTable = ref object of VTable
+  child*: VTable
+  whereExp*: Expression"><wbr />Where<wbr />Table<span class="attachedType"></span></a></li>
   <li><a class="reference" href="#ColumnAssignment"
     title="ColumnAssignment = object
   col*: Natural
   src*: Expression"><wbr />Column<wbr />Assignment<span class="attachedType"></span></a></li>
   <li><a class="reference" href="#InstantRow"
     title="InstantRow = object
-  table: VTable
-  case material: bool
+  table*: VTable
+  case material*: bool
   of true:
-      keyRecord: Record[MatValue]
+      keyRecord*: Record[MatValue]
 
   of false:
       vals: seq[NqValue]"><wbr />Instant<wbr />Row<span class="attachedType"></span></a></li>
@@ -201,6 +205,14 @@ function main() {
     title="dropBaseTable(db: Database; name: string)">dropBaseTable,Database,string<span class="attachedType"></span></a></li>
 
   </ul>
+  <ul class="simple nested-toc-section">setColumnValueAt
+      <li><a class="reference" href="#setColumnValueAt%2CHashBaseTable%2CRecord%5BMatValue%5D%2CNatural%2CMatValue"
+    title="setColumnValueAt(table: HashBaseTable; keyRecord: var Record[MatValue];
+                 col: Natural; val: MatValue)">setColumnValueAt,HashBaseTable,Record[MatValue],Natural,MatValue<span class="attachedType">HashBaseTable</span></a></li>
+  <li><a class="reference" href="#setColumnValueAt%2CInstantRow%2CNatural%2CNqValue"
+    title="setColumnValueAt(row: var InstantRow; col: Natural; val: NqValue)">setColumnValueAt,InstantRow,Natural,NqValue<span class="attachedType">InstantRow</span></a></li>
+
+  </ul>
   <ul class="simple nested-toc-section">adjustScale
       <li><a class="reference" href="#adjustScale%2CNqValue%2CNqValue"
     title="adjustScale(a: var NqValue; b: var NqValue)">adjustScale,NqValue,NqValue<span class="attachedType">NqValue</span></a></li>
@@ -212,27 +224,11 @@ function main() {
                 key: seq[string]): BaseTable">createBaseTable,Database,string,openArray[ColumnDef],seq[string]<span class="attachedType"></span></a></li>
 
   </ul>
-  <ul class="simple nested-toc-section">insert
-      <li><a class="reference" href="#insert%2CBaseTable%2Cseq%5BNqValue%5D"
-    title="insert(table: BaseTable; values: seq[NqValue])">insert,BaseTable,seq[NqValue]<span class="attachedType">NqValue</span></a></li>
-
-  </ul>
   <ul class="simple nested-toc-section">expKeyCols
       <li><a class="reference" href="#expKeyCols%2CExpression%2CBaseTableRef%2Cproc%28Expression%29%2CopenArray%5Bstring%5D"
     title="expKeyCols(exp: Expression; tableRef: BaseTableRef;
            isConstProc: proc (exp: Expression): bool; args: openArray[string]): seq[
     tuple[colNo: Natural, exp: Expression]]">expKeyCols,Expression,BaseTableRef,proc(Expression),openArray[string]<span class="attachedType">BaseTableRef</span></a></li>
-
-  </ul>
-  <ul class="simple nested-toc-section">delete
-      <li><a class="reference" href="#delete%2CBaseTable%2CExpression%2CopenArray%5Bstring%5D"
-    title="delete(table: BaseTable; whereExp: Expression; args: openArray[string]): int64">delete,BaseTable,Expression,openArray[string]<span class="attachedType"></span></a></li>
-
-  </ul>
-  <ul class="simple nested-toc-section">update
-      <li><a class="reference" href="#update%2CBaseTable%2Cseq%5BColumnAssignment%5D%2CExpression%2CopenArray%5Bstring%5D"
-    title="update(table: BaseTable; assignments: seq[ColumnAssignment];
-       whereExp: Expression; args: openArray[string]): int64">update,BaseTable,seq[ColumnAssignment],Expression,openArray[string]<span class="attachedType">ColumnAssignment</span></a></li>
 
   </ul>
 
@@ -256,6 +252,11 @@ function main() {
     title="`$`(val: NqValue): string">$,NqValue<span class="attachedType">NqValue</span></a></li>
 
   </ul>
+  <ul class="simple nested-toc-section">isKeyUpdate
+      <li><a class="reference" href="#isKeyUpdate%2CBaseTable%2Cseq%5BColumnAssignment%5D"
+    title="isKeyUpdate(table: BaseTable; assignments: seq[ColumnAssignment]): bool">isKeyUpdate,BaseTable,seq[ColumnAssignment]<span class="attachedType">ColumnAssignment</span></a></li>
+
+  </ul>
   <ul class="simple nested-toc-section">columnValueAt
       <li><a class="reference" href="#columnValueAt%2CInstantRow%2CNatural"
     title="columnValueAt(row: InstantRow; col: Natural): NqValue">columnValueAt,InstantRow,Natural<span class="attachedType">InstantRow</span></a></li>
@@ -274,6 +275,11 @@ function main() {
   <ul class="simple nested-toc-section">isQVarExp
       <li><a class="reference" href="#isQVarExp%2CExpression"
     title="isQVarExp(exp: Expression): bool">isQVarExp,Expression<span class="attachedType"></span></a></li>
+
+  </ul>
+  <ul class="simple nested-toc-section">keyIndex
+      <li><a class="reference" href="#keyIndex%2CBaseTable%2Cint"
+    title="keyIndex(table: BaseTable; col: int): int">keyIndex,BaseTable,int<span class="attachedType"></span></a></li>
 
   </ul>
   <ul class="simple nested-toc-section">isKey
@@ -519,6 +525,16 @@ function main() {
 
 
 </dd>
+<a id="WhereTable"></a>
+<dt><pre><a href="nqcore.html#WhereTable"><span class="Identifier">WhereTable</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span> <span class="Keyword">of</span> <a href="nqcore.html#VTable"><span class="Identifier">VTable</span></a>
+  <span class="Identifier">child</span><span class="Operator">*</span><span class="Other">:</span> <a href="nqcore.html#VTable"><span class="Identifier">VTable</span></a>
+  <span class="Identifier">whereExp</span><span class="Operator">*</span><span class="Other">:</span> <a href="nqcommon.html#Expression"><span class="Identifier">Expression</span></a>
+</pre></dt>
+<dd>
+
+
+
+</dd>
 <a id="ColumnAssignment"></a>
 <dt><pre><a href="nqcore.html#ColumnAssignment"><span class="Identifier">ColumnAssignment</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
   <span class="Identifier">col</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">Natural</span>
@@ -531,10 +547,10 @@ function main() {
 </dd>
 <a id="InstantRow"></a>
 <dt><pre><a href="nqcore.html#InstantRow"><span class="Identifier">InstantRow</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
-  <span class="Identifier">table</span><span class="Other">:</span> <a href="nqcore.html#VTable"><span class="Identifier">VTable</span></a>
-  <span class="Keyword">case</span> <span class="Identifier">material</span><span class="Other">:</span> <span class="Identifier">bool</span>
+  <span class="Identifier">table</span><span class="Operator">*</span><span class="Other">:</span> <a href="nqcore.html#VTable"><span class="Identifier">VTable</span></a>
+  <span class="Keyword">case</span> <span class="Identifier">material</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">bool</span>
   <span class="Keyword">of</span> <span class="Identifier">true</span><span class="Other">:</span>
-      <span class="Identifier">keyRecord</span><span class="Other">:</span> <a href="nqcommon.html#Record"><span class="Identifier">Record</span></a><span class="Other">[</span><a href="nqcore.html#MatValue"><span class="Identifier">MatValue</span></a><span class="Other">]</span>
+      <span class="Identifier">keyRecord</span><span class="Operator">*</span><span class="Other">:</span> <a href="nqcommon.html#Record"><span class="Identifier">Record</span></a><span class="Other">[</span><a href="nqcore.html#MatValue"><span class="Identifier">MatValue</span></a><span class="Other">]</span>
 
   <span class="Keyword">of</span> <span class="Identifier">false</span><span class="Other">:</span>
       <span class="Identifier">vals</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><a href="nqcore.html#NqValue"><span class="Identifier">NqValue</span></a><span class="Other">]</span>
@@ -586,14 +602,6 @@ Holds a row's column values.
 Converts a NqValue into a MatValue.
 
 </dd>
-<a id="insert,BaseTable,seq[NqValue]"></a>
-<dt><pre><span class="Keyword">proc</span> <a href="#insert%2CBaseTable%2Cseq%5BNqValue%5D"><span class="Identifier">insert</span></a><span class="Other">(</span><span class="Identifier">table</span><span class="Other">:</span> <a href="nqcommon.html#BaseTable"><span class="Identifier">BaseTable</span></a><span class="Other">;</span> <span class="Identifier">values</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><a href="nqcore.html#NqValue"><span class="Identifier">NqValue</span></a><span class="Other">]</span><span class="Other">)</span> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma">
-    <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">DbError</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
-<dd>
-
-
-
-</dd>
 <a id="createBaseTable,Database,string,openArray[ColumnDef],seq[string]"></a>
 <dt><pre><span class="Keyword">proc</span> <a href="#createBaseTable%2CDatabase%2Cstring%2CopenArray%5BColumnDef%5D%2Cseq%5Bstring%5D"><span class="Identifier">createBaseTable</span></a><span class="Other">(</span><span class="Identifier">db</span><span class="Other">:</span> <a href="nqcommon.html#Database"><span class="Identifier">Database</span></a><span class="Other">;</span> <span class="Identifier">name</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">columns</span><span class="Other">:</span> <span class="Identifier">openArray</span><span class="Other">[</span><a href="nqcommon.html#ColumnDef"><span class="Identifier">ColumnDef</span></a><span class="Other">]</span><span class="Other">;</span>
                      <span class="Identifier">key</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <a href="nqcommon.html#BaseTable"><span class="Identifier">BaseTable</span></a> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma">
@@ -610,28 +618,28 @@ Converts a NqValue into a MatValue.
 
 
 </dd>
+<a id="setColumnValueAt,HashBaseTable,Record[MatValue],Natural,MatValue"></a>
+<dt><pre><span class="Keyword">proc</span> <a href="#setColumnValueAt%2CHashBaseTable%2CRecord%5BMatValue%5D%2CNatural%2CMatValue"><span class="Identifier">setColumnValueAt</span></a><span class="Other">(</span><span class="Identifier">table</span><span class="Other">:</span> <a href="nqcore.html#HashBaseTable"><span class="Identifier">HashBaseTable</span></a><span class="Other">;</span> <span class="Identifier">keyRecord</span><span class="Other">:</span> <span class="Keyword">var</span> <a href="nqcommon.html#Record"><span class="Identifier">Record</span></a><span class="Other">[</span><a href="nqcore.html#MatValue"><span class="Identifier">MatValue</span></a><span class="Other">]</span><span class="Other">;</span>
+                      <span class="Identifier">col</span><span class="Other">:</span> <span class="Identifier">Natural</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <a href="nqcore.html#MatValue"><span class="Identifier">MatValue</span></a><span class="Other">)</span> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">KeyError</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
+<dd>
+
+
+
+</dd>
+<a id="setColumnValueAt,InstantRow,Natural,NqValue"></a>
+<dt><pre><span class="Keyword">proc</span> <a href="#setColumnValueAt%2CInstantRow%2CNatural%2CNqValue"><span class="Identifier">setColumnValueAt</span></a><span class="Other">(</span><span class="Identifier">row</span><span class="Other">:</span> <span class="Keyword">var</span> <a href="nqcore.html#InstantRow"><span class="Identifier">InstantRow</span></a><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Identifier">Natural</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <a href="nqcore.html#NqValue"><span class="Identifier">NqValue</span></a><span class="Other">)</span> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma">
+    <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">KeyError</span><span class="Other">,</span> <span class="Identifier">DbError</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
+<dd>
+
+
+
+</dd>
 <a id="expKeyCols,Expression,BaseTableRef,proc(Expression),openArray[string]"></a>
 <dt><pre><span class="Keyword">proc</span> <a href="#expKeyCols%2CExpression%2CBaseTableRef%2Cproc%28Expression%29%2CopenArray%5Bstring%5D"><span class="Identifier">expKeyCols</span></a><span class="Other">(</span><span class="Identifier">exp</span><span class="Other">:</span> <a href="nqcommon.html#Expression"><span class="Identifier">Expression</span></a><span class="Other">;</span> <span class="Identifier">tableRef</span><span class="Other">:</span> <a href="nqcore.html#BaseTableRef"><span class="Identifier">BaseTableRef</span></a><span class="Other">;</span>
                 <span class="Identifier">isConstProc</span><span class="Other">:</span> <span class="Keyword">proc</span> <span class="Other">(</span><span class="Identifier">exp</span><span class="Other">:</span> <a href="nqcommon.html#Expression"><span class="Identifier">Expression</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">bool</span><span class="Other">;</span>
                 <span class="Identifier">args</span><span class="Other">:</span> <span class="Identifier">openArray</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span>
     <span class="Keyword">tuple</span><span class="Other">[</span><span class="Identifier">colNo</span><span class="Other">:</span> <span class="Identifier">Natural</span><span class="Other">,</span> <span class="Identifier">exp</span><span class="Other">:</span> <a href="nqcommon.html#Expression"><span class="Identifier">Expression</span></a><span class="Other">]</span><span class="Other">]</span> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">DbError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
-<dd>
-
-
-
-</dd>
-<a id="update,BaseTable,seq[ColumnAssignment],Expression,openArray[string]"></a>
-<dt><pre><span class="Keyword">proc</span> <a href="#update%2CBaseTable%2Cseq%5BColumnAssignment%5D%2CExpression%2CopenArray%5Bstring%5D"><span class="Identifier">update</span></a><span class="Other">(</span><span class="Identifier">table</span><span class="Other">:</span> <a href="nqcommon.html#BaseTable"><span class="Identifier">BaseTable</span></a><span class="Other">;</span> <span class="Identifier">assignments</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><a href="nqcore.html#ColumnAssignment"><span class="Identifier">ColumnAssignment</span></a><span class="Other">]</span><span class="Other">;</span>
-            <span class="Identifier">whereExp</span><span class="Other">:</span> <a href="nqcommon.html#Expression"><span class="Identifier">Expression</span></a><span class="Other">;</span> <span class="Identifier">args</span><span class="Other">:</span> <span class="Identifier">openArray</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">int64</span> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma">
-    <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">DbError</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">,</span> <span class="Identifier">KeyError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
-<dd>
-
-
-
-</dd>
-<a id="delete,BaseTable,Expression,openArray[string]"></a>
-<dt><pre><span class="Keyword">proc</span> <a href="#delete%2CBaseTable%2CExpression%2CopenArray%5Bstring%5D"><span class="Identifier">delete</span></a><span class="Other">(</span><span class="Identifier">table</span><span class="Other">:</span> <a href="nqcommon.html#BaseTable"><span class="Identifier">BaseTable</span></a><span class="Other">;</span> <span class="Identifier">whereExp</span><span class="Other">:</span> <a href="nqcommon.html#Expression"><span class="Identifier">Expression</span></a><span class="Other">;</span> <span class="Identifier">args</span><span class="Other">:</span> <span class="Identifier">openArray</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">int64</span> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma">
-    <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">DbError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
 <dd>
 
 
@@ -737,6 +745,13 @@ Converts a NqValue into a MatValue.
 
 
 </dd>
+<a id="keyIndex,BaseTable,int"></a>
+<dt><pre><span class="Keyword">func</span> <a href="#keyIndex%2CBaseTable%2Cint"><span class="Identifier">keyIndex</span></a><span class="Other">(</span><span class="Identifier">table</span><span class="Other">:</span> <a href="nqcommon.html#BaseTable"><span class="Identifier">BaseTable</span></a><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Identifier">int</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">int</span> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
+<dd>
+
+
+
+</dd>
 <a id="isKey,BaseTable,int"></a>
 <dt><pre><span class="Keyword">func</span> <a href="#isKey%2CBaseTable%2Cint"><span class="Identifier">isKey</span></a><span class="Other">(</span><span class="Identifier">table</span><span class="Other">:</span> <a href="nqcommon.html#BaseTable"><span class="Identifier">BaseTable</span></a><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Identifier">int</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">bool</span> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
 <dd>
@@ -784,6 +799,14 @@ Converts a NqValue into a MatValue.
 </dd>
 <a id="isConst,Expression"></a>
 <dt><pre><span class="Keyword">func</span> <a href="#isConst%2CExpression"><span class="Identifier">isConst</span></a><span class="Other">(</span><span class="Identifier">exp</span><span class="Other">:</span> <a href="nqcommon.html#Expression"><span class="Identifier">Expression</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">bool</span> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
+<dd>
+
+
+
+</dd>
+<a id="isKeyUpdate,BaseTable,seq[ColumnAssignment]"></a>
+<dt><pre><span class="Keyword">func</span> <a href="#isKeyUpdate%2CBaseTable%2Cseq%5BColumnAssignment%5D"><span class="Identifier">isKeyUpdate</span></a><span class="Other">(</span><span class="Identifier">table</span><span class="Other">:</span> <a href="nqcommon.html#BaseTable"><span class="Identifier">BaseTable</span></a><span class="Other">;</span> <span class="Identifier">assignments</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><a href="nqcore.html#ColumnAssignment"><span class="Identifier">ColumnAssignment</span></a><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">bool</span> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma">
+    <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
 <dd>
 
 
@@ -954,7 +977,7 @@ Reads the next row from the cursor. If a row could be read, true is returned and
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2020-12-31 19:02:25 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2021-01-23 17:38:54 UTC</small>
       </div>
     </div>
   </div>
