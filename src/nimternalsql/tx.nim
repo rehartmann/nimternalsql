@@ -191,7 +191,7 @@ proc rollback*(tx: Tx) =
                   if i == a.col:
                     vals[vi] = a.oldVal
                     break
-                  vi = vi + 1
+                  vi += 1
           HashBaseTable(tx.log[i].table).rows.del(tx.log[i].keyRec)
           HashBaseTable(tx.log[i].table).rows[newKey] = vals
         else:

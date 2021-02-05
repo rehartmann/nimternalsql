@@ -60,10 +60,11 @@ type
     errorMsg: string
     tx: Tx
     autocommit: bool
-  Row* = seq[string]
-  SqlPrepared = distinct SqlStatement
 
+  Row* = seq[string] ## \
   ## A row of a dataset. NULL database values will be converted to empty strings.
+
+  SqlPrepared = distinct SqlStatement
 
 proc open*(connection, user, password, database: string): DbConn =
   ## Opens a database, creating a new database in memory.
