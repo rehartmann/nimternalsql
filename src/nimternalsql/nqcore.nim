@@ -470,7 +470,7 @@ func findColumnName(columns: openArray[ColumnDef],
       return i
   result = -1
 
-proc newHashBaseTable(name: string, columns: openArray[ColumnDef],
+proc newHashBaseTable*(name: string, columns: openArray[ColumnDef],
     key: seq[string]): HashBaseTable =
   var rtable: HashBaseTable
   new(rtable)
@@ -516,34 +516,6 @@ method eval*(exp: Expression, varResolver: VarResolver,
 method eval*(exp: StringLit, varResolver: VarResolver,
     aggrResolver: AggrResolver): NqValue =
   result = NqValue(kind: nqkString, strVal: exp.val)
-
-proc createBaseTable*(db: Database, name: string, columns: openArray[ColumnDef],
-                   key: seq[string]): BaseTable =
-  if columns.len < 1:
-    raiseDbError("table must have at least one column")
-  let rtable = newHashBaseTable(name, columns, key)
-  for i in 0..<rtable.def.len:
-    if i < rtable.def.len - 1:
-      for j in i + 1..<rtable.def.len:
-        if rtable.def[i].name == rtable.def[j].name:
-          raiseDbError("error: column \"" & rtable.def[i].name & "\" specified more than once")
-    if rtable.def[i].precision > maxPrecision:
-      raiseDbError("max precision is " & $maxPrecision)
-    if rtable.def[i].typ == "DECIMAL":
-      rtable.def[i].precision = maxPrecision
-    # Check default value
-    if columns[i].defaultValue != nil:
-      discard toMatValue(eval(columns[i].defaultValue, nil, nil), columns[i])
-  for i in rtable.primaryKey:
-    rtable.def[i].notNull = true
-  if db.tables.hasKeyOrPut(name, rtable):
-    raiseDbError("table \"" & name & "\" already exists")
-  result = rtable
-
-proc dropBaseTable*(db: Database, name: string) =
-  if not db.tables.hasKey(name):
-    raiseDbError("table \"" & name & "\" does not exist")
-  db.tables.del(name)
 
 method eval*(exp: NumericLit, varResolver: VarResolver,
     aggrResolver: AggrResolver): NqValue =

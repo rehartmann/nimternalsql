@@ -4,8 +4,8 @@ import tables
 
 const
   magic = 0x3e3db22a
-  writeError = "error writing snapshot"
-  readErrorMissingData = "error reading snapshot: missing data"
+  writeError* = "error writing to file"
+  readErrorMissingData* = "error reading from file: missing data"
   fileVersion = 1
   tHashBaseTable = 1
 
@@ -16,7 +16,7 @@ proc raiseIoError*(msg: string) {.noreturn.} =
   e.msg = msg
   raise e
 
-proc writeValue(f: File, val: MatValue) =
+proc writeValue*(f: File, val: MatValue) =
   var shortBuf = int16(ord(val.kind))
   if writeBuffer(f, addr(shortBuf), sizeof(int16)) < sizeof(int16):
     raiseIoError(writeError)
@@ -42,28 +42,21 @@ proc writeValue(f: File, val: MatValue) =
     of kNull:
       discard
 
-proc writeRecord(f: File, rec: Record) =
+proc writeRecord*(f: File, rec: Record) =
   var reclen = int16(rec.len)
   if writeBuffer(f, addr(reclen), sizeof(int16)) < sizeof(int16):
     raiseIoError(writeError)
   for v in rec:
     writeValue(f, v)
 
-proc writeTable(f: File, table: BaseTable) =
-  var intBuf = int32(table.name.len)
+proc writeName*(f: File, name: string) =
+  var intBuf = int32(name.len)
   if writeBuffer(f, addr(intBuf), sizeof(int32)) < sizeof(int32):
-    raiseIoError(writeError)
-  write(f, table.name)
-  
-  var shortBuf = tHashBaseTable;
-  if writeBuffer(f, addr(shortBuf), sizeof(int16)) < sizeof(int16):
-    raiseIoError(writeError)  
+    raiseIoError("error writing log entry")
+  write(f, name)
 
-  intBuf = int32(table.def.len)
-  if writeBuffer(f, addr(intBuf), sizeof(int32)) < sizeof(int32):
-    raiseIoError(writeError)
-  for colDef in table.def:
-    intBuf = int32(colDef.name.len)
+proc writeColumnDef(f: File, colDef: ColumnDef) =
+    var intBuf = int32(colDef.name.len)
     if writeBuffer(f, addr(intBuf), sizeof(int32)) < sizeof(int32):
       raiseIoError(writeError)
     write(f, colDef.name)
@@ -77,7 +70,7 @@ proc writeTable(f: File, table: BaseTable) =
     if writeBuffer(f, addr(intBuf), sizeof(int32)) < sizeof(int32):
       raiseIoError(writeError)
     
-    shortBuf = int16(colDef.precision)
+    var shortBuf = int16(colDef.precision)
     if writeBuffer(f, addr(shortBuf), sizeof(int16)) < sizeof(int16):
       raiseIoError(writeError)
 
@@ -95,6 +88,19 @@ proc writeTable(f: File, table: BaseTable) =
     if colDef.defaultValue != nil:
       writeValue(f, toMatValue(eval(colDef.defaultValue, nil, nil), colDef))
 
+proc writeTableDef*(f: File, table: BaseTable) =
+  writeName(f, table.name)
+  
+  var shortBuf = int16(tHashBaseTable)
+  if writeBuffer(f, addr(shortBuf), sizeof(int16)) < sizeof(int16):
+    raiseIoError(writeError)  
+
+  var intBuf = int32(table.def.len)
+  if writeBuffer(f, addr(intBuf), sizeof(int32)) < sizeof(int32):
+    raiseIoError(writeError)
+  for colDef in table.def:
+    writeColumnDef(f, colDef)
+
   shortBuf = int16(table.primaryKey.len)
   if writeBuffer(f, addr(shortBuf), sizeof(int16)) < sizeof(int16):
     raiseIoError(writeError)
@@ -102,8 +108,10 @@ proc writeTable(f: File, table: BaseTable) =
     shortBuf = int16(k)
     if writeBuffer(f, addr(shortBuf), sizeof(int16)) < sizeof(int16):
       raiseIoError(writeError)
-  
-  intBuf = int32(((HashBaseTable)table).rows.len)
+
+proc writeTable(f: File, table: BaseTable) =
+  writeTableDef(f, table)
+  var intBuf = int32(((HashBaseTable)table).rows.len)
   if writeBuffer(f, addr(intBuf), sizeof(int32)) < sizeof(int32):
     raiseIoError(writeError)
   for k, v in ((HashBaseTable)table).rows.pairs:
@@ -131,7 +139,7 @@ proc save*(db: Database, filename: string) =
   finally:
     close(f)
 
-proc readValue(f: File): MatValue =
+proc readValue*(f: File): MatValue =
   var shortBuf: int16
   if readBuffer(f, addr(shortBuf), sizeof(int16)) < sizeof(int16):
     raiseDbError(readErrorMissingData)
@@ -166,7 +174,7 @@ proc readValue(f: File): MatValue =
     of kNull:
       discard  
     
-proc readRecord(f: File): Record[MatValue] =
+proc readRecord*(f: File): Record[MatValue] =
   var reclen: int16
   if readBuffer(f, addr(reclen), sizeof(int16)) < sizeof(int16):
     raiseDbError(readErrorMissingData)
@@ -186,35 +194,31 @@ func toExpr(v: NqValue): Expression =
     of nqkList:
       raiseDbError("internal error: list value is invalid")
 
-proc readTable(f: File): BaseTable =
-  var htable: HashBaseTable
-  new(htable)
-  result = htable
-
+proc readName*(f: File): string =
   var intBuf: int32
   if readBuffer(f, addr(intBuf), sizeof(int32)) < sizeof(int32):
     raiseDbError(readErrorMissingData)
-  result.name = newString(intBuf)
-  if readChars(f, result.name, 0, intBuf) < intBuf:
+  result = newString(intBuf)
+  if readChars(f, result, 0, intBuf) < intBuf:
     raiseDbError(readErrorMissingData)
+
+proc readTableDef*(f: File, table: BaseTable) =
+  table.name = readName(f)
   
   var shortBuf: int16
   if readBuffer(f, addr(shortBuf), sizeof(int16)) < sizeof(int16):
     raiseDbError(readErrorMissingData)
   if shortBuf != tHashBaseTable:
-    raiseDbError("invalid result type")
+    raiseDbError("invalid table type")
 
   var colCount: int32
   if readBuffer(f, addr(colCount), sizeof(int32)) < sizeof(int32):
     raiseDbError(readErrorMissingData)
   var colDef: ColumnDef
-  for i in 0..<colCount:
-    if readBuffer(f, addr(intBuf), sizeof(int32)) < sizeof(int32):
-      raiseDbError(readErrorMissingData)
-    colDef.name = newString(intBuf)
 
-    if readChars(f, colDef.name, 0, intBuf) < intBuf:
-      raiseDbError(readErrorMissingData)
+  var intBuf: int32    
+  for i in 0..<colCount:
+    colDef.name = readName(f)
 
     if readBuffer(f, addr(intBuf), sizeof(int32)) < sizeof(int32):
       raiseDbError(readErrorMissingData)
@@ -249,7 +253,7 @@ proc readTable(f: File): BaseTable =
       raiseDbError(readErrorMissingData)
     if byteBuf == 1:
       colDef.defaultValue = toExpr(toNqValue(readValue(f), colDef))
-    result.def.add(colDef)
+    table.def.add(colDef)
 
   var keyLen: int16
   if readBuffer(f, addr(keyLen), sizeof(int16)) < sizeof(int16):
@@ -257,14 +261,24 @@ proc readTable(f: File): BaseTable =
   for i in 0..<keyLen:
     if readBuffer(f, addr(shortBuf), sizeof(int16)) < sizeof(int16):
       raiseDbError(readErrorMissingData)
-    result.primaryKey.add(shortBuf)
+    table.primaryKey.add(shortBuf)
 
+
+proc readTable(f: File): BaseTable =
+  var htable: HashBaseTable
+  new(htable)
+  result = htable
+  
+  readTableDef(f, htable)
+
+  var intBuf: int32    
   if readBuffer(f, addr(intBuf), sizeof(int32)) < sizeof(int32):
     raiseDbError(readErrorMissingData)
   for i in 0..<intBuf:
     let k = readRecord(f)
     let v = readRecord(f)
     ((HashBaseTable)result).rows[k] = v
+
 
 proc restore*(db: var Database, filename: string) =
   let f = open(filename, fmRead)

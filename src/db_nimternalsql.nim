@@ -60,6 +60,7 @@ type
     errorMsg: string
     tx: Tx
     autocommit: bool
+    logFile: File
 
   Row* = seq[string] ## \
   ## A row of a dataset. NULL database values will be converted to empty strings.
@@ -70,10 +71,13 @@ proc open*(connection, user, password, database: string): DbConn =
   ## Opens a database, creating a new database in memory.
   ## All arguments are currently ignored.
   ## For compatibility with future versions, empty strings should be passed.
-  return DbConn(db: newDatabase(), errorMsg: "", tx: newTx(), autocommit: true)
+  let db = newDatabase()
+  let tx = newTx(if connection != "": openLog(connection, db) else: nil)
+  return DbConn(db: db, errorMsg: "", tx: tx, autocommit: true)
 
 proc close*(db: DbConn) =
   ## Closes the database.
+  closeLog(db.tx)
   db.db = nil
 
 proc setAutocommit*(db: DbConn, ac: bool) =
@@ -109,12 +113,12 @@ method execute(stmt: SqlStatement, db: Database, tx: Tx, args: varargs[
 
 method execute(stmt: SqlCreateTable, db: Database, tx: Tx, args: varargs[
     string]): int64 =
-  discard createBaseTable(db, stmt.tableName, stmt.columns, getKey(stmt))
+  discard createBaseTable(tx, db, stmt.tableName, stmt.columns, getKey(stmt))
   result = 0
 
 method execute(stmt: SqlDropTable, db: Database, tx: Tx, args: varargs[string]): int64 =
   try:
-    dropBaseTable(db, stmt.tableName)
+    dropBaseTable(tx, db, stmt.tableName)
   except DbError:
     if not stmt.ifExists:
       raise getCurrentException()
@@ -172,7 +176,7 @@ method execute(stmt: SqlCommit, db: Database, tx: Tx, args: varargs[string]): in
   tx.commit()
 
 method execute(stmt: SqlRollback, db: Database, tx: Tx, args: varargs[string]): int64 =
-  tx.rollback()
+  tx.rollback(db)
 
 proc exec*(conn: DbConn; sql: SqlQuery; args: varargs[string, `$`]) =
   ## Executes the query and raises DbError if not successful.
@@ -182,7 +186,7 @@ proc exec*(conn: DbConn; sql: SqlQuery; args: varargs[string, `$`]) =
       discard stmt.execute(conn.db, conn.tx, args)
       conn.tx.commit()
     except:
-      conn.tx.rollback()
+      conn.tx.rollback(conn.db)
       raise
   else:
     discard stmt.execute(conn.db, conn.tx, args)
@@ -194,7 +198,7 @@ proc exec*(conn: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]) =
       discard SqlStatement(stmt).execute(conn.db, conn.tx, args)
       conn.tx.commit()
     except:
-      conn.tx.rollback()
+      conn.tx.rollback(conn.db)
       raise
   else:
     discard SqlStatement(stmt).execute(conn.db, conn.tx, args)
@@ -225,7 +229,7 @@ proc execAffectedRows*(conn: DbConn; sql: SqlQuery; args: varargs[string, `$`]):
       result = stmt.execute(conn.db, conn.tx, args)
       conn.tx.commit()
     except:
-      conn.tx.rollback()
+      conn.tx.rollback(conn.db)
       raise
   else:
     result = stmt.execute(conn.db, conn.tx, args)
@@ -237,7 +241,7 @@ proc execAffectedRows*(conn: DbConn; stmt: SqlPrepared; args: varargs[string, `$
       result = SqlStatement(stmt).execute(conn.db, conn.tx, args)
       conn.tx.commit()
     except:
-      conn.tx.rollback()
+      conn.tx.rollback(conn.db)
       raise
   else:
     result = SqlStatement(stmt).execute(conn.db, conn.tx, args)
@@ -415,4 +419,6 @@ proc save*(conn: DbConn, filename: string) =
 
 proc restore*(conn: DbConn, filename: string) =
   ## Restores a previously saved database snapshot from a file named `filename`.
+  if conn.tx.logIsActive:
+    raiseDbError("restoring shnapshots is not supported in transaction log mode")
   restore(conn.db, filename)
