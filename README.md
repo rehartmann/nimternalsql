@@ -24,9 +24,8 @@ DECIMAL and NUMERIC are internally represented as 64-bit integers. The maximum n
  
 ## Persistence
 
-Persistence is supported through snapshots.
-
-Support for restoring a database from a transaction log is intended for the near future.
+Persistence is supported through snapshots or (optionally) a transaction
+log.
 
 ## Transactions
 

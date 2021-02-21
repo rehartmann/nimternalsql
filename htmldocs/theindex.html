@@ -102,6 +102,10 @@ function main() {
 <li><a class="reference external"
           data-doc-search-tag="db_nimternalsql: close(db: DbConn)" href="db_nimternalsql.html#close%2CDbConn">db_nimternalsql: close(db: DbConn)</a></li>
           </ul></dd>
+<dt><a name="closeLog" href="#closeLog"><span>closeLog:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="tx: closeLog(tx: Tx)" href="nimternalsql/tx.html#closeLog%2CTx">tx: closeLog(tx: Tx)</a></li>
+          </ul></dd>
 <dt><a name="cmp" href="#cmp"><span>cmp:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="sorter: cmp(v1: NqValue; v2: NqValue): int" href="nimternalsql/sorter.html#cmp%2CNqValue%2CNqValue">sorter: cmp(v1: NqValue; v2: NqValue): int</a></li>
@@ -138,9 +142,9 @@ function main() {
           </ul></dd>
 <dt><a name="createBaseTable" href="#createBaseTable"><span>createBaseTable:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="nqcore: createBaseTable(db: Database; name: string; columns: openArray[ColumnDef];
-                key: seq[string]): BaseTable" href="nimternalsql/nqcore.html#createBaseTable%2CDatabase%2Cstring%2CopenArray%5BColumnDef%5D%2Cseq%5Bstring%5D">nqcore: createBaseTable(db: Database; name: string; columns: openArray[ColumnDef];
-                key: seq[string]): BaseTable</a></li>
+          data-doc-search-tag="tx: createBaseTable(tx: Tx; db: Database; name: string;
+                columns: openArray[ColumnDef]; key: seq[string]): BaseTable" href="nimternalsql/tx.html#createBaseTable%2CTx%2CDatabase%2Cstring%2CopenArray%5BColumnDef%5D%2Cseq%5Bstring%5D">tx: createBaseTable(tx: Tx; db: Database; name: string;
+                columns: openArray[ColumnDef]; key: seq[string]): BaseTable</a></li>
           </ul></dd>
 <dt><a name="currentToken" href="#currentToken"><span>currentToken:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -168,7 +172,7 @@ function main() {
           </ul></dd>
 <dt><a name="dropBaseTable" href="#dropBaseTable"><span>dropBaseTable:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="nqcore: dropBaseTable(db: Database; name: string)" href="nimternalsql/nqcore.html#dropBaseTable%2CDatabase%2Cstring">nqcore: dropBaseTable(db: Database; name: string)</a></li>
+          data-doc-search-tag="tx: dropBaseTable(tx: Tx; db: Database; name: string)" href="nimternalsql/tx.html#dropBaseTable%2CTx%2CDatabase%2Cstring">tx: dropBaseTable(tx: Tx; db: Database; name: string)</a></li>
           </ul></dd>
 <dt><a name="eval" href="#eval"><span>eval:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -330,6 +334,10 @@ function main() {
 <li><a class="reference external"
           data-doc-search-tag="nqcommon: ListExp" href="nimternalsql/nqcommon.html#ListExp">nqcommon: ListExp</a></li>
           </ul></dd>
+<dt><a name="logIsActive" href="#logIsActive"><span>logIsActive:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="tx: logIsActive(tx: Tx): bool" href="nimternalsql/tx.html#logIsActive%2CTx">tx: logIsActive(tx: Tx): bool</a></li>
+          </ul></dd>
 <dt><a name="matchesLike" href="#matchesLike"><span>matchesLike:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="like: matchesLike(s: seq[Rune]; pattern: seq[Rune]; startAt: Natural = 0): bool" href="nimternalsql/like.html#matchesLike%2Cseq%5BRune%5D%2Cseq%5BRune%5D%2CNatural">like: matchesLike(s: seq[Rune]; pattern: seq[Rune]; startAt: Natural = 0): bool</a></li>
@@ -379,6 +387,10 @@ function main() {
 <dt><a name="newGroupTable" href="#newGroupTable"><span>newGroupTable:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="nqcore: newGroupTable(table: VTable; aggrs: seq[Expression]; groupBy: seq[QVarExp]): VTable" href="nimternalsql/nqcore.html#newGroupTable%2CVTable%2Cseq%5BExpression%5D%2Cseq%5BQVarExp%5D">nqcore: newGroupTable(table: VTable; aggrs: seq[Expression]; groupBy: seq[QVarExp]): VTable</a></li>
+          </ul></dd>
+<dt><a name="newHashBaseTable" href="#newHashBaseTable"><span>newHashBaseTable:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="nqcore: newHashBaseTable(name: string; columns: openArray[ColumnDef]; key: seq[string]): HashBaseTable" href="nimternalsql/nqcore.html#newHashBaseTable%2Cstring%2CopenArray%5BColumnDef%5D%2Cseq%5Bstring%5D">nqcore: newHashBaseTable(name: string; columns: openArray[ColumnDef]; key: seq[string]): HashBaseTable</a></li>
           </ul></dd>
 <dt><a name="newInstantRow" href="#newInstantRow"><span>newInstantRow:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -434,7 +446,7 @@ function main() {
           </ul></dd>
 <dt><a name="newTx" href="#newTx"><span>newTx:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="tx: newTx(): Tx" href="nimternalsql/tx.html#newTx">tx: newTx(): Tx</a></li>
+          data-doc-search-tag="tx: newTx(file: File): Tx" href="nimternalsql/tx.html#newTx%2CFile">tx: newTx(file: File): Tx</a></li>
           </ul></dd>
 <dt><a name="newUnionTable" href="#newUnionTable"><span>newUnionTable:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -500,6 +512,10 @@ function main() {
 <li><a class="reference external"
           data-doc-search-tag="db_nimternalsql: open(connection, user, password, database: string): DbConn" href="db_nimternalsql.html#open%2Cstring%2Cstring%2Cstring%2Cstring">db_nimternalsql: open(connection, user, password, database: string): DbConn</a></li>
           </ul></dd>
+<dt><a name="openLog" href="#openLog"><span>openLog:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="tx: openLog(logdir: string; db: Database): File" href="nimternalsql/tx.html#openLog%2Cstring%2CDatabase">tx: openLog(logdir: string; db: Database): File</a></li>
+          </ul></dd>
 <dt><a name="OrderByElement" href="#OrderByElement"><span>OrderByElement:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="sqlparser: OrderByElement" href="nimternalsql/sqlparser.html#OrderByElement">sqlparser: OrderByElement</a></li>
@@ -532,6 +548,26 @@ function main() {
 <li><a class="reference external"
           data-doc-search-tag="sqlscanner: Reader" href="nimternalsql/sqlscanner.html#Reader">sqlscanner: Reader</a></li>
           </ul></dd>
+<dt><a name="readErrorMissingData" href="#readErrorMissingData"><span>readErrorMissingData:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="snapshot: readErrorMissingData" href="nimternalsql/snapshot.html#readErrorMissingData">snapshot: readErrorMissingData</a></li>
+          </ul></dd>
+<dt><a name="readName" href="#readName"><span>readName:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="snapshot: readName(f: File): string" href="nimternalsql/snapshot.html#readName%2CFile">snapshot: readName(f: File): string</a></li>
+          </ul></dd>
+<dt><a name="readRecord" href="#readRecord"><span>readRecord:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="snapshot: readRecord(f: File): Record[MatValue]" href="nimternalsql/snapshot.html#readRecord%2CFile">snapshot: readRecord(f: File): Record[MatValue]</a></li>
+          </ul></dd>
+<dt><a name="readTableDef" href="#readTableDef"><span>readTableDef:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="snapshot: readTableDef(f: File; table: BaseTable)" href="nimternalsql/snapshot.html#readTableDef%2CFile%2CBaseTable">snapshot: readTableDef(f: File; table: BaseTable)</a></li>
+          </ul></dd>
+<dt><a name="readValue" href="#readValue"><span>readValue:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="snapshot: readValue(f: File): MatValue" href="nimternalsql/snapshot.html#readValue%2CFile">snapshot: readValue(f: File): MatValue</a></li>
+          </ul></dd>
 <dt><a name="Record" href="#Record"><span>Record:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="nqcommon: Record" href="nimternalsql/nqcommon.html#Record">nqcommon: Record</a></li>
@@ -544,7 +580,7 @@ function main() {
           </ul></dd>
 <dt><a name="rollback" href="#rollback"><span>rollback:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="tx: rollback(tx: Tx)" href="nimternalsql/tx.html#rollback%2CTx">tx: rollback(tx: Tx)</a></li>
+          data-doc-search-tag="tx: rollback(tx: Tx; db: Database)" href="nimternalsql/tx.html#rollback%2CTx%2CDatabase">tx: rollback(tx: Tx; db: Database)</a></li>
           </ul></dd>
 <dt><a name="Row" href="#Row"><span>Row:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -1030,12 +1066,32 @@ function main() {
 <li><a class="reference external"
           data-doc-search-tag="nqcore: WhereTable" href="nimternalsql/nqcore.html#WhereTable">nqcore: WhereTable</a></li>
           </ul></dd>
+<dt><a name="writeError" href="#writeError"><span>writeError:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="snapshot: writeError" href="nimternalsql/snapshot.html#writeError">snapshot: writeError</a></li>
+          </ul></dd>
+<dt><a name="writeName" href="#writeName"><span>writeName:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="snapshot: writeName(f: File; name: string)" href="nimternalsql/snapshot.html#writeName%2CFile%2Cstring">snapshot: writeName(f: File; name: string)</a></li>
+          </ul></dd>
+<dt><a name="writeRecord" href="#writeRecord"><span>writeRecord:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="snapshot: writeRecord(f: File; rec: Record)" href="nimternalsql/snapshot.html#writeRecord%2CFile%2CRecord">snapshot: writeRecord(f: File; rec: Record)</a></li>
+          </ul></dd>
+<dt><a name="writeTableDef" href="#writeTableDef"><span>writeTableDef:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="snapshot: writeTableDef(f: File; table: BaseTable)" href="nimternalsql/snapshot.html#writeTableDef%2CFile%2CBaseTable">snapshot: writeTableDef(f: File; table: BaseTable)</a></li>
+          </ul></dd>
+<dt><a name="writeValue" href="#writeValue"><span>writeValue:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="snapshot: writeValue(f: File; val: MatValue)" href="nimternalsql/snapshot.html#writeValue%2CFile%2CMatValue">snapshot: writeValue(f: File; val: MatValue)</a></li>
+          </ul></dd>
 </dl>
     <div class="row">
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2021-01-23 17:38:54 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2021-02-21 09:39:40 UTC</small>
       </div>
     </div>
   </div>

@@ -39,14 +39,13 @@ adjustScale	nimternalsql/nqcore.html#adjustScale,NqValue,NqValue	nqcore: adjustS
 toNqValue	nimternalsql/nqcore.html#toNqValue,MatValue,ColumnDef	nqcore: toNqValue(v: MatValue; colDef: ColumnDef): NqValue	
 toMatValue	nimternalsql/nqcore.html#toMatValue,NqValue,ColumnDef	nqcore: toMatValue(v: NqValue; colDef: ColumnDef): MatValue	
 `==`	nimternalsql/nqcore.html#==,seq,seq	nqcore: `==`(r1: seq; r2: seq): bool	
+newHashBaseTable	nimternalsql/nqcore.html#newHashBaseTable,string,openArray[ColumnDef],seq[string]	nqcore: newHashBaseTable(name: string; columns: openArray[ColumnDef]; key: seq[string]): HashBaseTable	
 newDatabase	nimternalsql/nqcore.html#newDatabase	nqcore: newDatabase(): Database	
 keyIndex	nimternalsql/nqcore.html#keyIndex,BaseTable,int	nqcore: keyIndex(table: BaseTable; col: int): int	
 isKey	nimternalsql/nqcore.html#isKey,BaseTable,int	nqcore: isKey(table: BaseTable; col: int): bool	
 getTable	nimternalsql/nqcore.html#getTable,Database,string	nqcore: getTable(db: Database; tableName: string): BaseTable	
 eval	nimternalsql/nqcore.html#eval.e,Expression,VarResolver,AggrResolver	nqcore: eval(exp: Expression; varResolver: VarResolver; aggrResolver: AggrResolver = proc (\n    exp: ScalarOpExp): NqValue = raiseDbError(exp.opName &amp; &quot; not supported&quot;)): NqValue	
 eval	nimternalsql/nqcore.html#eval.e,StringLit,VarResolver,AggrResolver	nqcore: eval(exp: StringLit; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
-createBaseTable	nimternalsql/nqcore.html#createBaseTable,Database,string,openArray[ColumnDef],seq[string]	nqcore: createBaseTable(db: Database; name: string; columns: openArray[ColumnDef];\n                key: seq[string]): BaseTable	
-dropBaseTable	nimternalsql/nqcore.html#dropBaseTable,Database,string	nqcore: dropBaseTable(db: Database; name: string)	
 eval	nimternalsql/nqcore.html#eval.e,NumericLit,VarResolver,AggrResolver	nqcore: eval(exp: NumericLit; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
 eval	nimternalsql/nqcore.html#eval.e,BoolLit,VarResolver,AggrResolver	nqcore: eval(exp: BoolLit; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
 eval	nimternalsql/nqcore.html#eval.e,NullLit,VarResolver,AggrResolver	nqcore: eval(exp: NullLit; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	

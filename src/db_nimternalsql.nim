@@ -69,8 +69,13 @@ type
 
 proc open*(connection, user, password, database: string): DbConn =
   ## Opens a database, creating a new database in memory.
-  ## All arguments are currently ignored.
+  ## The user, password, and database arguments are ignored.
   ## For compatibility with future versions, empty strings should be passed.
+  ##
+  ## If the connection argument is not an empty string, it is the name of a directory
+  ## where the transaction log file is kept.
+  ## When open() finds such a transaction log file, it reads the file to restore
+  ## the database.
   let db = newDatabase()
   let tx = newTx(if connection != "": openLog(connection, db) else: nil)
   return DbConn(db: db, errorMsg: "", tx: tx, autocommit: true)
