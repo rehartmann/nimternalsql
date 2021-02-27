@@ -1,5 +1,5 @@
 Tx	nimternalsql/tx.html#Tx	tx: Tx	
-newTx	nimternalsql/tx.html#newTx,File	tx: newTx(file: File): Tx	
+newTx	nimternalsql/tx.html#newTx,string,File	tx: newTx(logPath: string; file: File): Tx	
 createBaseTable	nimternalsql/tx.html#createBaseTable,Tx,Database,string,openArray[ColumnDef],seq[string]	tx: createBaseTable(tx: Tx; db: Database; name: string;\n                columns: openArray[ColumnDef]; key: seq[string]): BaseTable	
 dropBaseTable	nimternalsql/tx.html#dropBaseTable,Tx,Database,string	tx: dropBaseTable(tx: Tx; db: Database; name: string)	
 insert	nimternalsql/tx.html#insert,Tx,BaseTable,seq[NqValue]	tx: insert(tx: Tx; table: BaseTable; values: seq[NqValue])	
@@ -10,3 +10,4 @@ rollback	nimternalsql/tx.html#rollback,Tx,Database	tx: rollback(tx: Tx; db: Data
 openLog	nimternalsql/tx.html#openLog,string,Database	tx: openLog(logdir: string; db: Database): File	
 closeLog	nimternalsql/tx.html#closeLog,Tx	tx: closeLog(tx: Tx)	
 logIsActive	nimternalsql/tx.html#logIsActive,Tx	tx: logIsActive(tx: Tx): bool	
+truncateLog	nimternalsql/tx.html#truncateLog,Tx	tx: truncateLog(tx: Tx)	

@@ -28,4 +28,5 @@ getRow	db_nimternalsql.html#getRow,DbConn,SqlPrepared,varargs[string,]	db_nimter
 getValue	db_nimternalsql.html#getValue,DbConn,SqlQuery,varargs[string,]	db_nimternalsql: getValue(conn: DbConn; query: SqlQuery; args: varargs[string, `$`]): string	
 getValue	db_nimternalsql.html#getValue,DbConn,SqlPrepared,varargs[string,]	db_nimternalsql: getValue(conn: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]): string	
 save	db_nimternalsql.html#save,DbConn,string	db_nimternalsql: save(conn: DbConn; filename: string)	
+save	db_nimternalsql.html#save,DbConn	db_nimternalsql: save(conn: DbConn)	
 restore	db_nimternalsql.html#restore,DbConn,string	db_nimternalsql: restore(conn: DbConn; filename: string)	

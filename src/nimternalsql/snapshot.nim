@@ -280,7 +280,7 @@ proc readTable(f: File): BaseTable =
     ((HashBaseTable)result).rows[k] = v
 
 
-proc restore*(db: var Database, filename: string) =
+proc restore*(db: Database, filename: string) =
   let f = open(filename, fmRead)
   
   try:

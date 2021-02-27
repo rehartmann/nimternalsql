@@ -166,6 +166,10 @@ function main() {
 <li><a class="reference external"
           data-doc-search-tag="db_nimternalsql: dbError(db: DbConn)" href="db_nimternalsql.html#dbError%2CDbConn">db_nimternalsql: dbError(db: DbConn)</a></li>
           </ul></dd>
+<dt><a name="defaultDumpName" href="#defaultDumpName"><span>defaultDumpName:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="nqcommon: defaultDumpName" href="nimternalsql/nqcommon.html#defaultDumpName">nqcommon: defaultDumpName</a></li>
+          </ul></dd>
 <dt><a name="delete" href="#delete"><span>delete:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="tx: delete(tx: Tx; table: BaseTable; whereExp: Expression; args: openArray[string]): int64" href="nimternalsql/tx.html#delete%2CTx%2CBaseTable%2CExpression%2CopenArray%5Bstring%5D">tx: delete(tx: Tx; table: BaseTable; whereExp: Expression; args: openArray[string]): int64</a></li>
@@ -446,7 +450,7 @@ function main() {
           </ul></dd>
 <dt><a name="newTx" href="#newTx"><span>newTx:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="tx: newTx(file: File): Tx" href="nimternalsql/tx.html#newTx%2CFile">tx: newTx(file: File): Tx</a></li>
+          data-doc-search-tag="tx: newTx(logPath: string; file: File): Tx" href="nimternalsql/tx.html#newTx%2Cstring%2CFile">tx: newTx(logPath: string; file: File): Tx</a></li>
           </ul></dd>
 <dt><a name="newUnionTable" href="#newUnionTable"><span>newUnionTable:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -576,7 +580,7 @@ function main() {
 <li><a class="reference external"
           data-doc-search-tag="db_nimternalsql: restore(conn: DbConn; filename: string)" href="db_nimternalsql.html#restore%2CDbConn%2Cstring">db_nimternalsql: restore(conn: DbConn; filename: string)</a></li>
           <li><a class="reference external"
-          data-doc-search-tag="snapshot: restore(db: var Database; filename: string)" href="nimternalsql/snapshot.html#restore%2CDatabase%2Cstring">snapshot: restore(db: var Database; filename: string)</a></li>
+          data-doc-search-tag="snapshot: restore(db: Database; filename: string)" href="nimternalsql/snapshot.html#restore%2CDatabase%2Cstring">snapshot: restore(db: Database; filename: string)</a></li>
           </ul></dd>
 <dt><a name="rollback" href="#rollback"><span>rollback:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -594,6 +598,8 @@ function main() {
           </ul></dd>
 <dt><a name="save" href="#save"><span>save:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
+          data-doc-search-tag="db_nimternalsql: save(conn: DbConn)" href="db_nimternalsql.html#save%2CDbConn">db_nimternalsql: save(conn: DbConn)</a></li>
+          <li><a class="reference external"
           data-doc-search-tag="db_nimternalsql: save(conn: DbConn; filename: string)" href="db_nimternalsql.html#save%2CDbConn%2Cstring">db_nimternalsql: save(conn: DbConn; filename: string)</a></li>
           <li><a class="reference external"
           data-doc-search-tag="snapshot: save(db: Database; filename: string)" href="nimternalsql/snapshot.html#save%2CDatabase%2Cstring">snapshot: save(db: Database; filename: string)</a></li>
@@ -1034,6 +1040,10 @@ function main() {
 <li><a class="reference external"
           data-doc-search-tag="SqlTableRefKind.trkSimpleTableRef" href="nimternalsql/nqcommon.html#trkSimpleTableRef">SqlTableRefKind.trkSimpleTableRef</a></li>
           </ul></dd>
+<dt><a name="truncateLog" href="#truncateLog"><span>truncateLog:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="tx: truncateLog(tx: Tx)" href="nimternalsql/tx.html#truncateLog%2CTx">tx: truncateLog(tx: Tx)</a></li>
+          </ul></dd>
 <dt><a name="tryExec" href="#tryExec"><span>tryExec:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="db_nimternalsql: tryExec(db: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]): bool" href="db_nimternalsql.html#tryExec%2CDbConn%2CSqlPrepared%2Cvarargs%5Bstring%2C%5D">db_nimternalsql: tryExec(db: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]): bool</a></li>
@@ -1091,7 +1101,7 @@ function main() {
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2021-02-21 09:39:40 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2021-02-27 21:06:33 UTC</small>
       </div>
     </div>
   </div>

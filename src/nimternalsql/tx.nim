@@ -31,11 +31,13 @@ type
     ## A transaction object which can be used seially to begin and commit
     ## multiple transactions. Transactions are started implicitly.
     log: seq[TxLogEntry]
+    logDir*: string
     logFile: File
 
-proc newTx*(file: File): Tx =
+proc newTx*(logPath: string, file: File): Tx =
   var tx: Tx 
   new(tx)
+  tx.logDir = logPath
   tx.log = @[]
   tx.logFile = file
   return tx
@@ -320,7 +322,9 @@ proc openLog*(logdir: string, db: Database): File =
     if fileExists(logDir):
       raiseDbError(logDir & " is not a directory")
     createDir(logDir)
-  var logNo: Natural
+  if fileExists(logdir & DirSep & defaultDumpName):
+    restore(db, logdir & DirSep & defaultDumpName)
+  let logNo = 0
   var logFile: File
   if open(logFile, logdir & DirSep & $logNo & ".txlog", fmRead):
     replayLog(logFile, db)
@@ -334,3 +338,6 @@ proc closeLog*(tx: Tx) =
 
 proc logIsActive*(tx: Tx): bool =
   result = tx.logFile != nil
+
+proc truncateLog*(tx: Tx) =
+  discard ftruncate(tx.logFile.getOsFileHandle, 0)

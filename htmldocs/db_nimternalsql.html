@@ -132,6 +132,8 @@ function main() {
   <ul class="simple nested-toc-section">save
       <li><a class="reference" href="#save%2CDbConn%2Cstring"
     title="save(conn: DbConn; filename: string)">save,DbConn,string<span class="attachedType">DbConn</span></a></li>
+  <li><a class="reference" href="#save%2CDbConn"
+    title="save(conn: DbConn)">save,DbConn<span class="attachedType">DbConn</span></a></li>
 
   </ul>
   <ul class="simple nested-toc-section">prepare
@@ -295,7 +297,7 @@ A row of a dataset. NULL database values will be converted to empty strings.
 <dd>
 
 <p>Opens a database, creating a new database in memory. The user, password, and database arguments are ignored. For compatibility with future versions, empty strings should be passed.</p>
-<p>If the connection argument is not an empty string, it is the name of a directory where the transaction log file is kept. When open() finds such a transaction log file, it reads the file to restore the database.</p>
+<p>If the connection argument is not an empty string, it is the name of a directory where the transaction log file is kept. If open() finds a file &quot;dump.ndb&quot; this directory, it restores the database from this file. Afterwards, if open() finds a transaction log file, it reads the file to restore the last state of the database.</p>
 
 
 </dd>
@@ -310,7 +312,7 @@ Closes the database.
 <dt><pre><span class="Keyword">proc</span> <a href="#setAutocommit%2CDbConn%2Cbool"><span class="Identifier">setAutocommit</span></a><span class="Other">(</span><span class="Identifier">db</span><span class="Other">:</span> <a href="db_nimternalsql.html#DbConn"><span class="Identifier">DbConn</span></a><span class="Other">;</span> <span class="Identifier">ac</span><span class="Other">:</span> <span class="Identifier">bool</span><span class="Other">)</span> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
 <dd>
 
-
+Sets the auto-commit mode of the connection given by db to ac
 
 </dd>
 <a id="dbError,DbConn"></a>
@@ -436,6 +438,14 @@ Executes the prepared query and returns the first column of the first row of the
 Saves a snapshot of the database to a file named <tt class="docutils literal"><span class="pre">filename</span></tt>.
 
 </dd>
+<a id="save,DbConn"></a>
+<dt><pre><span class="Keyword">proc</span> <a href="#save%2CDbConn"><span class="Identifier">save</span></a><span class="Other">(</span><span class="Identifier">conn</span><span class="Other">:</span> <a href="db_nimternalsql.html#DbConn"><span class="Identifier">DbConn</span></a><span class="Other">)</span> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">IOError</span><span class="Other">,</span> <span class="Identifier">DbError</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span>
+                          <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">WriteIOEffect</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
+<dd>
+
+If transaction logging is active, a snapshot file &quot;dump.ndb&quot; is saved in the directory that was passed to open() and the transaction log is truncated. Otherwise, a snapshot file &quot;dump.ndb&quot; is saved in the current directory.
+
+</dd>
 <a id="restore,DbConn,string"></a>
 <dt><pre><span class="Keyword">proc</span> <a href="#restore%2CDbConn%2Cstring"><span class="Identifier">restore</span></a><span class="Other">(</span><span class="Identifier">conn</span><span class="Other">:</span> <a href="db_nimternalsql.html#DbConn"><span class="Identifier">DbConn</span></a><span class="Other">;</span> <span class="Identifier">filename</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma">
     <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">DbError</span><span class="Other">,</span> <span class="Identifier">IOError</span><span class="Other">,</span> <span class="Identifier">EOFError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">ReadIOEffect</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
@@ -516,7 +526,7 @@ Executes the query and iterates over the result dataset.
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2021-02-21 09:39:40 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2021-02-27 21:06:33 UTC</small>
       </div>
     </div>
   </div>

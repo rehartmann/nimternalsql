@@ -6,6 +6,9 @@
 import db_common
 import tables
 
+const
+  defaultDumpName* = "dump.ndb"
+
 type
   ColumnDef* = object
     name*: string

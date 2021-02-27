@@ -48,6 +48,7 @@ import nimternalsql/sorter
 import nimternalsql/snapshot
 import nimternalsql/tx
 import strutils
+import os
 
 export db_common.sql
 export db_common.DbError
@@ -74,10 +75,11 @@ proc open*(connection, user, password, database: string): DbConn =
   ##
   ## If the connection argument is not an empty string, it is the name of a directory
   ## where the transaction log file is kept.
-  ## When open() finds such a transaction log file, it reads the file to restore
-  ## the database.
+  ## If open() finds a file "dump.ndb" this directory, it restores the database from this file.
+  ## Afterwards, if open() finds a transaction log file, it reads the file to restore
+  ## the last state of the database.
   let db = newDatabase()
-  let tx = newTx(if connection != "": openLog(connection, db) else: nil)
+  let tx = newTx(connection, if connection != "": openLog(connection, db) else: nil)
   return DbConn(db: db, errorMsg: "", tx: tx, autocommit: true)
 
 proc close*(db: DbConn) =
@@ -86,6 +88,7 @@ proc close*(db: DbConn) =
   db.db = nil
 
 proc setAutocommit*(db: DbConn, ac: bool) =
+  ## Sets the auto-commit mode of the connection given by db to ac
   db.autocommit = ac
 
 proc dbError*(db: DbConn) {.noreturn.} =
@@ -421,6 +424,16 @@ proc getValue*(conn: DbConn; stmt: SqlPrepared; args: varargs[string,
 proc save*(conn: DbConn, filename: string) =
   ## Saves a snapshot of the database to a file named `filename`.
   save(conn.db, filename)
+
+proc save*(conn: DbConn) =
+  ## If transaction logging is active, a snapshot file "dump.ndb" is saved
+  ## in the directory that was passed to open() and the transaction log is truncated.
+  ## Otherwise, a snapshot file "dump.ndb" is saved in the current directory.
+  if conn.tx.logIsActive:
+    save(conn.db, conn.tx.logDir & DirSep & defaultDumpName)
+    truncateLog(conn.tx)
+  else:
+    save(conn.db, defaultDumpName)
 
 proc restore*(conn: DbConn, filename: string) =
   ## Restores a previously saved database snapshot from a file named `filename`.
