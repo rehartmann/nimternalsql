@@ -29,14 +29,14 @@ type
 #  SqlError = object of DbError
 #    sqlState: string
 
-  MatValueKind* = enum kInt, kNumeric, kFloat, kString, kBool, kNull
+  MatValueKind* = enum kInt, kNumeric, kFloat, kString, kBool, kNull, kBigint
   ## A value in a base table.
   ## The scale in the case of kNumeric is taken from the column definition.
   MatValue* = object
     case kind*: MatValueKind
       of kInt:
         intVal*: int32
-      of kNumeric:
+      of kNumeric, kBigint:
         numericVal*: int64
       of kFloat:
         floatVal*: float
@@ -50,7 +50,7 @@ type
     rows*: Table[Record[MatValue], Record[MatValue]]
 
   NqValueKind* = enum nqkNull, nqkInt, nqkNumeric, nqkFloat, nqkString,
-                         nqkBool, nqkList
+                         nqkBool, nqkList, nqkBigint
   NqValue* = object
     case kind*: NqValueKind
     of nqkNull:
@@ -68,6 +68,8 @@ type
       boolVal*: bool
     of nqkList:
       listVal: seq[NqValue]
+    of nqkBigint:
+      bigintVal: int64
   VarResolver* = proc(name: string, rangeVar: string): NqValue
   AggrResolver = proc(exp: ScalarOpExp): NqValue
 
@@ -140,7 +142,7 @@ func isQVarExp*(exp: Expression): bool =
 func hash(v: MatValue): Hash =
   case v.kind
   of kInt: result = hash(v.intVal)
-  of kNumeric: result = hash(v.numericVal)
+  of kNumeric, kBigint: result = hash(v.numericVal)
   of kFloat: result = hash(v.floatVal)
   of kString: result = hash(v.strVal)
   of kBool: result = hash(v.boolVal)
@@ -155,6 +157,7 @@ func hash*(v: NqValue): Hash =
   of nqkBool: result = hash(v.boolVal)
   of nqkNull: result = 17
   of nqkList: result = if v.listVal.len == 0: 13 else: hash(v.listVal[0])
+  of nqkBigint: result = hash(v.bigintVal)
 
 func toNum*(v: NqValue): NqValue =
   case v.kind
@@ -183,31 +186,37 @@ func toNumeric*(v: NqValue): NqValue =
       result = NqValue(kind: nqkNumeric, scale: 0, numericVal: v.intVal)
     of nqkNumeric:
       result = v
+    of nqkBigint:
+      result = NqValue(kind: nqkNumeric, scale: 0, numericVal: v.bigintVal)
     of nqkFloat:
       result = NqValue(kind: nqkNumeric, scale: 0, numericVal: int64(round(v.floatVal)))
     of nqkString:
       try:
-        if v.strVal.len > maxPrecision + 1:
-          result = NqValue(kind: nqkFloat, floatVal: parseFloat(v.strVal))
+        let dotPos = find(v.strVal, ".")
+        var val: BiggestInt
+        if dotPos == -1:
+          val = parseBiggestInt(v.strVal)
         else:
-          let dotPos = find(v.strVal, ".")
-          if dotPos == -1:
-            result = NqValue(kind: nqkNumeric, numericVal: parseInt(v.strVal))
-          else:
-            result = NqValue(kind: nqkNumeric,
-                        numericVal: parseInt(v.strVal[0 .. dotPos - 1] &
-                            v.strVal[dotPos + 1 .. ^1]),
+          val = parseBiggestInt(v.strVal[0 .. dotPos - 1] &
+                            v.strVal[dotPos + 1 .. ^1])
+        if val > high(int64) or val < low(int64):
+          raiseDbError("numeric value too larg: " & v.strVal)
+        if dotPos == -1:
+          result = NqValue(kind: nqkNumeric, numericVal: int64(val))
+        else:
+          result = NqValue(kind: nqkNumeric,
+                        numericVal: int64(val),
                         scale: v.strVal.len - 1 - dotPos)
       except ValueError:
         raiseDbError("invalid numeric value: " & v.strVal)
     else: raiseDbError("numeric value required")
 
-func toInt*(v: NqValue): int =
+func toInt64(v: NqValue): int64 =
   case v.kind
     of nqkInt:
       result = v.intVal
     of nqkFloat:
-      result = int(round(v.floatVal))
+      result = int64(round(v.floatVal))
     of nqkNumeric:
       var scale = v.scale
       var num = v.numericVal
@@ -217,11 +226,13 @@ func toInt*(v: NqValue): int =
       if scale == 1:
         num = num div 10 + (if num mod 10 >= 5: 1 else: 0)
       if num > int64(high(int)) or num < int64(low(int)):
-        raiseDbError("numeric overflow")
-      result = int(num)
+        raiseDbError("value out of range")
+      result = num
+    of nqkBigint:
+      result = v.bigintVal
     of nqkString:
       try:
-        result = parseInt(v.strVal)
+        result = int64(parseBiggestInt(v.strVal))
       except ValueError:
         raiseDbError("invalid integer value: " & v.strVal)
     else: raiseDbError("invalid integer value")
@@ -236,7 +247,10 @@ func toFloat*(v: NqValue): float =
       while scale > 0:
         result /= 10.0
         scale -= 1
-    of nqkFloat: result = v.floatVal
+    of nqkBigint:
+      result = float(v.bigintVal)
+    of nqkFloat:
+      result = v.floatVal
     of nqkString:
       try:
         result = parseFloat(v.strVal)
@@ -281,8 +295,8 @@ func `==`(v1: NqValue, v2: NqValue): bool =
     result = v1.boolVal == v2.boolVal
   elif v1.kind == nqkString and v2.kind == nqkString:
     return v1.strVal == v2.strVal
-  elif v1.kind == nqkInt or v1.kind == nqkNumeric or
-        v2.kind == nqkInt or v2.kind == nqkNumeric:
+  elif v1.kind == nqkInt or v1.kind == nqkNumeric or v1.kind == nqkBigint or
+        v2.kind == nqkInt or v2.kind == nqkNumeric or v2.kind == nqkBigint:
     var a = toNumeric(v1)
     var b = toNumeric(v2)
     adjustScale(a, b)
@@ -302,8 +316,8 @@ func `<=`(v1: NqValue, v2: NqValue): bool =
     result = v1.boolVal <= v2.boolVal
   elif v1.kind == nqkString and v2.kind == nqkString:
     result = v1.strVal <= v2.strVal
-  elif v1.kind == nqkInt or v1.kind == nqkNumeric or
-        v2.kind == nqkInt or v2.kind == nqkNumeric:
+  elif v1.kind == nqkInt or v1.kind == nqkNumeric or v1.kind == nqkBigint or
+        v2.kind == nqkInt or v2.kind == nqkNumeric or v2.kind == nqkBigint:
     var a = toNumeric(v1)
     var b = toNumeric(v2)
     adjustScale(a, b)
@@ -329,6 +343,7 @@ func toNqValue*(v: MatValue, colDef: ColumnDef): NqValue =
     of kString: return NqValue(kind: nqkString, strVal: v.strVal)
     of kBool: return NqValue(kind: nqkBool, boolVal: v.boolVal)
     of kNull: return NqValue(kind: nqkNull)
+    of kBigint: return NqValue(kind: nqkBigint, bigintVal: v.numericVal) 
 
 func typeKind(def: ColumnDef): MatValueKind =
   case toUpperAscii(def.typ):
@@ -336,6 +351,8 @@ func typeKind(def: ColumnDef): MatValueKind =
       return kInt
     of "NUMERIC", "DECIMAL":
       return kNumeric
+    of "BIGINT":
+      return kBigint
     of "REAL":
       return kFloat
     of "TEXT", "CHAR", "VARCHAR":
@@ -344,6 +361,9 @@ func typeKind(def: ColumnDef): MatValueKind =
       return kBool
     else:
       raiseDbError("Unsupported type definition, type: " & def.typ)
+
+proc checkType*(def: ColumnDef) =
+  discard typeKind(def)
 
 func setScale(v: NqValue, scale: Natural): NqValue =
   result = v
@@ -362,14 +382,19 @@ proc toMatValue*(v: NqValue, colDef: ColumnDef): MatValue =
     if colDef.notNull:
       raiseDbError("destination is not nullable")
     return MatValue(kind: kNull)
+  var val: int64
   case typeKind(colDef):
     of kInt:
-      result = MatValue(kind: kInt, intVal: int32(toInt(v)))
+      val = toInt64(v)
+      if val > high(int32) or val < low(int32):
+        raiseDBError("value out of range for int")
+      result = MatValue(kind: kInt, intVal: int32(val))
+    of kBigint:
+      result = MatValue(kind: kBigint, numericVal: toInt64(v))
     of kNumeric:
-      var val: int64
       case v.kind:
         of nqkInt:
-          val = toInt(v)
+          val = toInt64(v)
         of nqkNumeric:
           val = v.setScale(colDef.scale).numericVal
         of nqkFloat:
@@ -430,7 +455,7 @@ proc toMatValue*(v: NqValue, colDef: ColumnDef): MatValue =
           raiseDbError("invalid value for type " & colDef.typ)
       result = MatValue(kind: kBool, boolVal: val)
     of kNull:
-      raiseDbError("internal error: invalid column definition")
+      raiseDbError("internal error: invalid column definition")      
 
 func `==`(v1: MatValue, v2: MatValue): bool =
   if v1.kind != v2.kind:
@@ -438,7 +463,7 @@ func `==`(v1: MatValue, v2: MatValue): bool =
   case v1.kind:
     of kInt:
       result = v1.intVal == v2.intVal
-    of kNumeric:
+    of kNumeric, kBigint:
       result = v1.numericVal == v2.numericVal
     of kFloat:
       result = v1.floatVal == v2.floatVal
@@ -1319,6 +1344,8 @@ func `$`*(val: NqValue): string =
       if val.scale > 0:
         result = result[0 .. result.len - 1 - val.scale] & "." &
             result[result.len - val.scale .. ^1]
+    of nqkBigint:
+      result = $val.bigintVal
     of nqkFloat: result = $val.floatVal
     of nqkString: result = $val.strVal
     of nqkBool: result = if val.boolVal: "TRUE" else: "FALSE"

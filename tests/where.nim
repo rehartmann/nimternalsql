@@ -3,17 +3,17 @@ import algorithm
 import strutils
     
 let db = open("", "", "", "")
-exec(db, sql"CREATE TABLE babababa (a text not null, b text, c int primary key)")
+exec(db, sql"CREATE TABLE babababa (a text not null, b text, c int primary key, d bigint)")
 doAssert execAffectedRows(db,
-                          sql"""INSERT INTO babababa
+                          sql"""INSERT INTO babababa (a, b, c)
                                   VALUES('Baba', 'Ba' || lower('Baa') || upper('Baa'), 1)"""
                           ) == 1
 exec(db,
-     sql"""INSERT INTO babababa VALUES('Electrica', 'Salsa', (1 + 2) * -3)""")
+     sql"""INSERT INTO babababa (a, b, c) VALUES('Electrica', 'Salsa', (1 + 2) * -3)""")
 exec(db,
-     sql"""INSERT INTO babababa VALUES('Alpen', NULL, 2)""")
+     sql"""INSERT INTO babababa (a, b, c) VALUES('Alpen', NULL, 2)""")
 exec(db,
-     sql"""INSERT INTO babababa VALUES(?, ?, ?)""", "Adam", "Eve", "3")
+     sql"""INSERT INTO babababa (a, b, c, d) VALUES(?, ?, ?, ?)""", "Adam", "Eve", "3", "-9223372036854775808")
 
 var rows = getAllRows(db, sql"SELECT * FROM babababa b WHERE b.a = 'Baba' or c > 1")
 sort(rows) do (row1, row2: Row) -> int:
@@ -54,3 +54,17 @@ doAssert rows.len == 1
 doAssert rows[0][0] == "Alpen"
 doAssert rows[0][1] == ""
 doAssert rows[0][2] == "2"
+
+rows = getAllRows(db, sql"SELECT * FROM babababa WHERE d < ?", "-9223372036854775000")
+doAssert rows.len == 1
+doAssert rows[0][0] == "Adam"
+doAssert rows[0][1] == "Eve"
+doAssert rows[0][2] == "3"
+doAssert rows[0][3] == "-9223372036854775808"
+
+rows = getAllRows(db, sql"SELECT * FROM babababa WHERE d = ?", "-9223372036854775808")
+doAssert rows.len == 1
+doAssert rows[0][0] == "Adam"
+doAssert rows[0][1] == "Eve"
+doAssert rows[0][2] == "3"
+doAssert rows[0][3] == "-9223372036854775808"

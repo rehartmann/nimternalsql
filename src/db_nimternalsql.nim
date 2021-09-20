@@ -88,7 +88,7 @@ proc close*(db: DbConn) =
   db.db = nil
 
 proc setAutocommit*(db: DbConn, ac: bool) =
-  ## Sets the auto-commit mode of the connection given by db to ac
+  ## Sets the auto-commit mode of the connection given by `db` to `ac`.
   db.autocommit = ac
 
 proc dbError*(db: DbConn) {.noreturn.} =

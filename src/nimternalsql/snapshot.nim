@@ -24,7 +24,7 @@ proc writeValue*(f: File, val: MatValue) =
     of kInt:
       if writeBuffer(f, unsafeAddr(val.intVal), sizeof(int32)) < sizeof(int32):
         raiseIoError(writeError)
-    of kNumeric:
+    of kNumeric, kBigint:
       if writeBuffer(f, unsafeAddr(val.numericVal), sizeof(int64)) < sizeof(int64):
         raiseIoError(writeError)
     of kFloat:
@@ -150,7 +150,7 @@ proc readValue*(f: File): MatValue =
       if readBuffer(f, addr(intVal), sizeof(int32)) < sizeof(int32):
         raiseDbError(readErrorMissingData)
       result = MatValue(kind: kInt, intVal: intVal)
-    of kNumeric:
+    of kNumeric, kBigint:
       var nVal: int64
       if readBuffer(f, addr(nVal), sizeof(int64)) < sizeof(int64):
         raiseDbError(readErrorMissingData)
@@ -170,7 +170,7 @@ proc readValue*(f: File): MatValue =
       result = MatValue(kind: kString, strVal: strVal)
     of kBool:
       result = MatValue(kind: kBool,
-                             boolVal: if readChar(f) == '\0': false else: true)
+                        boolVal: if readChar(f) == '\0': false else: true)
     of kNull:
       discard  
     
@@ -183,7 +183,7 @@ proc readRecord*(f: File): Record[MatValue] =
 
 func toExpr(v: NqValue): Expression =
   case v.kind:
-    of nqkInt, nqkNumeric, nqkFloat:
+    of nqkInt, nqkNumeric, nqkFloat, nqkBigint:
       result = NumericLit(val: $v)
     of nqkString:
       result = StringLit(val: v.strVal)

@@ -49,6 +49,8 @@ proc createBaseTable*(tx: Tx, db: Database, name: string,
     raiseDbError("table must have at least one column")
   result = newHashBaseTable(name, columns, key)
   for i in 0..<result.def.len:
+    checkType(result.def[i])
+
     if i < result.def.len - 1:
       for j in i + 1..<result.def.len:
         if result.def[i].name == result.def[j].name:

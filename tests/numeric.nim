@@ -4,9 +4,9 @@ import strutils
 let db = open("", "", "", "")
 exec(db, sql"""CREATE TABLE tst
                 (a int primary key, b numeric, c numeric(10), d numeric(18, 5),
-                e real, f integer, g double precision)""")
+                e real, f integer, g double precision, h bigint)""")
 
-doAssert execAffectedRows(db, sql"INSERT INTO tst VALUES (1, 2, 3.6, 1200.004, 130.12, 7, 1.7e6)") == 1
+doAssert execAffectedRows(db, sql"INSERT INTO tst VALUES (1, 2, 3.6, 1200.004, 130.12, 7, 1.7e6, 9223372036854775807)") == 1
 
 var res: seq[Row]
 
@@ -21,8 +21,9 @@ doAssert res[0][3] == "1200.00400"
 doAssert res[0][4] == "130.12"
 doAssert res[0][5] == "7"
 doAssert parseFloat(res[0][6]) == 1.7e6
+doAssert res[0][7] == "9223372036854775807"
 
-res = getAllRows(db, sql"SELECT t.d * 2, t.e * 2, t.d * 2.1, 1.1 * t.e, d + f FROM tst t")
+res = getAllRows(db, sql"SELECT t.d * 2, t.e * 2, t.d * 2.1, 1.1 * t.e, d + f, h - b FROM tst t")
 
 doAssert res.len == 1
 doAssert parseFloat(res[0][0]) == 2400.008
@@ -30,6 +31,7 @@ doAssert res[0][1] == "260.24"
 doAssert parseFloat(res[0][2]) == 2520.0084
 doAssert res[0][3] == "143.132"
 doAssert parseFloat(res[0][4]) == 1207.004
+doAssert res[0][5] == "9223372036854775805"
 
 res = getAllRows(db,
                  sql"""SELECT ? + ?, 5.5 + 200.25, 20 - ?, ? / ?,
@@ -60,6 +62,14 @@ doAssert res[0][3] == "2.5"
 doAssert res[0][4] == "Low"
 doAssert res[0][5] == "Seven"
 doAssert res[0][6] == ""
+
+try:
+  exec(db, sql"UPDATE tst SET f = h")
+  raiseAssert("updating integer column with large bigint succeeded")
+except DbError:
+  discard
+
+exec(db, sql"UPDATE tst SET f = h / 100000000000000")
 
 exec(db, sql"CREATE TABLE tst2 (a decimal primary key, b decimal(10), c dec(18, 8))")
 
