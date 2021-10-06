@@ -355,7 +355,8 @@ func typeKind(def: ColumnDef): MatValueKind =
       return kBigint
     of "REAL":
       return kFloat
-    of "TEXT", "CHAR", "VARCHAR":
+    of "TEXT", "CHAR", "VARCHAR", "BINARY", "VARBINARY", "LONGVARBINARY",
+       "RAW", "BYTEA":
       return kString
     of "BOOLEAN":
       return kBool

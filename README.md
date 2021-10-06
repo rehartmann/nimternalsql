@@ -20,6 +20,11 @@ The following data types are supported:
 * DOUBLE PRECISION
 * BIGINT
 * BOOLEAN
+* BINARY
+* VARBINARY
+* LONGVARBINARY
+* RAW
+* BYTEA
 
 DECIMAL and NUMERIC are internally represented as 64-bit integers. The maximum number of digits is 18.
  
