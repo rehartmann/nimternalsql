@@ -434,7 +434,10 @@ proc toMatValue*(v: NqValue, colDef: ColumnDef): MatValue =
       var s = v.strVal
       if colDef.typ == "CHAR" or colDef.typ == "VARCHAR":
         if s.len > colDef.size:
-          raiseDbError("value too long: '" & s & "'")
+          for i in colDef.size..s.high:
+            if s[i] != ' ':
+              raiseDbError("value too long: '" & s & "'")
+          s = substr(s, 0, colDef.size)
       if colDef.typ == "CHAR":
         while s.len < colDef.size:
           s = s & " "

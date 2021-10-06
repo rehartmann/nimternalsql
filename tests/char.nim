@@ -3,7 +3,13 @@ import db_nimternalsql
 let db = open("", "", "", "")
 exec(db, sql"CREATE TABLE tst (a char(3) primary key, b char, c varchar(5), d text)")
 
-exec(db, sql"INSERT INTO tst VALUES (?, 'f', 'Don''t', ? || UPPER(?) || LOWER(?))",
+try:
+  exec(db, sql"INSERT INTO tst (a, c) VALUES (?, ?)", "t", "123456")
+  raiseAssert("value exceeding column length was excepted")
+except DbError:
+  discard
+
+exec(db, sql"INSERT INTO tst VALUES (?, 'f', 'Don''t  ', ? || UPPER(?) || LOWER(?))",
      "yo", "Yo", "Yo", "Yo")
 
 var res: seq[seq[string]]
@@ -14,7 +20,7 @@ for r in instantRows(db, sql"SELECT * FROM tst"):
 doAssert res.len == 1
 doAssert res[0][0] == "yo "
 doAssert res[0][1] == "f"
-doAssert res[0][2] == "Don't"
+doAssert res[0][2] == "Don't "
 doAssert res[0][3] == "YoYOyo"
 
 res = @[]
@@ -24,7 +30,7 @@ for r in instantRows(db, sql"SELECT * FROM tst WHERE b IN (?)", "f"):
 doAssert res.len == 1
 doAssert res[0][0] == "yo "
 doAssert res[0][1] == "f"
-doAssert res[0][2] == "Don't"
+doAssert res[0][2] == "Don't "
 doAssert res[0][3] == "YoYOyo"
 
 exec(db, sql"UPDATE tst SET b = '', c = 'Do', d = d || d")
