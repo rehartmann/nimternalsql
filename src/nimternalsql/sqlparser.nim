@@ -535,6 +535,7 @@ proc parseSelectElements(scanner: Scanner, argCount: var int): seq[SelectElement
 
 proc parseTableRef(scanner: Scanner, argCount: var int): SqlTableRef =
   var crossJoin = false
+  var leftOuter = false
   while true:
     var nameTok = nextToken(scanner)
     var rangeVar: string
@@ -558,17 +559,26 @@ proc parseTableRef(scanner: Scanner, argCount: var int): SqlTableRef =
         if crossJoin:
           raiseDbError("ON is not allowed with CROSS JOIN")
         result = SqlTableRef(kind: trkRelOp, tableRef1: result, tableRef2: tref,
-                             onExp: parseExpression(scanner, argCount))
+                             onExp: parseExpression(scanner, argCount),
+                             leftOuter: leftOuter)
       else:
         if not crossJoin:
           raiseDbError("ON is required with JOIN")
-        result = SqlTableRef(kind: trkRelOp, tableRef1: result, tableRef2: tref)
+        result = SqlTableRef(kind: trkRelOp, tableRef1: result, tableRef2: tref,
+                             leftOuter: false)
     if t.kind == tokCross:
       if nextToken(scanner).kind != tokJoin:
         raiseDbError("JOIN expected")
       crossJoin = true
+      leftOuter = false
     elif t.kind == tokJoin:
       crossJoin = false
+      leftOuter = false
+    elif t.kind == tokLeft:
+      if nextToken(scanner).kind != tokJoin:
+        raiseDbError("JOIN expected")
+      crossJoin = false
+      leftOuter = true
     else:
       return
 

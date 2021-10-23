@@ -262,6 +262,7 @@ func toVTable(tableRef: SqlTableRef, db: Database): VTable =
     of trkRelOp:
       result = newJoinTable(toVTable(tableRef.tableRef1, db),
                              toVTable(tableRef.tableRef2, db),
+                             tableRef.leftOuter,
                              tableRef.onExp)
 
 proc toVTable(tableExp: TableExp, db: Database): VTable

@@ -42,7 +42,7 @@ enabled or disabled using DbConn.setAutocommit().
 
 A number of SQL features is not implemented, most notably:
 
-OUTER JOIN (JOIN .. ON and CROSS JOIN are supported)
+OUTER JOIN (JOIN .. ON, CROSS JOIN, and LEFT JOIN are supported)
 
 HAVING (GROUP BY is supported)
 

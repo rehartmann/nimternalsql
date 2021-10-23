@@ -2,23 +2,28 @@ import nqcommon
 import nqcore
 import strutils
 import tables
+import sequtils
 
 type
   JoinTable* = ref object of VTable
     children: array[2, VTable]
     exp*: Expression
+    leftOuter*: bool
   JoinTableCursor = ref object of Cursor
     childCursors: array[2, Cursor]
     table: JoinTable
-    leftBeforeFirst: bool
+    advanceLeft: bool
     row: InstantRow
     keyCols: seq[tuple[colNo: Natural, exp: Expression]]
     keyTableNo: int   # of child table accessed by key, if keyCols.len > 0
+    rightMatch: bool # true if a row from the right was returned
+                     # which matched the current row of the left table
 
 func newJoinTable*(lchild: VTable, rchild: VTable,
+                    leftOuter: bool = false,
                     exp: Expression = nil): VTable =
   result = JoinTable(children: [lchild, rchild],
-                    exp: exp)
+                    leftOuter: leftOuter, exp: exp)
 
 method columnCount(table: JoinTable): Natural =
   result = columnCount(table.children[0]) + columnCount(table.children[1])
@@ -44,7 +49,7 @@ func join(row1: InstantRow, row2: InstantRow, table: VTable): InstantRow =
 
 method newCursor(rtable: JoinTable, args: openArray[string]): Cursor =
   if rtable.exp != nil:
-    for i in 0..1:
+    for i in (if rtable.leftOuter: 1 else: 0)..1:
       if rtable.children[i] of BaseTableRef:
         let keyCols = expKeyCols(rtable.exp, BaseTableRef(rtable.children[i]),
             proc(exp: Expression): bool =
@@ -70,14 +75,14 @@ method newCursor(rtable: JoinTable, args: openArray[string]): Cursor =
                                       if i == 0: [nil, newCursor(rtable.children[1], args)]
                                       else: [newCursor(rtable.children[0], args), nil],
                                   table: rtable,
-                                  leftBeforeFirst: true,
+                                  advanceLeft: true,
                                   keyCols: keyCols,
                                   keyTableNo: i)
   result = JoinTableCursor(args: @args,
                           childCursors: [newCursor(rtable.children[0], args),
                                          newCursor(rtable.children[1], args)],
                           table: rtable,
-                          leftBeforeFirst: true)
+                          advanceLeft: true)
 
 func evalJoinCond(cursor: JoinTableCursor, row: InstantRow): bool =
   result = cursor.table.exp == nil or
@@ -119,6 +124,13 @@ proc nextByKey(cursor: JoinTableCursor, row: var InstantRow, varResolver: VarRes
                newMatInstantRow(cursor.table.children[cursor.keyTableNo], key),
                cursor.table)
       return true
+    elif cursor.table.leftOuter:
+      row = join(cursor.row,
+                 newInstantRow(cursor.table.children[1], 
+                               repeat(NqValue(kind: nqkNull),
+                                      cursor.table.children[1].columnCount)),
+                 cursor.table)
+      return true
   result = false
 
 method next(cursor: JoinTableCursor, row: var InstantRow, varResolver: VarResolver = nil): bool =
@@ -126,24 +138,36 @@ method next(cursor: JoinTableCursor, row: var InstantRow, varResolver: VarResolv
     return nextByKey(cursor, row, varResolver)
   var rrow: InstantRow
   while true:
-    if cursor.leftBeforeFirst:
-      cursor.leftBeforeFirst = false
+    if cursor.advanceLeft:
+      cursor.advanceLeft = false
       if not cursor.childCursors[0].next(cursor.row, varResolver):
         return false
+      cursor.rightMatch = false
     if cursor.childCursors[1].next(rrow):
       row = join(cursor.row, rrow, cursor.table)
       if evalJoinCond(cursor, row):
+        cursor.rightMatch = true
         return true
       else:
         continue
+    if cursor.table.leftOuter and not cursor.rightMatch:
+      row = join(cursor.row,
+                 newInstantRow(cursor.table.children[1],
+                               repeat(NqValue(kind: nqkNull),
+                                      cursor.table.children[1].columnCount)),
+                 cursor.table)
+      cursor.advanceLeft = true
+      return true
     if not cursor.childCursors[0].next(cursor.row, varResolver):
       return false
     cursor.childCursors[1] = newCursor(cursor.table.children[1], cursor.args)
+    cursor.rightMatch = false
     if cursor.childCursors[1].next(rrow, varResolver):
       row = join(cursor.row, rrow, cursor.table)
       if evalJoinCond(cursor, row):
+        cursor.rightMatch = true
         return true
-  return false
+  result = false
 
 method `$`(vtable: JoinTable): string =
   result = '(' & $vtable.children[0] & ')' & " JOIN " & '(' & $vtable.children[1] & ')'

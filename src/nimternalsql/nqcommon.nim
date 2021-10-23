@@ -59,6 +59,7 @@ type
       of trkRelOp:
         tableRef1*, tableRef2*: SqlTableRef
         onExp*: Expression
+        leftOuter*: bool
 
 proc raiseDbError*(msg: string) {.noreturn.} =
   var
