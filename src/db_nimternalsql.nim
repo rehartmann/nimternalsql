@@ -37,16 +37,16 @@
 ##     db.exec(sql"INSERT INTO my_table (id, name) VALUES (0, ?)",
 ##             "Nicolas")
 import db_common
-import nimternalsql/nqcommon
-import nimternalsql/nqcore
-import nimternalsql/sqlscanner
-import nimternalsql/sqlparser
-import nimternalsql/join
-import nimternalsql/duprem
-import nimternalsql/union
-import nimternalsql/sorter
-import nimternalsql/snapshot
-import nimternalsql/tx
+import db_nimternalsql/nqcommon
+import db_nimternalsql/nqcore
+import db_nimternalsql/sqlscanner
+import db_nimternalsql/sqlparser
+import db_nimternalsql/join
+import db_nimternalsql/duprem
+import db_nimternalsql/union
+import db_nimternalsql/sorter
+import db_nimternalsql/snapshot
+import db_nimternalsql/tx
 import strutils
 import os
 
