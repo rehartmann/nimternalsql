@@ -177,6 +177,9 @@ proc parseExpListOrTableExp(scanner: Scanner, argCount: var int): Expression =
     raiseDbError("\"(\" expected")
   if nextToken(scanner).kind == tokSelect:
     result = parseTableExp(scanner, argCount)
+    if currentToken(scanner).kind != tokRightParen:
+      raiseDbError("\")\" expected")
+    discard nextToken(scanner)
   else:
     var exps = @[parseExpression(scanner, argCount, false)]
     while currentToken(scanner).kind == tokComma:
@@ -448,7 +451,7 @@ proc parseCreate(scanner: Scanner): SqlStatement =
   if currentToken(scanner).kind != tokRightParen:
     raiseDbError(") expected")
   result = SqlCreateTable(tableName: nameTok.identifier, columns: cols,
-                        primaryKey: pkey)
+                          primaryKey: pkey)
 
 proc parseDrop(scanner: Scanner): SqlStatement =
   var ifExists = false
@@ -505,7 +508,7 @@ proc parseInsert(scanner: Scanner): SqlStatement =
   vals.add(parseExpression(scanner, argCount))
   while currentToken(scanner).kind == tokComma:
     vals.add(parseExpression(scanner, argCount))
-  if scanner.currentToken.kind != tokRightParen:
+  if currentToken(scanner).kind != tokRightParen:
     raiseDbError(") expected")
   result = SqlInsert(tableName: nameTok.identifier, columns: columns, values: vals)
 
@@ -764,20 +767,22 @@ proc parseStatement*(reader: Reader): SqlStatement =
   let t = nextToken(scanner)
   case t.kind:
     of tokCreate:
-      return parseCreate(scanner)
+      result = parseCreate(scanner)
     of tokDrop:
-      return parseDrop(scanner)
+      result = parseDrop(scanner)
     of tokInsert:
-      return parseInsert(scanner)
+      result = parseInsert(scanner)
     of tokUpdate:
-      return parseUpdate(scanner)
+      result = parseUpdate(scanner)
     of tokDelete:
-      return parseDelete(scanner)
+      result = parseDelete(scanner)
     of tokSelect:
-      return parseQueryExp(scanner)
+      result = parseQueryExp(scanner)
     of tokCommit:
-      return parseCommit(scanner);
+      result = parseCommit(scanner);
     of tokRollback:
-      return parseRollback(scanner);
+      result = parseRollback(scanner);
     else:
       raiseDbError("invalid statement")
+  if nextToken(scanner).kind != tokEndOfInput:
+    raiseDbError("unexpected input near " & $currentToken(scanner))

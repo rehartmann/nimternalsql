@@ -27,14 +27,20 @@ res = getAllRows(db, sql"""SELECT DISTINCT s.sname FROM s
                              WHERE 1 IN (
                                SELECT sp.pno FROM sp
                                  WHERE sp.sno = s.sno)
-                             ORDER BY s.sname""")
+                             ORDER BY s.sname DESC""")
 doAssert res.len == 2
-doAssert res[0][0] == "one"
-doAssert res[1][0] == "three"
+doAssert res[0][0] == "three"
+doAssert res[1][0] == "one"
 
 res = getAllRows(db, sql"""SELECT DISTINCT s.sname FROM s
                              WHERE s.sno = (
                                SELECT sp.sno FROM sp
-                                 WHERE sp.pno = 3)""")
+                                 WHERE sp.pno = 3) AND TRUE""")
 doAssert res.len == 1
 doAssert res[0][0] == "four"
+
+res = getAllRows(db, sql"""SELECT DISTINCT s.sname FROM s
+                             WHERE s.sno = (
+                               SELECT sp.sno FROM sp
+                                 WHERE sp.pno = 3) AND FALSE""")
+doAssert res.len == 0

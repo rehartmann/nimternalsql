@@ -55,7 +55,7 @@ doAssert rows[1][3] == "2"
 doAssert rows[1][4] == "Team B"
 
 rows = getAllRows(db, sql"""SELECT * FROM emp_team t
-                              INNER JOIN emp ON t.empno = emp.empno
+                              JOIN emp ON t.empno = emp.empno
                               ORDER BY last_name""")
 doAssert rows.len == 2
 doAssert rows[0][0] == "1"
@@ -69,7 +69,7 @@ doAssert rows[1][2] == "2"
 doAssert rows[1][3] == "Daisy"
 doAssert rows[1][4] == "Database"
 
-rows = getAllRows(db, sql"""SELECT * FROM emp2 JOIN emp_team t 
+rows = getAllRows(db, sql"""SELECT * FROM emp2 INNER JOIN emp_team t 
                                 ON no = empno
                                 ORDER BY last_name""")
 doAssert rows.len == 1
@@ -78,3 +78,12 @@ doAssert rows[0][1] == "Bob"
 doAssert rows[0][2] == "Base"
 doAssert rows[0][3] == "1"
 doAssert rows[0][4] == "Team A"
+
+# OUTER JOIN is not supported
+try:
+  rows = getAllRows(db, sql"""SELECT * FROM emp_team t
+                              OUTER JOIN emp ON t.empno = emp.empno
+                              ORDER BY last_name""")
+  raiseAssert("OUTER JOIN succeeded")
+except DbError:
+  discard
