@@ -566,21 +566,30 @@ proc parseTableRef(scanner: Scanner, argCount: var int): SqlTableRef =
           raiseDbError("ON is required with JOIN")
         result = SqlTableRef(kind: trkRelOp, tableRef1: result, tableRef2: tref,
                              leftOuter: false)
-    if t.kind == tokCross:
-      if nextToken(scanner).kind != tokJoin:
-        raiseDbError("JOIN expected")
-      crossJoin = true
-      leftOuter = false
-    elif t.kind == tokJoin:
-      crossJoin = false
-      leftOuter = false
-    elif t.kind == tokLeft:
-      if nextToken(scanner).kind != tokJoin:
-        raiseDbError("JOIN expected")
-      crossJoin = false
-      leftOuter = true
-    else:
-      return
+    case t.kind:
+      of tokCross:
+        if nextToken(scanner).kind != tokJoin:
+          raiseDbError("JOIN expected")
+        crossJoin = true
+        leftOuter = false
+      of tokJoin:
+        crossJoin = false
+        leftOuter = false
+      of tokInner:
+        if nextToken(scanner).kind != tokJoin:
+          raiseDbError("JOIN expected")
+        crossJoin = false
+        leftOuter = false
+      of tokLeft:
+        var tk = nextToken(scanner).kind
+        if tk == tokOuter:
+          tk = nextToken(scanner).kind
+        if tk != tokJoin:
+          raiseDbError("JOIN expected")
+        crossJoin = false
+        leftOuter = true
+      else:
+        return
 
 proc parseTableRefs(scanner: Scanner, argCount: var int): seq[SqlTableRef] =
   result.add(parseTableRef(scanner, argCount))

@@ -55,7 +55,7 @@ doAssert rows[1][3] == "2"
 doAssert rows[1][4] == "Team B"
 
 rows = getAllRows(db, sql"""SELECT * FROM emp_team t
-                              JOIN emp ON t.empno = emp.empno
+                              INNER JOIN emp ON t.empno = emp.empno
                               ORDER BY last_name""")
 doAssert rows.len == 2
 doAssert rows[0][0] == "1"

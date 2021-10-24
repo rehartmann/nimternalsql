@@ -29,7 +29,7 @@ doAssert rows[1][2] == "2"
 doAssert rows[1][3] == "Daisy"
 doAssert rows[1][4] == "Database"
 
-rows = getAllRows(db, sql"""SELECT * FROM emp_team LEFT JOIN emp2
+rows = getAllRows(db, sql"""SELECT * FROM emp_team LEFT OUTER JOIN emp2
                                 ON no = empno
                                 ORDER BY emp_team.team_name""")
 doAssert rows.len == 3
