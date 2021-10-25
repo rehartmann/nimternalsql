@@ -1,4 +1,4 @@
-import nimternalsql/like
+import db_nimternalsql/like
 
 doAssert matchesLike("", "")
 doAssert matchesLike("", "%")
