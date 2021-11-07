@@ -374,6 +374,9 @@ proc parseColumn(scanner: Scanner): ColumnDef =
         raiseDbError("PRECISION expected")
       typ = "REAL"
       discard nextToken(scanner)
+    of tokTime:
+      typ = "TIME"
+      discard nextToken(scanner)
     else:
       raiseDbError("type expected")
   var pk = false;

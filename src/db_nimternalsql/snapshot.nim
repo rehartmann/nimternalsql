@@ -21,7 +21,7 @@ proc writeValue*(f: File, val: MatValue) =
   if writeBuffer(f, addr(shortBuf), sizeof(int16)) < sizeof(int16):
     raiseIoError(writeError)
   case val.kind:
-    of kInt:
+    of kInt, kTime:
       if writeBuffer(f, unsafeAddr(val.intVal), sizeof(int32)) < sizeof(int32):
         raiseIoError(writeError)
     of kNumeric, kBigint:
@@ -150,6 +150,11 @@ proc readValue*(f: File): MatValue =
       if readBuffer(f, addr(intVal), sizeof(int32)) < sizeof(int32):
         raiseDbError(readErrorMissingData)
       result = MatValue(kind: kInt, intVal: intVal)
+    of kTime:
+      var intVal: int32
+      if readBuffer(f, addr(intVal), sizeof(int32)) < sizeof(int32):
+        raiseDbError(readErrorMissingData)
+      result = MatValue(kind: kTime, seconds: intVal)
     of kNumeric, kBigint:
       var nVal: int64
       if readBuffer(f, addr(nVal), sizeof(int64)) < sizeof(int64):
@@ -181,9 +186,9 @@ proc readRecord*(f: File): Record[MatValue] =
   for i in 0..<reclen:
     result.add(readValue(f))
 
-func toExpr(v: NqValue): Expression =
+proc toExpr(v: NqValue): Expression =
   case v.kind:
-    of nqkInt, nqkNumeric, nqkFloat, nqkBigint:
+    of nqkInt, nqkNumeric, nqkFloat, nqkBigint, nqkTime:
       result = NumericLit(val: $v)
     of nqkString:
       result = StringLit(val: v.strVal)

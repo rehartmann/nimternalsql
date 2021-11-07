@@ -8,6 +8,8 @@ import strutils
 import hashes
 import sequtils
 import math
+import times
+import strformat
 import algorithm
 import nqcommon
 import like
@@ -29,13 +31,16 @@ type
 #  SqlError = object of DbError
 #    sqlState: string
 
-  MatValueKind* = enum kInt, kNumeric, kFloat, kString, kBool, kNull, kBigint
+  MatValueKind* = enum kInt, kNumeric, kFloat, kString, kBool, kNull, kBigint, kTime
   ## A value in a base table.
   ## The scale in the case of kNumeric is taken from the column definition.
   MatValue* = object
     case kind*: MatValueKind
       of kInt:
         intVal*: int32
+      of kTime:
+        seconds*: int32
+        nanoseconds*: NanosecondRange
       of kNumeric, kBigint:
         numericVal*: int64
       of kFloat:
@@ -50,13 +55,16 @@ type
     rows*: Table[Record[MatValue], Record[MatValue]]
 
   NqValueKind* = enum nqkNull, nqkInt, nqkNumeric, nqkFloat, nqkString,
-                         nqkBool, nqkList, nqkBigint
+                         nqkBool, nqkList, nqkBigint, nqkTime
   NqValue* = object
     case kind*: NqValueKind
     of nqkNull:
       discard
     of nqkInt:
       intVal*: int32
+    of nqkTime:
+      seconds*: int32
+      nanoseconds*: NanosecondRange
     of nqkNumeric:
       numericVal*: int64
       scale*: Natural
@@ -141,7 +149,7 @@ func isQVarExp*(exp: Expression): bool =
 
 func hash(v: MatValue): Hash =
   case v.kind
-  of kInt: result = hash(v.intVal)
+  of kInt, kTime: result = hash(v.intVal)
   of kNumeric, kBigint: result = hash(v.numericVal)
   of kFloat: result = hash(v.floatVal)
   of kString: result = hash(v.strVal)
@@ -150,7 +158,7 @@ func hash(v: MatValue): Hash =
 
 func hash*(v: NqValue): Hash =
   case v.kind
-  of nqkInt: result = hash(v.intVal)
+  of nqkInt, nqkTime: result = hash(v.intVal)
   of nqkNumeric: result = hash(v.numericVal)
   of nqkFloat: result = hash(v.floatVal)
   of nqkString: result = hash(v.strVal)
@@ -344,6 +352,7 @@ func toNqValue*(v: MatValue, colDef: ColumnDef): NqValue =
     of kBool: return NqValue(kind: nqkBool, boolVal: v.boolVal)
     of kNull: return NqValue(kind: nqkNull)
     of kBigint: return NqValue(kind: nqkBigint, bigintVal: v.numericVal) 
+    of kTime: return NqValue(kind: nqkTime, seconds: v.seconds)
 
 func typeKind(def: ColumnDef): MatValueKind =
   case toUpperAscii(def.typ):
@@ -360,6 +369,8 @@ func typeKind(def: ColumnDef): MatValueKind =
       return kString
     of "BOOLEAN":
       return kBool
+    of "TIME":
+      return kTime
     else:
       raiseDbError("Unsupported type definition, type: " & def.typ)
 
@@ -458,14 +469,23 @@ proc toMatValue*(v: NqValue, colDef: ColumnDef): MatValue =
         else:
           raiseDbError("invalid value for type " & colDef.typ)
       result = MatValue(kind: kBool, boolVal: val)
+    of kTime:
+      case v.kind:
+        of nqkTime:
+          result = MatValue(kind: kTime, seconds: v.seconds)
+        of nqkString:
+          let t = parse(v.strVal, "hh:mm:ss")
+          result = MatValue(kind: kTime, seconds: int32(t.hour * 3600 + t.minute * 60 + t.second))
+        else:
+          raiseDbError("invalid value for type " & colDef.typ)
     of kNull:
-      raiseDbError("internal error: invalid column definition")      
+      raiseDbError("internal error: invalid column definition")
 
 func `==`(v1: MatValue, v2: MatValue): bool =
   if v1.kind != v2.kind:
     return false
   case v1.kind:
-    of kInt:
+    of kInt, kTime:
       result = v1.intVal == v2.intVal
     of kNumeric, kBigint:
       result = v1.numericVal == v2.numericVal
@@ -817,6 +837,9 @@ func getAggrs*(sels: seq[SelectElement]): seq[Expression] =
 method eval*(exp: QVarExp, varResolver: VarResolver,
     aggrResolver: AggrResolver): NqValue =
   try:
+    if exp.name == "CURRENT_TIME":
+      let t = now()
+      return NqValue(kind: nqkTime, seconds: int32(t.hour * 3600 + t.minute * 60 + t.second))
     result = varResolver(exp.name, exp.tableName)
   except KeyError:
     raiseDbError("Not found: " & exp.name)
@@ -1353,6 +1376,9 @@ func `$`*(val: NqValue): string =
     of nqkFloat: result = $val.floatVal
     of nqkString: result = $val.strVal
     of nqkBool: result = if val.boolVal: "TRUE" else: "FALSE"
+    of nqkTime: result = &"{val.seconds div 3600:02}" & ":" &
+                         &"{(val.seconds mod 3600) div 60:02}" & ":" &
+                         &"{val.seconds mod 60:02}"
     of nqkNull: result = ""
     of nqkList: raiseDbError("conversion of list to string not supported")
 

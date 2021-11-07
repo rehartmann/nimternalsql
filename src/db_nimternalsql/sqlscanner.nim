@@ -6,7 +6,7 @@ type
     tokAll, tokAnd, tokAny, tokAs, tokAsc, tokBy, tokChar, tokDefault, tokDrop,
     tokVarchar, tokNumeric, tokCase, tokWhen, tokThen, tokElse, tokEnd,
     tokCommit, tokRollback, tokCreate, tokCross, tokCount, tokDecimal,
-    tokDelete, tokDesc, tokDistinct, tokDouble, tokPrecision, tokExists,
+    tokDelete, tokDesc, tokDistinct, tokDouble, tokTime, tokPrecision, tokExists,
     tokFrom, tokGroup, tokIf, tokInsert, tokUpdate, tokSet, tokIn, tokIs,
     tokInto, tokJoin, tokKey, tokLike, tokNot, tokOn, tokOr, tokOrder,
     tokPrimary, tokSelect, tokTable, tokUnion, tokValues, tokWhere,
@@ -129,6 +129,8 @@ proc toToken(s: string): Token =
       return Token(kind: tokFalse)
     of "GROUP":
       return Token(kind: tokGroup)
+    of "TIME":
+      return Token(kind: tokTime)
     of "THEN":
       return Token(kind: tokThen)
     of "TRUE":
