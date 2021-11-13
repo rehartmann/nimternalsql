@@ -21,8 +21,18 @@ proc writeValue*(f: File, val: MatValue) =
   if writeBuffer(f, addr(shortBuf), sizeof(int16)) < sizeof(int16):
     raiseIoError(writeError)
   case val.kind:
-    of kInt, kTime:
+    of kInt:
       if writeBuffer(f, unsafeAddr(val.intVal), sizeof(int32)) < sizeof(int32):
+        raiseIoError(writeError)
+    of kTime:
+      if writeBuffer(f, unsafeAddr(val.microsecond), sizeof(int64)) < sizeof(int64):
+        raiseIoError(writeError)
+    of kDate:
+      if writeBuffer(f, unsafeAddr(val.year), sizeof(int16)) < sizeof(int16):
+        raiseIoError(writeError)
+      if writeBuffer(f, unsafeAddr(val.month), sizeof(int8)) < sizeof(int8):
+        raiseIoError(writeError)
+      if writeBuffer(f, unsafeAddr(val.day), sizeof(int8)) < sizeof(int8):
         raiseIoError(writeError)
     of kNumeric, kBigint:
       if writeBuffer(f, unsafeAddr(val.numericVal), sizeof(int64)) < sizeof(int64):
@@ -78,7 +88,7 @@ proc writeColumnDef(f: File, colDef: ColumnDef) =
     if writeBuffer(f, addr(shortBuf), sizeof(int16)) < sizeof(int16):
       raiseIoError(writeError)
 
-    var byteBuf = byte(if colDef.notNull: 0 else: 1)
+    var byteBuf = byte(if colDef.notNull: 1 else: 0)
     if writeBuffer(f, addr(byteBuf), 1) < 1:
       raiseIoError(writeError)
       
@@ -151,10 +161,20 @@ proc readValue*(f: File): MatValue =
         raiseDbError(readErrorMissingData)
       result = MatValue(kind: kInt, intVal: intVal)
     of kTime:
-      var intVal: int32
-      if readBuffer(f, addr(intVal), sizeof(int32)) < sizeof(int32):
+      var msval: int64
+      if readBuffer(f, addr(msval), sizeof(int64)) < sizeof(int64):
         raiseDbError(readErrorMissingData)
-      result = MatValue(kind: kTime, seconds: intVal)
+      result = MatValue(kind: kTime, microsecond: msval)
+    of kDate:
+      var year: int16
+      var month, day: int8
+      if readBuffer(f, addr(year), sizeof(int16)) < sizeof(int16):
+        raiseDbError(readErrorMissingData)
+      if readBuffer(f, addr(month), sizeof(int8)) < sizeof(int8):
+        raiseDbError(readErrorMissingData)
+      if readBuffer(f, addr(day), sizeof(int8)) < sizeof(int8):
+        raiseDbError(readErrorMissingData)
+      result = MatValue(kind: kDate, year: year, month: month, day: day)
     of kNumeric, kBigint:
       var nVal: int64
       if readBuffer(f, addr(nVal), sizeof(int64)) < sizeof(int64):
@@ -178,7 +198,7 @@ proc readValue*(f: File): MatValue =
                         boolVal: if readChar(f) == '\0': false else: true)
     of kNull:
       discard  
-    
+
 proc readRecord*(f: File): Record[MatValue] =
   var reclen: int16
   if readBuffer(f, addr(reclen), sizeof(int16)) < sizeof(int16):
@@ -190,6 +210,8 @@ proc toExpr(v: NqValue): Expression =
   case v.kind:
     of nqkInt, nqkNumeric, nqkFloat, nqkBigint, nqkTime:
       result = NumericLit(val: $v)
+    of nqkDate:
+      result = StringLit(val: $v)
     of nqkString:
       result = StringLit(val: v.strVal)
     of nqkBool:
@@ -258,6 +280,8 @@ proc readTableDef*(f: File, table: BaseTable) =
       raiseDbError(readErrorMissingData)
     if byteBuf == 1:
       colDef.defaultValue = toExpr(toNqValue(readValue(f), colDef))
+    else:
+      colDef.defaultValue = nil
     table.def.add(colDef)
 
   var keyLen: int16

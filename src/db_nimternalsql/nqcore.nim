@@ -31,16 +31,14 @@ type
 #  SqlError = object of DbError
 #    sqlState: string
 
-  MatValueKind* = enum kInt, kNumeric, kFloat, kString, kBool, kNull, kBigint, kTime
+  MatValueKind* = enum kInt, kNumeric, kFloat, kString, kBool, kNull, kBigint,
+                       kTime, kDate
   ## A value in a base table.
   ## The scale in the case of kNumeric is taken from the column definition.
   MatValue* = object
     case kind*: MatValueKind
       of kInt:
         intVal*: int32
-      of kTime:
-        seconds*: int32
-        nanoseconds*: NanosecondRange
       of kNumeric, kBigint:
         numericVal*: int64
       of kFloat:
@@ -49,22 +47,25 @@ type
         strVal*: string
       of kBool:
         boolVal*: bool
+      of kTime:
+        microsecond*: int64
+      of kDate:
+        year*: int16
+        month*: int8
+        day*: int8
       of kNull:
         discard
   HashBaseTable* = ref object of BaseTable
     rows*: Table[Record[MatValue], Record[MatValue]]
 
   NqValueKind* = enum nqkNull, nqkInt, nqkNumeric, nqkFloat, nqkString,
-                         nqkBool, nqkList, nqkBigint, nqkTime
+                         nqkBool, nqkList, nqkBigint, nqkTime, nqkDate
   NqValue* = object
     case kind*: NqValueKind
     of nqkNull:
       discard
     of nqkInt:
       intVal*: int32
-    of nqkTime:
-      seconds*: int32
-      nanoseconds*: NanosecondRange
     of nqkNumeric:
       numericVal*: int64
       scale*: Natural
@@ -78,6 +79,12 @@ type
       listVal: seq[NqValue]
     of nqkBigint:
       bigintVal: int64
+    of nqkTime:
+      microsecond*: int64
+    of nqkDate:
+      year*: int
+      month*: Month
+      day*: MonthdayRange
   VarResolver* = proc(name: string, rangeVar: string): NqValue
   AggrResolver = proc(exp: ScalarOpExp): NqValue
 
@@ -150,6 +157,7 @@ func isQVarExp*(exp: Expression): bool =
 func hash(v: MatValue): Hash =
   case v.kind
   of kInt, kTime: result = hash(v.intVal)
+  of kDate: result = hash(v.year) xor hash(v.month) xor hash(v.day)
   of kNumeric, kBigint: result = hash(v.numericVal)
   of kFloat: result = hash(v.floatVal)
   of kString: result = hash(v.strVal)
@@ -159,6 +167,7 @@ func hash(v: MatValue): Hash =
 func hash*(v: NqValue): Hash =
   case v.kind
   of nqkInt, nqkTime: result = hash(v.intVal)
+  of nqkDate: result = hash(v.year) xor hash(v.month) xor hash(v.day)
   of nqkNumeric: result = hash(v.numericVal)
   of nqkFloat: result = hash(v.floatVal)
   of nqkString: result = hash(v.strVal)
@@ -352,7 +361,8 @@ func toNqValue*(v: MatValue, colDef: ColumnDef): NqValue =
     of kBool: return NqValue(kind: nqkBool, boolVal: v.boolVal)
     of kNull: return NqValue(kind: nqkNull)
     of kBigint: return NqValue(kind: nqkBigint, bigintVal: v.numericVal) 
-    of kTime: return NqValue(kind: nqkTime, seconds: v.seconds)
+    of kTime: return NqValue(kind: nqkTime, microsecond: v.microsecond)
+    of kDate: return NqValue(kind: nqkDate, year: v.year, month: Month(v.month), day: v.day)
 
 func typeKind(def: ColumnDef): MatValueKind =
   case toUpperAscii(def.typ):
@@ -371,6 +381,8 @@ func typeKind(def: ColumnDef): MatValueKind =
       return kBool
     of "TIME":
       return kTime
+    of "DATE":
+      return kDate
     else:
       raiseDbError("Unsupported type definition, type: " & def.typ)
 
@@ -392,7 +404,7 @@ proc toMatValue*(v: NqValue, colDef: ColumnDef): MatValue =
 
   if v.kind == nqkNull:
     if colDef.notNull:
-      raiseDbError("destination is not nullable")
+      raiseDbError("destination column " & colDef.name & " is not nullable")
     return MatValue(kind: kNull)
   var val: int64
   case typeKind(colDef):
@@ -472,10 +484,20 @@ proc toMatValue*(v: NqValue, colDef: ColumnDef): MatValue =
     of kTime:
       case v.kind:
         of nqkTime:
-          result = MatValue(kind: kTime, seconds: v.seconds)
+          result = MatValue(kind: kTime, microsecond: v.microsecond)
         of nqkString:
           let t = parse(v.strVal, "hh:mm:ss")
-          result = MatValue(kind: kTime, seconds: int32(t.hour * 3600 + t.minute * 60 + t.second))
+          result = MatValue(kind: kTime, microsecond: int64(t.hour * 3600 + t.minute * 60 + t.second) * 1000000)
+        else:
+          raiseDbError("invalid value for type " & colDef.typ)
+    of kDate:
+      case v.kind:
+        of nqkDate:
+          result = MatValue(kind: kDate, year: int16(v.year), month: int8(v.month), day: int8(v.day))
+        of nqkString:
+          let t = parse(v.strVal, "yyyy-MM-dd")
+          result = MatValue(kind: kDate, year: int16(t.year), month: int8(ord(t.month)),
+                            day: int8(t.monthday))
         else:
           raiseDbError("invalid value for type " & colDef.typ)
     of kNull:
@@ -487,6 +509,9 @@ func `==`(v1: MatValue, v2: MatValue): bool =
   case v1.kind:
     of kInt, kTime:
       result = v1.intVal == v2.intVal
+    of kDate:
+      result = (v1.year == v2.year) and (v1.month == v2.month) and
+               (v1.day == v2.day)
     of kNumeric, kBigint:
       result = v1.numericVal == v2.numericVal
     of kFloat:
@@ -839,7 +864,10 @@ method eval*(exp: QVarExp, varResolver: VarResolver,
   try:
     if exp.name == "CURRENT_TIME":
       let t = now()
-      return NqValue(kind: nqkTime, seconds: int32(t.hour * 3600 + t.minute * 60 + t.second))
+      return NqValue(kind: nqkTime, microsecond: int64(t.hour * 3600 + t.minute * 60 + t.second) * 1000000)
+    if exp.name == "CURRENT_DATE":
+      let t = now()
+      return NqValue(kind: nqkDate, year: t.year, month: t.month, day: t.monthday)
     result = varResolver(exp.name, exp.tableName)
   except KeyError:
     raiseDbError("Not found: " & exp.name)
@@ -1376,9 +1404,12 @@ func `$`*(val: NqValue): string =
     of nqkFloat: result = $val.floatVal
     of nqkString: result = $val.strVal
     of nqkBool: result = if val.boolVal: "TRUE" else: "FALSE"
-    of nqkTime: result = &"{val.seconds div 3600:02}" & ":" &
-                         &"{(val.seconds mod 3600) div 60:02}" & ":" &
-                         &"{val.seconds mod 60:02}"
+    of nqkTime: result = &"{val.microsecond div 3600000000:02}" & ":" &
+                         &"{(val.microsecond mod 3600000000) div 60000000:02}" & ":" &
+                         &"{val.microsecond mod 60000000 div 1000000:02}"
+    of nqkDate: result = &"{val.year:04}" & "-" &
+                         &"{ord(val.month):02}" & "-" &
+                         &"{val.day:02}"
     of nqkNull: result = ""
     of nqkList: raiseDbError("conversion of list to string not supported")
 
