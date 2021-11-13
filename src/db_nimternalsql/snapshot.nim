@@ -88,7 +88,7 @@ proc writeColumnDef(f: File, colDef: ColumnDef) =
     if writeBuffer(f, addr(shortBuf), sizeof(int16)) < sizeof(int16):
       raiseIoError(writeError)
 
-    var byteBuf = byte(if colDef.notNull: 1 else: 0)
+    var byteBuf = byte(if colDef.notNull: 0 else: 1)
     if writeBuffer(f, addr(byteBuf), 1) < 1:
       raiseIoError(writeError)
       
@@ -270,9 +270,9 @@ proc readTableDef*(f: File, table: BaseTable) =
       raiseDbError(readErrorMissingData)
     case byteBuf:
       of 0:
-        colDef.notNull = false
-      of 1:
         colDef.notNull = true
+      of 1:
+        colDef.notNull = false
       else:
         raiseDbError("invalid notNull value")
     
