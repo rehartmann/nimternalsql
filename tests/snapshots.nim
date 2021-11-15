@@ -1,12 +1,26 @@
 import db_nimternalsql
 
 var db = open("", "", "", "")
-exec(db, sql"""CREATE TABLE tst
-                (a int primary key, b numeric(10,5) DEFAULT 1.23, c integer, d text, e varchar(40),
-                f real, g bigint, h time, k date)""")
+exec(db, sql"""CREATE TABLE tst(
+                a int primary key,
+                b numeric(10,5) DEFAULT 1.23,
+                c integer,
+                d text,
+                e varchar(40),
+                f real,
+                g bigint,
+                h time,
+                k date)""")
 
 exec(db, sql"INSERT INTO tst VALUES (1, 3.6, 1200, 'Water', 'Fire', 7.8, 9223372036854775805, '17:05:06', '1901-05-02')")
 
+exec(db, sql"""CREATE TABLE tstdef(
+                a int primary key,
+                t time default '11:11:00',
+                d date default '2007-06-05',
+                ts timestamp default '2000-01-01 09:00:00.50000',
+                ts3 timestamp(3) default '2020-02-01 14:00:00.123')""")
+                
 save(db, "snapshot.dump")
 
 db = open("", "", "", "")
@@ -33,3 +47,11 @@ doAssert rows[1][3] == "Wine"
 doAssert rows[1][4] == "Earth"
 doAssert rows[1][5] == "150000.0"
 doAssert rows[1][6] == "1000"
+
+exec(db, sql"""INSERT INTO tstdef (a) values(1)""")
+
+let row = getRow(db, sql"""SELECT t, d, ts, ts3 FROM tstdef""")
+assert row[0] == "11:11:00"
+assert row[1] == "2007-06-05"
+assert row[2] == "2000-01-01 09:00:00.500000"
+assert row[3] == "2020-02-01 14:00:00.123"

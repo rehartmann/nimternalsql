@@ -349,7 +349,7 @@ iterator instantRows*(conn: DbConn; sql: SqlPrepared; args: varargs[string,
   for r in instantRows(toVTable(SqlStatement(sql), conn.db), args):
     yield r
 
-func `[]`*(row: InstantRow; col: int): string =
+proc `[]`*(row: InstantRow; col: int): string =
   ## Returns text for given column of the row.
   result = $columnValueAt(row, col)
 

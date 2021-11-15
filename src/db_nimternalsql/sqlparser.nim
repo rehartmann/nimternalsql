@@ -377,6 +377,20 @@ proc parseColumn(scanner: Scanner): ColumnDef =
     of tokTime:
       typ = "TIME"
       discard nextToken(scanner)
+    of tokTimestamp:
+      var t = nextToken(scanner)
+      if t.kind == tokLeftParen:
+        t = nextToken(scanner)
+        if t.kind != tokInt:
+          raiseDbError("number expected")
+        precision = parseInt(t.value)
+        t = nextToken(scanner)
+        if t.kind != tokRightParen:
+          raiseDbError("\")\" expected")
+        discard nextToken(scanner)
+      else:
+        precision = 6
+      typ = "TIMESTAMP"
     else:
       raiseDbError("type expected")
   var pk = false;

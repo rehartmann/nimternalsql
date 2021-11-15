@@ -208,9 +208,9 @@ proc readRecord*(f: File): Record[MatValue] =
 
 proc toExpr(v: NqValue): Expression =
   case v.kind:
-    of nqkInt, nqkNumeric, nqkFloat, nqkBigint, nqkTime:
+    of nqkInt, nqkNumeric, nqkFloat, nqkBigint:
       result = NumericLit(val: $v)
-    of nqkDate:
+    of nqkDate, nqkTime, nqkTimestamp:
       result = StringLit(val: $v)
     of nqkString:
       result = StringLit(val: v.strVal)

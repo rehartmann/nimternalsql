@@ -25,7 +25,9 @@ func getMaxByPrecision: array[1..18, int64] =
     val = val * 10 + 9
     result[i] = val
 
-let maxByPrecision = getMaxByPrecision()
+let
+  maxByPrecision = getMaxByPrecision()
+  baseDate = dateTime(2000, mJan, 1, zone = utc())
 
 type
 #  SqlError = object of DbError
@@ -59,7 +61,7 @@ type
     rows*: Table[Record[MatValue], Record[MatValue]]
 
   NqValueKind* = enum nqkNull, nqkInt, nqkNumeric, nqkFloat, nqkString,
-                         nqkBool, nqkList, nqkBigint, nqkTime, nqkDate
+                      nqkBool, nqkList, nqkBigint, nqkTime, nqkDate, nqkTimestamp
   NqValue* = object
     case kind*: NqValueKind
     of nqkNull:
@@ -79,8 +81,9 @@ type
       listVal: seq[NqValue]
     of nqkBigint:
       bigintVal: int64
-    of nqkTime:
+    of nqkTime, nqkTimestamp:
       microsecond*: int64
+      precision*: Natural
     of nqkDate:
       year*: int
       month*: Month
@@ -156,7 +159,8 @@ func isQVarExp*(exp: Expression): bool =
 
 func hash(v: MatValue): Hash =
   case v.kind
-  of kInt, kTime: result = hash(v.intVal)
+  of kInt: result = hash(v.intVal)
+  of kTime: result = hash(v.microsecond)
   of kDate: result = hash(v.year) xor hash(v.month) xor hash(v.day)
   of kNumeric, kBigint: result = hash(v.numericVal)
   of kFloat: result = hash(v.floatVal)
@@ -166,7 +170,8 @@ func hash(v: MatValue): Hash =
 
 func hash*(v: NqValue): Hash =
   case v.kind
-  of nqkInt, nqkTime: result = hash(v.intVal)
+  of nqkInt: result = hash(v.intVal)
+  of nqkTime, nqkTimestamp: result = hash(v.microsecond)
   of nqkDate: result = hash(v.year) xor hash(v.month) xor hash(v.day)
   of nqkNumeric: result = hash(v.numericVal)
   of nqkFloat: result = hash(v.floatVal)
@@ -361,7 +366,8 @@ func toNqValue*(v: MatValue, colDef: ColumnDef): NqValue =
     of kBool: return NqValue(kind: nqkBool, boolVal: v.boolVal)
     of kNull: return NqValue(kind: nqkNull)
     of kBigint: return NqValue(kind: nqkBigint, bigintVal: v.numericVal) 
-    of kTime: return NqValue(kind: nqkTime, microsecond: v.microsecond)
+    of kTime: return if colDef.typ == "TIMESTAMP": NqValue(kind: nqkTimestamp, microsecond: v.microsecond, precision: colDef.precision)
+                     else: NqValue(kind: nqkTime, microsecond: v.microsecond, precision: colDef.precision)
     of kDate: return NqValue(kind: nqkDate, year: v.year, month: Month(v.month), day: v.day)
 
 func typeKind(def: ColumnDef): MatValueKind =
@@ -379,8 +385,11 @@ func typeKind(def: ColumnDef): MatValueKind =
       return kString
     of "BOOLEAN":
       return kBool
-    of "TIME":
+    of "TIME", "TIMESTAMP":
       return kTime
+#    of "TIMESTAMP":
+#      if def.precision < 0 or def.precision > 6:
+        
     of "DATE":
       return kDate
     else:
@@ -483,11 +492,22 @@ proc toMatValue*(v: NqValue, colDef: ColumnDef): MatValue =
       result = MatValue(kind: kBool, boolVal: val)
     of kTime:
       case v.kind:
-        of nqkTime:
+        of nqkTime, nqkTimestamp:
           result = MatValue(kind: kTime, microsecond: v.microsecond)
         of nqkString:
-          let t = parse(v.strVal, "hh:mm:ss")
-          result = MatValue(kind: kTime, microsecond: int64(t.hour * 3600 + t.minute * 60 + t.second) * 1000000)
+          var ms = 0
+          if colDef.typ == "TIMESTAMP":
+            let dt = parse(v.strVal.substr(0, 18), "yyyy-MM-dd HH:mm:ss", utc())
+            if v.strVal.len > 19 and v.strVal[19] == '.':
+              let frac = v.strVal.substr(20, 19 + colDef.precision)
+              ms = frac.parseInt
+              for i in 0..5 - frac.len:
+                ms *= 10
+            result = MatValue(kind: kTime, microsecond: (dt - baseDate).inMicroseconds + ms)
+          else:
+            let t = parse(v.strVal, "hh:mm:ss")
+            result = MatValue(kind: kTime,
+                              microsecond: int64(t.hour * 3600 + t.minute * 60 + t.second) * 1000000)
         else:
           raiseDbError("invalid value for type " & colDef.typ)
     of kDate:
@@ -863,11 +883,17 @@ method eval*(exp: QVarExp, varResolver: VarResolver,
     aggrResolver: AggrResolver): NqValue =
   try:
     if exp.name == "CURRENT_TIME":
-      let t = now()
-      return NqValue(kind: nqkTime, microsecond: int64(t.hour * 3600 + t.minute * 60 + t.second) * 1000000)
+      let t = now().utc
+      return NqValue(kind: nqkTime,
+                     microsecond: int64(t.hour * 3600 + t.minute * 60 + t.second) * 1000000,
+                     precision: 0)
     if exp.name == "CURRENT_DATE":
       let t = now()
       return NqValue(kind: nqkDate, year: t.year, month: t.month, day: t.monthday)
+    if exp.name == "CURRENT_TIMESTAMP":
+      return NqValue(kind: nqkTimestamp,
+                     microsecond: (now().utc - baseDate).inMicroseconds,
+                     precision: 6)
     result = varResolver(exp.name, exp.tableName)
   except KeyError:
     raiseDbError("Not found: " & exp.name)
@@ -1390,7 +1416,7 @@ func isKeyUpdate*(table: BaseTable, assignments: seq[ColumnAssignment]): bool =
         return true
   result = false
 
-func `$`*(val: NqValue): string =
+proc `$`*(val: NqValue): string =
   case val.kind
     of nqkInt:
       result = $val.intVal
@@ -1410,6 +1436,13 @@ func `$`*(val: NqValue): string =
     of nqkDate: result = &"{val.year:04}" & "-" &
                          &"{ord(val.month):02}" & "-" &
                          &"{val.day:02}"
+    of nqkTimestamp:
+      var dt = baseDate + initDuration(nanoseconds = val.microsecond * 1000)
+      result = dt.format("yyyy-MM-dd HH:mm:ss")
+      if val.precision > 0:
+        let frac = &"{dt.nanosecond mod 1000000000:06}"
+        result &= "."
+        result &= frac.substr(0, val.precision - 1)
     of nqkNull: result = ""
     of nqkList: raiseDbError("conversion of list to string not supported")
 

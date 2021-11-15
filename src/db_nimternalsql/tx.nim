@@ -55,8 +55,13 @@ proc createBaseTable*(tx: Tx, db: Database, name: string,
       for j in i + 1..<result.def.len:
         if result.def[i].name == result.def[j].name:
           raiseDbError("error: column \"" & result.def[i].name & "\" specified more than once")
-    if result.def[i].precision > maxPrecision:
-      raiseDbError("max precision is " & $maxPrecision)
+    if result.def[i].typ == "TIMESTAMP":
+      let tsMaxPrecision = 6
+      if result.def[i].precision > tsMaxPrecision:
+        raiseDbError("max precision of TIMESTAMP is " & $tsMaxPrecision)
+    else:
+      if result.def[i].precision > maxPrecision:
+        raiseDbError("max precision is " & $maxPrecision)
     if result.def[i].typ == "DECIMAL":
       result.def[i].precision = maxPrecision
     # Check default value

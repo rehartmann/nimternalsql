@@ -8,7 +8,7 @@ srcDir      = "src"
 
 # Deps
 
-requires "nim >= 1.4.0"
+requires "nim >= 1.6.0"
 
 task test, "Runs all the tests":
   cd "tests"
