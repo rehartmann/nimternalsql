@@ -308,7 +308,44 @@ proc adjustScale*(a: var NqValue, b: var NqValue) =
   elif a.scale < b.scale:
     adjustScaleFirstGreater(b, a)
 
-func `==`(v1: NqValue, v2: NqValue): bool =
+proc precisionMicroseconds(ms: int64, precision: int): int64 =
+  result = ms
+  for i in 0..5 - precision:
+    result = result div 10
+  for i in 0..5 - precision:
+    result = result * 10
+
+proc toTime(s: string): NqValue =
+  let t = parse(s.substr(0, 7), "hh:mm:ss")
+  var ms = 0
+  if s.len > 8 and s[8] == '.':
+    let frac = s.substr(9)
+    ms = frac.parseInt
+    for i in 0..5 - frac.len:
+      ms *= 10
+  result = NqValue(kind: nqkTime,
+                   microsecond: int64(t.hour * 3600 + t.minute * 60 +
+                                      t.second) * 1000000 + ms,
+                   precision: 6)
+
+proc toTimestamp(s: string): NqValue =
+  var ms = 0
+  let dt = parse(s.substr(0, 18), "yyyy-MM-dd HH:mm:ss", utc())
+  if s.len > 19 and s[19] == '.':
+    let frac = s.substr(20)
+    ms = frac.parseInt
+    for i in 0..5 - frac.len:
+      ms *= 10
+  result = NqValue(kind: nqkTimestamp, 
+                   microsecond: (dt - baseDate).inMicroseconds + ms,
+                   precision: 6)
+
+proc toDate(s: string): NqValue =
+  let t = parse(s, "yyyy-MM-dd")
+  result = NqValue(kind: nqkDate, year: int16(t.year), month: Month(t.month),
+                   day: int8(t.monthday))
+
+proc `==`(v1: NqValue, v2: NqValue): bool =
   if v1.kind == nqkInt and v2.kind == nqkInt:
     result = v1.intVal == v2.intVal
   elif v1.kind == nqkFloat or v2.kind == nqkFloat:
@@ -323,13 +360,40 @@ func `==`(v1: NqValue, v2: NqValue): bool =
     var b = toNumeric(v2)
     adjustScale(a, b)
     result = a.numericVal == b.numericVal
+  elif v1.kind == nqkTime and v2.kind == nqkTime:
+    result = v1.microsecond == v2.microsecond
+  elif v1.kind == nqkTime and v2.kind == nqkString:
+    result = v1 == toTime(v2.strVal)
+  elif v1.kind == nqkString and v2.kind == nqkTime:
+    result = toTime(v1.strVal) == v2
+  elif v1.kind == nqkDate and v2.kind == nqkDate:
+    result = (v1.year == v2.year) and (v1.month == v2.month) and (v1.day == v2.day)
+  elif v1.kind == nqkDate and v2.kind == nqkString:
+    result = v1 == toDate(v2.strVal)
+  elif v1.kind == nqkString and v2.kind == nqkDate:
+    result = toDate(v1.strVal) == v2
+  elif v1.kind == nqkTimestamp and v2.kind == nqkTimestamp:
+    result = v1.microsecond == v2.microsecond
+  elif v1.kind == nqkTimestamp and v2.kind == nqkString:
+    result = v1 == toTimestamp(v2.strVal)
+  elif v1.kind == nqkString and v2.kind == nqkTimestamp:
+    result = toTimestamp(v1.strVal) == v2
   else:
     raiseDbError("comparing incompatible types")
 
-func `!=`(f1: NqValue, f2: NqValue): bool =
+proc `!=`(f1: NqValue, f2: NqValue): bool =
   result = not (f1 == f2)
 
-func `<=`(v1: NqValue, v2: NqValue): bool =
+func compareDate(v1: NqValue, v2: NqValue): int =
+  var d = v1.year - v2.year
+  if d != 0:
+    return d
+  d = ord(v1.month) - ord(v2.month)
+  if d != 0:
+    return d
+  return v1.day - v2.day
+
+proc `<=`(v1: NqValue, v2: NqValue): bool =
   if v1.kind == nqkInt and v2.kind == nqkInt:
     result = v1.intVal <= v2.intVal
   elif v1.kind == nqkFloat or v2.kind == nqkFloat:
@@ -344,16 +408,34 @@ func `<=`(v1: NqValue, v2: NqValue): bool =
     var b = toNumeric(v2)
     adjustScale(a, b)
     result = a.numericVal <= b.numericVal
+  elif v1.kind == nqkTime and v2.kind == nqkTime:
+    result = v1.microsecond <= v2.microsecond
+  elif v1.kind == nqkTime and v2.kind == nqkString:
+    result = v1 <= toTime(v2.strVal)
+  elif v1.kind == nqkString and v2.kind == nqkTime:
+    result = toTime(v1.strVal) <= v2
+  elif v1.kind == nqkDate and v2.kind == nqkDate:
+    result = compareDate(v1, v2) <= 0
+  elif v1.kind == nqkDate and v2.kind == nqkString:
+    result = compareDate(v1, toDate(v2.strVal)) <= 0
+  elif v1.kind == nqkString and v2.kind == nqkDate:
+    result = compareDate(toDate(v1.strVal), v2) <= 0
+  elif v1.kind == nqkTimestamp and v2.kind == nqkTimestamp:
+    result = v1.microsecond <= v2.microsecond
+  elif v1.kind == nqkTimestamp and v2.kind == nqkString:
+    result = v1 <= toTimestamp(v2.strVal)
+  elif v1.kind == nqkString and v2.kind == nqkTimestamp:
+    result = toTimestamp(v1.strVal) <= v2
   else:
     raiseDbError("comparing incompatible types")
 
-func `>=`(f1: NqValue, f2: NqValue): bool =
+proc `>=`(f1: NqValue, f2: NqValue): bool =
   result = f2 <= f1
 
-func `<`(f1: NqValue, f2: NqValue): bool =
+proc `<`(f1: NqValue, f2: NqValue): bool =
   result = not (f1 >= f2)
 
-func `>`(f1: NqValue, f2: NqValue): bool =
+proc `>`(f1: NqValue, f2: NqValue): bool =
   result = not (f1 <= f2)
 
 func toNqValue*(v: MatValue, colDef: ColumnDef): NqValue =
@@ -366,8 +448,12 @@ func toNqValue*(v: MatValue, colDef: ColumnDef): NqValue =
     of kBool: return NqValue(kind: nqkBool, boolVal: v.boolVal)
     of kNull: return NqValue(kind: nqkNull)
     of kBigint: return NqValue(kind: nqkBigint, bigintVal: v.numericVal) 
-    of kTime: return if colDef.typ == "TIMESTAMP": NqValue(kind: nqkTimestamp, microsecond: v.microsecond, precision: colDef.precision)
-                     else: NqValue(kind: nqkTime, microsecond: v.microsecond, precision: colDef.precision)
+    of kTime:
+      return if colDef.typ == "TIMESTAMP": NqValue(kind: nqkTimestamp,
+                                                   microsecond: v.microsecond,
+                                                   precision: colDef.precision)
+             else: NqValue(kind: nqkTime, microsecond: v.microsecond,
+                            precision: colDef.precision)
     of kDate: return NqValue(kind: nqkDate, year: v.year, month: Month(v.month), day: v.day)
 
 func typeKind(def: ColumnDef): MatValueKind =
@@ -387,9 +473,6 @@ func typeKind(def: ColumnDef): MatValueKind =
       return kBool
     of "TIME", "TIMESTAMP":
       return kTime
-#    of "TIMESTAMP":
-#      if def.precision < 0 or def.precision > 6:
-        
     of "DATE":
       return kDate
     else:
@@ -492,8 +575,23 @@ proc toMatValue*(v: NqValue, colDef: ColumnDef): MatValue =
       result = MatValue(kind: kBool, boolVal: val)
     of kTime:
       case v.kind:
-        of nqkTime, nqkTimestamp:
-          result = MatValue(kind: kTime, microsecond: v.microsecond)
+        of nqkTime:
+          if colDef.typ != "TIME":
+            raiseDbError("invalid time value")
+          result = MatValue(kind: kTime,
+                            microsecond: precisionMicroseconds(v.microsecond, colDef.precision))
+        of nqkTimestamp:
+          if colDef.typ != "TIMESTAMP":
+            raiseDbError("invalid timestamp value")
+          if colDef.precision < 6:
+            var dt = baseDate + initDuration(nanoseconds = v.microsecond * 1000)
+            let frac = dt.nanosecond div 1000
+            result = MatValue(kind: kTime,
+                              microsecond: v.microsecond - frac +
+                                           precisionMicroseconds(frac, colDef.precision))
+          else:
+            result = MatValue(kind: kTime,
+                              microsecond: v.microsecond)
         of nqkString:
           var ms = 0
           if colDef.typ == "TIMESTAMP":
@@ -503,11 +601,9 @@ proc toMatValue*(v: NqValue, colDef: ColumnDef): MatValue =
               ms = frac.parseInt
               for i in 0..5 - frac.len:
                 ms *= 10
-            result = MatValue(kind: kTime, microsecond: (dt - baseDate).inMicroseconds + ms)
+            result = toMatValue(toTimestamp(v.strVal), colDef)
           else:
-            let t = parse(v.strVal, "hh:mm:ss")
-            result = MatValue(kind: kTime,
-                              microsecond: int64(t.hour * 3600 + t.minute * 60 + t.second) * 1000000)
+            result = toMatValue(toTime(v.strVal), colDef)
         else:
           raiseDbError("invalid value for type " & colDef.typ)
     of kDate:
@@ -515,9 +611,7 @@ proc toMatValue*(v: NqValue, colDef: ColumnDef): MatValue =
         of nqkDate:
           result = MatValue(kind: kDate, year: int16(v.year), month: int8(v.month), day: int8(v.day))
         of nqkString:
-          let t = parse(v.strVal, "yyyy-MM-dd")
-          result = MatValue(kind: kDate, year: int16(t.year), month: int8(ord(t.month)),
-                            day: int8(t.monthday))
+          result = toMatValue(toDate(v.strVal), colDef)
         else:
           raiseDbError("invalid value for type " & colDef.typ)
     of kNull:
@@ -549,7 +643,7 @@ func hash[T](r: seq[T]): Hash =
     result = result !& hash(v)
   result = !$result
 
-func `==`*(r1: seq, r2: seq): bool =
+proc `==`*(r1: seq, r2: seq): bool =
   if r1.len() != r2.len():
     return false
   for i in 0..<r1.len():
@@ -1254,7 +1348,7 @@ proc aggrMax(table: VTable, groupBy: seq[QVarExp],
         else:
           result = NqValue(kind: nqkFloat, floatVal: max(result.floatVal, val.floatVal))
 
-func aggrMin(table: VTable, groupBy: seq[QVarExp],
+proc aggrMin(table: VTable, groupBy: seq[QVarExp],
              columns: seq[SelectElement],
              groupByVals: Record[NqValue],
              colRef: QVarExp,
@@ -1284,7 +1378,7 @@ func aggrMin(table: VTable, groupBy: seq[QVarExp],
         else:
           result = NqValue(kind: nqkFloat, floatVal: max(result.floatVal, val.floatVal))
 
-func aggrSum(table: VTable, groupBy: seq[QVarExp],
+proc aggrSum(table: VTable, groupBy: seq[QVarExp],
              columns: seq[SelectElement],
              groupByVals: Record[NqValue],
              colRef: QVarExp,
@@ -1305,7 +1399,7 @@ func aggrSum(table: VTable, groupBy: seq[QVarExp],
         else:
           result = result + val
 
-func aggrAvg(table: VTable, groupBy: seq[QVarExp],
+proc aggrAvg(table: VTable, groupBy: seq[QVarExp],
              columns: seq[SelectElement],
              groupByVals: Record[NqValue],
              colRef: QVarExp,
@@ -1430,9 +1524,14 @@ proc `$`*(val: NqValue): string =
     of nqkFloat: result = $val.floatVal
     of nqkString: result = $val.strVal
     of nqkBool: result = if val.boolVal: "TRUE" else: "FALSE"
-    of nqkTime: result = &"{val.microsecond div 3600000000:02}" & ":" &
-                         &"{(val.microsecond mod 3600000000) div 60000000:02}" & ":" &
-                         &"{val.microsecond mod 60000000 div 1000000:02}"
+    of nqkTime:
+      result = &"{val.microsecond div 3600000000:02}" & ":" &
+               &"{(val.microsecond mod 3600000000) div 60000000:02}" & ":" &
+               &"{val.microsecond mod 60000000 div 1000000:02}"
+      if val.precision > 0:
+        let frac = &"{val.microsecond mod 1000000:06}"
+        result &= "."
+        result &= frac.substr(0, val.precision - 1)
     of nqkDate: result = &"{val.year:04}" & "-" &
                          &"{ord(val.month):02}" & "-" &
                          &"{val.day:02}"
