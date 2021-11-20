@@ -53,6 +53,98 @@ proc parseExpression(scanner: Scanner, argCount: var int, before: bool = true): 
 
 proc parseTableExp(scanner: Scanner, argCount: var int): TableExp
 
+proc parseType(scanner: Scanner): TypeDef =
+  let typeTok = nextToken(scanner)
+  var typ: string
+  var precision = 0
+  var scale = 0
+  var size = 0
+  case typeTok.kind
+    of tokIdentifier:
+      typ = typeTok.identifier
+      discard nextToken(scanner)
+    of tokNumeric, tokDecimal:
+      typ = if typeTok.kind == tokNumeric: "NUMERIC" else: "DECIMAL"
+      var t = nextToken(scanner)
+      if t.kind == tokLeftParen:
+        t = nextToken(scanner)
+        if t.kind != tokInt:
+          raiseDbError("number expected")
+        precision = parseInt(t.value)
+        t = nextToken(scanner)
+        if t.kind == tokComma:
+          t = nextToken(scanner)
+          if t.kind != tokInt:
+            raiseDbError("number expected")
+          scale = parseInt(t.value)
+          t = nextToken(scanner)
+        if t.kind != tokRightParen:
+          raiseDbError("\")\" expected")
+        discard nextToken(scanner)
+    of tokChar:
+      typ = "CHAR"
+      var t = nextToken(scanner)
+      if t.kind == tokLeftParen:
+        t = nextToken(scanner)
+        if t.kind != tokInt:
+          raiseDbError("number expected")
+        size = parseInt(t.value)
+        t = nextToken(scanner)
+        if t.kind != tokRightParen:
+          raiseDbError("\")\" expected")
+        discard nextToken(scanner)
+      else:
+        size = 1
+    of tokVarchar:
+      typ = "VARCHAR"
+      var t = nextToken(scanner)
+      if t.kind != tokLeftParen:
+        raiseDbError("\")\" expected")
+      t = nextToken(scanner)
+      if t.kind != tokInt:
+        raiseDbError("number expected")
+      size = parseInt(t.value)
+      t = nextToken(scanner)
+      if t.kind != tokRightParen:
+        raiseDbError("\")\" expected")
+      discard nextToken(scanner)
+    of tokDouble:
+      if nextToken(scanner).kind != tokPrecision:
+        raiseDbError("PRECISION expected")
+      typ = "REAL"
+      discard nextToken(scanner)
+    of tokTime:
+      var t = nextToken(scanner)
+      if t.kind == tokLeftParen:
+        t = nextToken(scanner)
+        if t.kind != tokInt:
+          raiseDbError("number expected")
+        precision = parseInt(t.value)
+        t = nextToken(scanner)
+        if t.kind != tokRightParen:
+          raiseDbError("\")\" expected")
+        discard nextToken(scanner)
+      else:
+        precision = 0
+      typ = "TIME"
+    of tokTimestamp:
+      var t = nextToken(scanner)
+      if t.kind == tokLeftParen:
+        t = nextToken(scanner)
+        if t.kind != tokInt:
+          raiseDbError("number expected")
+        precision = parseInt(t.value)
+        t = nextToken(scanner)
+        if t.kind != tokRightParen:
+          raiseDbError("\")\" expected")
+        discard nextToken(scanner)
+      else:
+        precision = 6
+      typ = "TIMESTAMP"
+    else:
+      raiseDbError("type expected")
+  return TypeDef(typ: typ, size: size, precision: precision, scale: scale)
+
 proc parseOperand(scanner: Scanner, argCount: var int): Expression =
   var t = currentToken(scanner)
   var sign = 0
@@ -76,6 +168,17 @@ proc parseOperand(scanner: Scanner, argCount: var int): Expression =
         discard nextToken(scanner)
       else:
         result = newScalarOpExp("COUNT", parseExpression(scanner, argCount, false))
+      if currentToken(scanner).kind != tokRightParen:
+        raiseDbError("\")\" expected")
+    of tokCast:
+      t = nextToken(scanner)
+      if t.kind != tokLeftParen:
+        raiseDbError("\"(\" expected")
+      t = nextToken(scanner)
+      let exp = parseExpression(scanner, argCount, false)
+      if currentToken(scanner).kind != tokAs:
+        raiseDbError("AS expected")
+      result = newCastExp(exp, parseType(scanner))
       if currentToken(scanner).kind != tokRightParen:
         raiseDbError("\")\" expected")
     of tokIdentifier:
@@ -314,98 +417,10 @@ proc parseColumn(scanner: Scanner): ColumnDef =
   let nameTok = currentToken(scanner)
   if nameTok.kind != tokIdentifier:
     raiseDbError("column name expected")
-  let typeTok = nextToken(scanner)
-  var typ: string
-  var precision = 0
-  var scale = 0
-  var size = 0
   var defValue: Expression = nil
-  case typeTok.kind
-    of tokIdentifier:
-      typ = typeTok.identifier
-      discard nextToken(scanner)
-    of tokNumeric, tokDecimal:
-      typ = if typeTok.kind == tokNumeric: "NUMERIC" else: "DECIMAL"
-      var t = nextToken(scanner)
-      if t.kind == tokLeftParen:
-        t = nextToken(scanner)
-        if t.kind != tokInt:
-          raiseDbError("number expected")
-        precision = parseInt(t.value)
-        t = nextToken(scanner)
-        if t.kind == tokComma:
-          t = nextToken(scanner)
-          if t.kind != tokInt:
-            raiseDbError("number expected")
-          scale = parseInt(t.value)
-          t = nextToken(scanner)
-        if t.kind != tokRightParen:
-          raiseDbError("\")\" expected")
-        discard nextToken(scanner)
-    of tokChar:
-      typ = "CHAR"
-      var t = nextToken(scanner)
-      if t.kind == tokLeftParen:
-        t = nextToken(scanner)
-        if t.kind != tokInt:
-          raiseDbError("number expected")
-        size = parseInt(t.value)
-        t = nextToken(scanner)
-        if t.kind != tokRightParen:
-          raiseDbError("\")\" expected")
-        discard nextToken(scanner)
-      else:
-        size = 1
-    of tokVarchar:
-      typ = "VARCHAR"
-      var t = nextToken(scanner)
-      if t.kind != tokLeftParen:
-        raiseDbError("\")\" expected")
-      t = nextToken(scanner)
-      if t.kind != tokInt:
-        raiseDbError("number expected")
-      size = parseInt(t.value)
-      t = nextToken(scanner)
-      if t.kind != tokRightParen:
-        raiseDbError("\")\" expected")
-      discard nextToken(scanner)
-    of tokDouble:
-      if nextToken(scanner).kind != tokPrecision:
-        raiseDbError("PRECISION expected")
-      typ = "REAL"
-      discard nextToken(scanner)
-    of tokTime:
-      var t = nextToken(scanner)
-      if t.kind == tokLeftParen:
-        t = nextToken(scanner)
-        if t.kind != tokInt:
-          raiseDbError("number expected")
-        precision = parseInt(t.value)
-        t = nextToken(scanner)
-        if t.kind != tokRightParen:
-          raiseDbError("\")\" expected")
-        discard nextToken(scanner)
-      else:
-        precision = 0
-      typ = "TIME"
-    of tokTimestamp:
-      var t = nextToken(scanner)
-      if t.kind == tokLeftParen:
-        t = nextToken(scanner)
-        if t.kind != tokInt:
-          raiseDbError("number expected")
-        precision = parseInt(t.value)
-        t = nextToken(scanner)
-        if t.kind != tokRightParen:
-          raiseDbError("\")\" expected")
-        discard nextToken(scanner)
-      else:
-        precision = 6
-      typ = "TIMESTAMP"
-    else:
-      raiseDbError("type expected")
   var pk = false;
   var notNull = false;
+  let typdef = parseType(scanner)
   var t = currentToken(scanner)
   if t.kind == tokDefault:
     t = nextToken(scanner)
@@ -425,8 +440,9 @@ proc parseColumn(scanner: Scanner): ColumnDef =
       notNull = true
     else: discard
     t = nextToken(scanner)
-  return ColumnDef(name: nameTok.identifier, typ: typ, 
-                   size: size, precision: precision, scale: scale,
+  return ColumnDef(name: nameTok.identifier, typ: typdef.typ, 
+                   size: typdef.size, precision: typdef.precision,
+                   scale: typdef.scale,
                    notNull: notNull, defaultValue: defValue,
                    primaryKey: pk)
 

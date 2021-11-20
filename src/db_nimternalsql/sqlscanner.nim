@@ -4,8 +4,8 @@ import nqcommon
 type
   TokenKind* = enum
     tokAll, tokAnd, tokAny, tokAs, tokAsc, tokBy, tokChar, tokDefault, tokDrop,
-    tokVarchar, tokNumeric, tokCase, tokWhen, tokThen, tokElse, tokEnd,
-    tokCommit, tokRollback, tokCreate, tokCross, tokCount, tokDecimal,
+    tokVarchar, tokNumeric, tokCase, tokCast, tokWhen, tokThen, tokElse,
+    tokEnd, tokCommit, tokRollback, tokCreate, tokCross, tokCount, tokDecimal,
     tokDelete, tokDesc, tokDistinct, tokDouble, tokTime, tokTimestamp,
     tokPrecision, tokExists,
     tokFrom, tokGroup, tokIf, tokInsert, tokUpdate, tokSet, tokIn, tokIs,
@@ -96,6 +96,8 @@ proc toToken(s: string): Token =
       return Token(kind: tokBy)
     of "CASE":
       return Token(kind: tokCase)
+    of "CAST":
+      return Token(kind: tokCast)
     of "COMMIT":
       return Token(kind: tokCommit)
     of "COUNT":

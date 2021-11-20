@@ -183,7 +183,7 @@ func hash*(v: NqValue): Hash =
 
 func toNum*(v: NqValue): NqValue =
   case v.kind
-    of nqkInt, nqkNumeric, nqkFloat:
+    of nqkInt, nqkNumeric, nqkFloat, nqkBigint:
       result = v
     of nqkString:
       try:
@@ -456,8 +456,8 @@ func toNqValue*(v: MatValue, colDef: ColumnDef): NqValue =
                             precision: colDef.precision)
     of kDate: return NqValue(kind: nqkDate, year: v.year, month: Month(v.month), day: v.day)
 
-func typeKind(def: ColumnDef): MatValueKind =
-  case toUpperAscii(def.typ):
+func typeKind(typ: string): MatValueKind =
+  case toUpperAscii(typ):
     of "INTEGER", "INT":
       return kInt
     of "NUMERIC", "DECIMAL":
@@ -476,7 +476,10 @@ func typeKind(def: ColumnDef): MatValueKind =
     of "DATE":
       return kDate
     else:
-      raiseDbError("Unsupported type definition, type: " & def.typ)
+      raiseDbError("Unsupported type definition, type: " & typ)
+
+func typeKind(def: ColumnDef): MatValueKind =
+  result = typeKind(def.typ)
 
 proc checkType*(def: ColumnDef) =
   discard typeKind(def)
@@ -490,6 +493,14 @@ func setScale(v: NqValue, scale: Natural): NqValue =
     let incr = if result.numericVal mod 10 < 5: 0 else: 1
     result.numericVal = result.numericVal div 10 + incr
     result.scale -= 1
+
+proc withPrecision(tsMicroseconds: int64, precision: int): int64 =
+  if precision < 6:
+    var dt = baseDate + initDuration(nanoseconds = tsMicroseconds * 1000)
+    let frac = dt.nanosecond div 1000
+    result = tsMicroseconds - frac + precisionMicroseconds(frac, precision)
+  else:
+    result = tsMicroseconds
 
 proc toMatValue*(v: NqValue, colDef: ColumnDef): MatValue =
   ## Converts a NqValue into a MatValue.
@@ -583,15 +594,8 @@ proc toMatValue*(v: NqValue, colDef: ColumnDef): MatValue =
         of nqkTimestamp:
           if colDef.typ != "TIMESTAMP":
             raiseDbError("invalid timestamp value")
-          if colDef.precision < 6:
-            var dt = baseDate + initDuration(nanoseconds = v.microsecond * 1000)
-            let frac = dt.nanosecond div 1000
-            result = MatValue(kind: kTime,
-                              microsecond: v.microsecond - frac +
-                                           precisionMicroseconds(frac, colDef.precision))
-          else:
-            result = MatValue(kind: kTime,
-                              microsecond: v.microsecond)
+          result = MatValue(kind: kTime,
+                            microsecond: withPrecision(v.microsecond, colDef.precision))
         of nqkString:
           var ms = 0
           if colDef.typ == "TIMESTAMP":
@@ -943,6 +947,8 @@ method eval*(exp: ScalarOpExp, varResolver: VarResolver,
       let arg1 = eval(exp.args[1], varResolver, aggrResolver)
       if arg1.kind == nqkNull:
         return NqValue(kind: nqkNull)
+      if arg0.kind != nqkString or arg1.kind != nqkString:
+        raiseDbError("arguments of || must be of a character type")
       result = NqValue(kind: nqkString,
           strVal: arg0.strVal & arg1.strVal)
     of "LOWER":
@@ -1029,6 +1035,85 @@ method eval*(exp: CaseExp, varResolver: VarResolver,
         return eval(exp.whens[i].exp, varResolver, aggrResolver)
   result = if exp.elseExp != nil: eval(exp.elseExp, varResolver, aggrResolver)
            else: NqValue(kind: nqkNull)
+
+proc `$`*(val: NqValue): string =
+  case val.kind
+    of nqkInt:
+      result = $val.intVal
+    of nqkNumeric:
+      result = $val.numericVal
+      if val.scale > 0:
+        result = result[0 .. result.len - 1 - val.scale] & "." &
+            result[result.len - val.scale .. ^1]
+    of nqkBigint:
+      result = $val.bigintVal
+    of nqkFloat: result = $val.floatVal
+    of nqkString: result = $val.strVal
+    of nqkBool: result = if val.boolVal: "TRUE" else: "FALSE"
+    of nqkTime:
+      result = &"{val.microsecond div 3600000000:02}" & ":" &
+               &"{(val.microsecond mod 3600000000) div 60000000:02}" & ":" &
+               &"{val.microsecond mod 60000000 div 1000000:02}"
+      if val.precision > 0:
+        let frac = &"{val.microsecond mod 1000000:06}"
+        result &= "."
+        result &= frac.substr(0, val.precision - 1)
+    of nqkDate: result = &"{val.year:04}" & "-" &
+                         &"{ord(val.month):02}" & "-" &
+                         &"{val.day:02}"
+    of nqkTimestamp:
+      var dt = baseDate + initDuration(nanoseconds = val.microsecond * 1000)
+      result = dt.format("yyyy-MM-dd HH:mm:ss")
+      if val.precision > 0:
+        let frac = &"{dt.nanosecond mod 1000000000:06}"
+        result &= "."
+        result &= frac.substr(0, val.precision - 1)
+    of nqkNull: result = ""
+    of nqkList: raiseDbError("conversion of list to string not supported")
+
+method eval*(exp: CastExp, varResolver: VarResolver,
+    aggrResolver: AggrResolver): NqValue =
+  let arg = eval(exp.exp, varResolver, aggrResolver)
+  var coldef: ColumnDef
+  case typeKind(exp.typeDef.typ)
+    of kInt:
+      let v = toInt64(arg)
+      if v > high(int32) or v < low(int32):
+        raiseDBError("value out of range for int")
+      result = NqValue(kind: nqkInt, intVal: int32(v))
+    of kNumeric:
+      result = toNumeric(arg)
+
+      # Check if result is compatible with target type
+      coldef.typ = exp.typeDef.typ
+      coldef.precision = exp.typeDef.precision
+      coldef.scale = exp.typeDef.scale
+      discard toMatValue(result, coldef)
+    of kFloat:
+      result = NqValue(kind: nqkFloat, floatVal: toFloat(arg))
+    of kString:
+      result = NqValue(kind: nqkString, strVal: $arg)
+      coldef.typ = exp.typeDef.typ
+      coldef.size = exp.typeDef.size
+      discard toMatValue(result, coldef)
+    of kBool:
+      result = NqValue(kind: nqkBool, boolVal: toBool(arg))
+    of kNull:
+      raiseDbError("internal error")
+    of kBigint:
+      result = NqValue(kind: nqkBigint, bigintVal: toInt64(arg))
+    of kTime:
+      if exp.typeDef.typ == "TIMESTAMP":
+        let t = toTimestamp($arg)
+        result = NqValue(kind: nqkTimestamp,
+                         microsecond: withPrecision(t.microsecond, exp.typeDef.precision),
+                         precision: exp.typeDef.precision)
+      else:
+        let t = toTime($arg)
+        result = NqValue(kind: nqkTime,
+                         microsecond: precisionMicroseconds(t.microsecond, exp.typeDef.precision),
+                         precision: exp.typeDef.precision)
+    of kDate: result = toDate($arg)
 
 method columnCount(table: BaseTableRef): Natural =
   result = HashBaseTable(table.table).def.len
@@ -1509,41 +1594,6 @@ func isKeyUpdate*(table: BaseTable, assignments: seq[ColumnAssignment]): bool =
       if a.col == k:
         return true
   result = false
-
-proc `$`*(val: NqValue): string =
-  case val.kind
-    of nqkInt:
-      result = $val.intVal
-    of nqkNumeric:
-      result = $val.numericVal
-      if val.scale > 0:
-        result = result[0 .. result.len - 1 - val.scale] & "." &
-            result[result.len - val.scale .. ^1]
-    of nqkBigint:
-      result = $val.bigintVal
-    of nqkFloat: result = $val.floatVal
-    of nqkString: result = $val.strVal
-    of nqkBool: result = if val.boolVal: "TRUE" else: "FALSE"
-    of nqkTime:
-      result = &"{val.microsecond div 3600000000:02}" & ":" &
-               &"{(val.microsecond mod 3600000000) div 60000000:02}" & ":" &
-               &"{val.microsecond mod 60000000 div 1000000:02}"
-      if val.precision > 0:
-        let frac = &"{val.microsecond mod 1000000:06}"
-        result &= "."
-        result &= frac.substr(0, val.precision - 1)
-    of nqkDate: result = &"{val.year:04}" & "-" &
-                         &"{ord(val.month):02}" & "-" &
-                         &"{val.day:02}"
-    of nqkTimestamp:
-      var dt = baseDate + initDuration(nanoseconds = val.microsecond * 1000)
-      result = dt.format("yyyy-MM-dd HH:mm:ss")
-      if val.precision > 0:
-        let frac = &"{dt.nanosecond mod 1000000000:06}"
-        result &= "."
-        result &= frac.substr(0, val.precision - 1)
-    of nqkNull: result = ""
-    of nqkList: raiseDbError("conversion of list to string not supported")
 
 method `$`(vtable: VTable): string = nil
 

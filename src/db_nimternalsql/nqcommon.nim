@@ -19,6 +19,11 @@ type
     notNull*: bool
     defaultValue*: Expression
     primaryKey*: bool # unused in BaseTable
+  TypeDef* = object
+    typ*: string
+    size*: Natural
+    precision*: Natural
+    scale*: Natural    
 
   Expression* = ref object of RootObj
   ScalarLit* = ref object of Expression
@@ -39,6 +44,9 @@ type
     exp*: Expression
     whens*: seq[tuple[cond: Expression, exp: Expression]]
     elseExp*: Expression
+  CastExp* {.acyclic.} = ref object of Expression
+    exp*: Expression
+    typeDef*: TypeDef
   SelectElement* {.acyclic.} = object
     colName*: string
     exp*: Expression
@@ -93,6 +101,9 @@ func newCaseExp*(exp: Expression,
                  whens: seq[tuple[cond: Expression, exp: Expression]],
                  elseExp: Expression): Expression =
   result = CaseExp(exp: exp, whens: whens, elseExp: elseExp)
+
+func newCastExp*(exp: Expression, typ: TypeDef): Expression =
+  result = CastExp(exp: exp, typedef: typ)
 
 method `$`*(exp: Expression): string {.base.} = nil
 
