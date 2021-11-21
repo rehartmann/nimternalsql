@@ -11,6 +11,7 @@ import math
 import times
 import strformat
 import algorithm
+import unicode
 import nqcommon
 import like
 
@@ -599,7 +600,6 @@ proc toMatValue*(v: NqValue, colDef: ColumnDef): MatValue =
         of nqkString:
           var ms = 0
           if colDef.typ == "TIMESTAMP":
-            let dt = parse(v.strVal.substr(0, 18), "yyyy-MM-dd HH:mm:ss", utc())
             if v.strVal.len > 19 and v.strVal[19] == '.':
               let frac = v.strVal.substr(20, 19 + colDef.precision)
               ms = frac.parseInt
@@ -961,6 +961,10 @@ method eval*(exp: ScalarOpExp, varResolver: VarResolver,
         return NqValue(kind: nqkNull)
       result = NqValue(kind: nqkBool,
           boolVal: matchesLike(arg0.strVal, arg1.strVal))
+    of "OCTET_LENGTH":
+      result = NqValue(kind: nqkInt, intVal: int32(arg0.strVal.len))
+    of "CHAR_LENGTH", "LENGTH":
+      result = NqValue(kind: nqkInt, intVal: int32(runeLen(arg0.strVal)))
     else:
       raiseDbError("Unknown operator: " & exp.opName)
 
