@@ -12,7 +12,7 @@ type
     tokFrom, tokGroup, tokIf, tokInsert, tokUpdate, tokSet, tokIn, tokIs,
     tokInto, tokJoin, tokKey, tokLike, tokNot, tokOn, tokOr, tokOrder,
     tokPrimary, tokSelect, tokTable, tokUnion, tokValues, tokWhere,
-    tokLeft, tokInner, tokOuter,
+    tokLeft, tokInner, tokOuter, tokPosition,
     tokAsterisk, tokDiv, tokPlus, tokNull, tokMinus, tokRightParen,
     tokLeftParen, tokComma, tokDot, tokEq, tokNeq, tokLt, tokLe, tokGt, tokGe,
     tokConcat, tokIdentifier, tokString, tokInt, tokRat, tokTrue, tokFalse,
@@ -181,6 +181,8 @@ proc toToken(s: string): Token =
       return Token(kind: tokOrder)
     of "OUTER":
       return Token(kind: tokOuter)
+    of "POSITION":
+      return Token(kind: tokPosition)
     of "PRIMARY":
       return Token(kind: tokPrimary)
     of "PRECISION":

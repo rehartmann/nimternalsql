@@ -145,6 +145,8 @@ proc parseType(scanner: Scanner): TypeDef =
       raiseDbError("type expected")
   return TypeDef(typ: typ, size: size, precision: precision, scale: scale)
 
+proc parseSum(scanner: Scanner, argCount: var int): Expression
+
 proc parseOperand(scanner: Scanner, argCount: var int): Expression =
   var t = currentToken(scanner)
   var sign = 0
@@ -183,9 +185,16 @@ proc parseOperand(scanner: Scanner, argCount: var int): Expression =
     of tokIdentifier:
       let t2 = nextToken(scanner)
       if t2.kind == tokLeftParen:
-        result = newScalarOpExp(t.identifier, parseExpression(scanner, argCount))
-        if currentToken(scanner).kind != tokRightParen:
-          raiseDbError("\")\" expected")
+        let opname = t.identifier
+        var exps: seq[Expression]
+        while true:
+          exps.add(parseExpression(scanner, argCount))
+          t = currentToken(scanner)
+          if t.kind == tokRightParen:
+            break
+          if t.kind != tokComma:
+            raiseDbError("\")\" or comma expected")
+        result = newScalarOpExp(opname, exps)
       elif t2.kind == tokDot:
         let colToken = nextToken(scanner)
         if colToken.kind != tokIdentifier:
@@ -276,6 +285,18 @@ proc parseOperand(scanner: Scanner, argCount: var int): Expression =
             result = newTrimExp(parseExpression(scanner, argCount), true, true, exp)
           else:
             result = newTrimExp(exp, true, true)
+      if currentToken(scanner).kind != tokRightParen:
+        raiseDbError(") expected")
+    of tokPosition:
+      t = nextToken(scanner)
+      if t.kind != tokLeftParen:
+        raiseDbError("\"(\" expected")
+      discard nextToken(scanner)
+      let subs = parseSum(scanner, argCount)
+      t = currentToken(scanner)
+      if t.kind != tokIn:
+        raiseDbError("IN expected, found " & $t)
+      result = newScalarOpExp("POSITION", [subs, parseExpression(scanner, argCount)])
       if currentToken(scanner).kind != tokRightParen:
         raiseDbError(") expected")
     else:

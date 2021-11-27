@@ -23,6 +23,16 @@ doAssert res[0][1] == "f"
 doAssert res[0][2] == "Don't "
 doAssert res[0][3] == "YoYOyo"
 
+assert getValue(db, sql"SELECT SUBSTR(d, 2, 2) FROM tst") == "oY"
+assert getValue(db, sql"SELECT SUBSTR(d, ?) FROM tst", "2") == "oYOyo"
+assert getValue(db, sql"SELECT SUBSTR(d, -1, 1) FROM tst") == "o"
+assert getValue(db, sql"SELECT SUBSTR(d, -2 * 1) FROM tst") == "yo"
+
+assert getValue(db, sql"SELECT POSITION('Oy' IN d) FROM tst") == "4"
+assert getValue(db, sql"SELECT POSITION('' IN d) FROM tst") == "1"
+assert getValue(db, sql"SELECT POSITION('Bab' IN d) FROM tst") == "0"
+assert getValue(db, sql"SELECT POSITION('h' IN 'Äh') FROM tst") == "2"
+
 res = @[]
 for r in instantRows(db, sql"SELECT * FROM tst WHERE b IN (?)", "f"):
   res.add(@[r[0], r[1], r[2], r[3]])

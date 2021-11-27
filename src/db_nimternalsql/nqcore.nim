@@ -812,6 +812,12 @@ func evalCmpAllOrAny(arg0: NqValue, exp: ScalarOpExp,
       if cmp(arg0, row.columnValueAt(0)):
         return NqValue(kind: nqkBool, boolVal: true)
 
+proc toInt(val: NqValue): int =
+  let v = toInt64(val)
+  if v > int.high or v < int.low:
+    raiseDbError("value out of range")
+  result = int(v)
+
 method eval*(exp: ScalarOpExp, varResolver: VarResolver,
     aggrResolver: AggrResolver): NqValue =
   case exp.opName:
@@ -965,6 +971,41 @@ method eval*(exp: ScalarOpExp, varResolver: VarResolver,
       result = NqValue(kind: nqkInt, intVal: int32(arg0.strVal.len))
     of "CHAR_LENGTH", "LENGTH":
       result = NqValue(kind: nqkInt, intVal: int32(runeLen(arg0.strVal)))
+    of "SUBSTR":
+      if exp.args.len < 2:
+        raiseDbError("missing SUBSTR argument(s)")
+      if exp.args.len > 3:
+        raiseDbError("too many SUBSTR arguments")
+      if arg0.kind != nqkString:
+        raiseDbError("Character argument expected")
+      var pos = toInt(eval(exp.args[1], varResolver, aggrResolver))
+      if pos > 0:
+        pos -= 1
+      if exp.args.len == 2:
+        result = NqValue(kind: nqkString, strVal: runeSubStr(arg0.strVal, pos))
+      else:
+        let len = toInt(eval(exp.args[2], varResolver, aggrResolver))
+        # Workaround for a bug in unicode.runeSubStr
+        if pos < 0 and len >= -pos:
+          result = NqValue(kind: nqkString,
+                           strVal: runeSubStr(arg0.strVal, pos))
+        else:
+          result = NqValue(kind: nqkString,
+                           strVal: runeSubStr(arg0.strVal, pos, len))
+    of "POSITION":
+      if exp.args.len != 2:
+        raiseDbError("Invalid number of arguments")
+      if arg0.kind != nqkString:
+        raiseDbError("Character argument expected")
+      let str = eval(exp.args[1], varResolver, aggrResolver)
+      if str.kind != nqkString:
+        raiseDbError("Character argument expected")
+      let pos = find(str.strVal, arg0.strVal)
+      if pos < 0:
+        result = NqValue(kind: nqkInt, intVal: 0)
+      else:
+        result = NqValue(kind: nqkInt,
+                         intVal: int32(runeLen(str.strVal[0..<pos]) + 1))
     else:
       raiseDbError("Unknown operator: " & exp.opName)
 
