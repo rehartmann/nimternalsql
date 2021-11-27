@@ -7,6 +7,7 @@ type
     tokVarchar, tokNumeric, tokCase, tokCast, tokWhen, tokThen, tokElse,
     tokEnd, tokCommit, tokRollback, tokCreate, tokCross, tokCount, tokDecimal,
     tokDelete, tokDesc, tokDistinct, tokDouble, tokTime, tokTimestamp,
+    tokTrim, tokLeading, tokTrailing, tokBoth,
     tokPrecision, tokExists,
     tokFrom, tokGroup, tokIf, tokInsert, tokUpdate, tokSet, tokIn, tokIs,
     tokInto, tokJoin, tokKey, tokLike, tokNot, tokOn, tokOr, tokOrder,
@@ -92,6 +93,8 @@ proc toToken(s: string): Token =
       return Token(kind: tokAs)
     of "ASC":
       return Token(kind: tokAsc)
+    of "BOTH":
+      return Token(kind: tokBoth)
     of "BY":
       return Token(kind: tokBy)
     of "CASE":
@@ -158,6 +161,8 @@ proc toToken(s: string): Token =
       return Token(kind: tokJoin)
     of "KEY":
       return Token(kind: tokKey)
+    of "LEADING":
+      return Token(kind: tokLeading)
     of "LEFT":
       return Token(kind: tokLeft)
     of "LIKE":
@@ -182,6 +187,10 @@ proc toToken(s: string): Token =
       return Token(kind: tokPrecision)
     of "TABLE":
       return Token(kind: tokTable)
+    of "TRAILING":
+      return Token(kind: tokTrailing)
+    of "TRIM":
+      return Token(kind: tokTrim)
     of "ROLLBACK":
       return Token(kind: tokRollback)
     of "SELECT":

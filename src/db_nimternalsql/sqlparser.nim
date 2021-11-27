@@ -174,8 +174,7 @@ proc parseOperand(scanner: Scanner, argCount: var int): Expression =
       t = nextToken(scanner)
       if t.kind != tokLeftParen:
         raiseDbError("\"(\" expected")
-      t = nextToken(scanner)
-      let exp = parseExpression(scanner, argCount, false)
+      let exp = parseExpression(scanner, argCount, true)
       if currentToken(scanner).kind != tokAs:
         raiseDbError("AS expected")
       result = newCastExp(exp, parseType(scanner))
@@ -241,6 +240,44 @@ proc parseOperand(scanner: Scanner, argCount: var int): Expression =
       if currentToken(scanner).kind != tokEnd:
         raiseDbError("END expected")
       result = newCaseExp(exp, whens, elseExp)
+    of tokTrim:
+      var exp: Expression
+      t = nextToken(scanner)
+      if t.kind != tokLeftParen:
+        raiseDbError("\"(\" expected")
+      t = nextToken(scanner)
+      case t.kind:
+        of tokLeading, tokTrailing, tokBoth:
+          var leading: bool
+          var trailing: bool
+          case t.kind:
+            of tokLeading:
+              leading = true
+              trailing = false
+            of tokTrailing:
+              leading = false
+              trailing = true
+            of tokBoth:
+              leading = true
+              trailing = true
+            else:
+              discard # Cannot be reached
+          t = nextToken(scanner)
+          if t.kind == tokFrom:
+            result = newTrimExp(parseExpression(scanner, argCount), leading, trailing)
+          else:
+            exp = parseExpression(scanner, argCount, false)
+            if currentToken(scanner).kind != tokFrom:
+              raiseDbError("FROM expected")
+            result = newTrimExp(parseExpression(scanner, argCount), leading, trailing, exp)
+        else:
+          exp = parseExpression(scanner, argCount, false)
+          if currentToken(scanner).kind == tokFrom:
+            result = newTrimExp(parseExpression(scanner, argCount), true, true, exp)
+          else:
+            result = newTrimExp(exp, true, true)
+      if currentToken(scanner).kind != tokRightParen:
+        raiseDbError(") expected")
     else:
       raiseDbError("unsupported primitive: " & $t.kind)
   discard nextToken(scanner) 

@@ -1040,6 +1040,19 @@ method eval*(exp: CaseExp, varResolver: VarResolver,
   result = if exp.elseExp != nil: eval(exp.elseExp, varResolver, aggrResolver)
            else: NqValue(kind: nqkNull)
 
+method eval*(exp: TrimExp, varResolver: VarResolver,
+    aggrResolver: AggrResolver): NqValue =
+  let src = eval(exp.src, varResolver, aggrResolver)
+  if exp.char != nil:
+    let ch = eval(exp.char, varResolver, aggrResolver)
+    if ch.kind != nqkString or ch.strVal.runeLen != 1:
+      raiseDbError("single character expected")
+    result = NqValue(kind: nqkString,
+                     strVal: unicode.strip(src.strVal, exp.leading, exp.trailing, [runeAt(ch.strVal, 0)]))
+  else:
+    result = NqValue(kind: nqkString,
+                     strVal: unicode.strip(src.strVal, exp.leading, exp.trailing))
+
 proc `$`*(val: NqValue): string =
   case val.kind
     of nqkInt:
