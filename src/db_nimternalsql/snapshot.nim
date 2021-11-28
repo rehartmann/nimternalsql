@@ -190,7 +190,7 @@ proc readValue*(f: File): MatValue =
       if readBuffer(f, addr(len), sizeof(int32)) < sizeof(int32):
         raiseDbError(readErrorMissingData)
       var strVal = newString(len)
-      if readChars(f, strVal, 0, len) < len:
+      if readChars(f, strVal) < len:
         raiseDbError(readErrorMissingData)
       result = MatValue(kind: kString, strVal: strVal)
     of kBool:
@@ -226,7 +226,7 @@ proc readName*(f: File): string =
   if readBuffer(f, addr(intBuf), sizeof(int32)) < sizeof(int32):
     raiseDbError(readErrorMissingData)
   result = newString(intBuf)
-  if readChars(f, result, 0, intBuf) < intBuf:
+  if readChars(f, result) < intBuf:
     raiseDbError(readErrorMissingData)
 
 proc readTableDef*(f: File, table: BaseTable) =
@@ -250,7 +250,7 @@ proc readTableDef*(f: File, table: BaseTable) =
     if readBuffer(f, addr(intBuf), sizeof(int32)) < sizeof(int32):
       raiseDbError(readErrorMissingData)
     colDef.typ = newString(intBuf)
-    if readChars(f, colDef.typ, 0, intBuf) < intBuf:
+    if readChars(f, colDef.typ) < intBuf:
       raiseDbError(readErrorMissingData)
 
     if readBuffer(f, addr(intBuf), sizeof(int32)) < sizeof(int32):

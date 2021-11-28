@@ -286,7 +286,7 @@ proc rollback*(tx: Tx, db: Database) =
 
 proc replayLog(f: File, db: Database) =
   var c: array[0..0, char]
-  while readChars(f, c, 0, 1) == 1:
+  while readChars(f, c) == 1:
     case c[0]:
       of 'I':
         let tableName = readName(f)
