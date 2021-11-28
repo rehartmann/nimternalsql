@@ -183,28 +183,34 @@ proc parseOperand(scanner: Scanner, argCount: var int): Expression =
       if currentToken(scanner).kind != tokRightParen:
         raiseDbError("\")\" expected")
     of tokIdentifier:
-      let t2 = nextToken(scanner)
-      if t2.kind == tokLeftParen:
-        let opname = t.identifier
-        var exps: seq[Expression]
-        while true:
-          exps.add(parseExpression(scanner, argCount))
-          t = currentToken(scanner)
-          if t.kind == tokRightParen:
-            break
-          if t.kind != tokComma:
-            raiseDbError("\")\" or comma expected")
-        result = newScalarOpExp(opname, exps)
-      elif t2.kind == tokDot:
-        let colToken = nextToken(scanner)
-        if colToken.kind != tokIdentifier:
-          raiseDbError("identifier expected")
-        result = newQVarExp(colToken.identifier, t.identifier)
+      if t.identifier == "DATE":
+        t = nextToken(scanner)
+        if t.kind != tokString or not isValidDate(t.value):
+          raiseDbError("invalid date")
+        result = newDateLit(t.value)
       else:
-        result = newQVarExp(t.identifier)
-        if sign == -1:
-          result = newScalarOpExp("-", result)
-        return result
+        let t2 = nextToken(scanner)
+        if t2.kind == tokLeftParen:
+          let opname = t.identifier
+          var exps: seq[Expression]
+          while true:
+            exps.add(parseExpression(scanner, argCount))
+            t = currentToken(scanner)
+            if t.kind == tokRightParen:
+              break
+            if t.kind != tokComma:
+              raiseDbError("\")\" or comma expected")
+          result = newScalarOpExp(opname, exps)
+        elif t2.kind == tokDot:
+          let colToken = nextToken(scanner)
+          if colToken.kind != tokIdentifier:
+            raiseDbError("identifier expected")
+          result = newQVarExp(colToken.identifier, t.identifier)
+        else:
+          result = newQVarExp(t.identifier)
+          if sign == -1:
+            result = newScalarOpExp("-", result)
+          return result
     of tokLeftParen:
       if nextToken(scanner).kind == tokSelect:
         result = parseTableExp(scanner, argCount)
@@ -228,6 +234,16 @@ proc parseOperand(scanner: Scanner, argCount: var int): Expression =
       result = newBoolLit(false)
     of tokNull:
       result = newNullLit()
+    of tokTime:
+      t = nextToken(scanner)
+      if t.kind != tokString or not isValidTime(t.value):
+        raiseDbError("invalid time")
+      result = newTimeLit(t.value)
+    of tokTimestamp:
+      t = nextToken(scanner)
+      if t.kind != tokString or not isValidTimestamp(t.value):
+        raiseDbError("invalid timestamp")
+      result = newTimestampLit(t.value)
     of tokCase:
       var exp, elseExp: Expression
       var whens: seq[tuple[cond: Expression, exp: Expression]]

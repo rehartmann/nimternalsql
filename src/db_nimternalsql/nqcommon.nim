@@ -31,6 +31,9 @@ type
   StringLit* {.final.} = ref object of ScalarLit
   NumericLit* {.final.} = ref object of ScalarLit
   BoolLit* {.final.} = ref object of ScalarLit
+  TimeLit* {.final.} = ref object of ScalarLit
+  TimestampLit* {.final.} = ref object of ScalarLit
+  DateLit* {.final.} = ref object of ScalarLit
   NullLit* {.final.} = ref object of Expression
   ScalarOpExp* {.acyclic.} = ref object of Expression
     opName*: string
@@ -86,6 +89,15 @@ func newStringLit*(v: string): Expression =
 
 func newNumericLit*(v: string): Expression =
   result = NumericLit(val: v)
+
+func newTimeLit*(v: string): Expression =
+  result = TimeLit(val: v)
+
+func newTimestampLit*(v: string): Expression =
+  result = TimestampLit(val: v)
+
+func newDateLit*(v: string): Expression =
+  result = DateLit(val: v)
 
 func newBoolLit*(v: bool): Expression =
   result = BoolLit(val: if v: "TRUE" else: "FALSE")

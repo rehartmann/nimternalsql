@@ -71,4 +71,23 @@ doAssert getValue(db, sql"""SELECT ts FROM dt2""") == "1993-06-13 20:21:22.12"
 
 doAssert getValue(db, sql"""SELECT ts FROM dt2 WHERE ts = '1993-06-13 20:21:22.12'""") == "1993-06-13 20:21:22.12"
 
+try:
+  exec(db, sql"INSERT INTO dt (n, t) VALUES(3, TIME '05:06:7')")
+  raiseAssert("invalid time literal accepted")
+except:
+  discard
+try:
+  exec(db, sql"INSERT INTO dt (n, t) VALUES(3, TIME '05:06:07.f')")
+  raiseAssert("invalid time literal accepted")
+except:
+  discard
+exec(db, sql"""INSERT INTO dt (n, t, ts, d)
+               VALUES(3, TIME '05:06:08', TIMESTAMP '2000-01-02 05:04:06.123456',
+                      DATE '2003-02-01')""")
+
+let row = getRow(db, sql"SELECT t, ts, d FROM dt WHERE n = 3")
+doAssert row[0] == "05:06:08"
+doAssert row[1] == "2000-01-02 05:04:06.123456"
+doAssert row[2] == "2003-02-01"
+
 close(db)

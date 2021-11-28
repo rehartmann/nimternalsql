@@ -723,6 +723,18 @@ method eval*(exp: NumericLit, varResolver: VarResolver,
   else:
     result = NqValue(kind: nqkNumeric, numericVal: parseInt(exp.val))
 
+method eval*(exp: TimeLit, varResolver: VarResolver,
+    aggrResolver: AggrResolver): NqValue =
+  result = toTime(exp.val)
+
+method eval*(exp: TimestampLit, varResolver: VarResolver,
+    aggrResolver: AggrResolver): NqValue =
+  result = toTimestamp(exp.val)
+
+method eval*(exp: DateLit, varResolver: VarResolver,
+    aggrResolver: AggrResolver): NqValue =
+  result = toDate(exp.val)
+
 method eval*(exp: BoolLit, varResolver: VarResolver,
     aggrResolver: AggrResolver): NqValue =
   result = NqValue(kind: nqkBool, boolVal: if exp.val ==

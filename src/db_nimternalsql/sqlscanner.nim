@@ -1,5 +1,6 @@
 import strutils
 import nqcommon
+import times
 
 type
   TokenKind* = enum
@@ -319,3 +320,40 @@ proc readNextToken(s: Scanner): Token =
 proc nextToken*(s: Scanner): Token =
   s.current = readNextToken(s)
   result = s.current
+
+proc isValidTime*(str: string): bool =
+  if str.len > 15:
+    return false
+  try:
+    discard parse(str.substr(0, 7), "hh:mm:ss")
+  except:
+    return false
+  if str.len > 8:
+    if str[8] != '.':
+      return false
+    for i in 9..<str.len:
+      if not isDigit(str[i]):
+        return false
+  result = true
+
+proc isValidTimestamp*(str: string): bool =
+  if str.len > 26:
+    return false
+  try:
+    discard parse(str.substr(0, 18), "yyyy-MM-dd HH:mm:ss", utc())
+  except:
+    return false
+  if str.len > 19:
+    if str[19] != '.':
+      return false
+    for i in 20..<str.len:
+      if not isDigit(str[i]):
+        return false
+  result = true
+  
+proc isValidDate*(str: string): bool =
+  try:
+    discard parse(str, "yyyy-MM-dd")
+    result = true
+  except:
+    result = false
