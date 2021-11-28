@@ -1,28 +1,37 @@
 import osproc
 
-discard execCmd("nim c -r binary.nim")
-discard execCmd("nim c -r boolean.nim")
-discard execCmd("nim c -r char.nim")
-discard execCmd("nim c -r commit.nim")
-discard execCmd("nim c -r default.nim")
-discard execCmd("nim c -r distinct.nim")
-discard execCmd("nim c -r expjoin.nim")
-discard execCmd("nim c -r group.nim")
-discard execCmd("nim c -r impjoin.nim")
-discard execCmd("nim c -r leftjoin.nim")
-discard execCmd("nim c -r key.nim")
-discard execCmd("nim c -r like.nim")
-discard execCmd("nim c -r null.nim")
-discard execCmd("nim c -r numeric.nim")
-discard execCmd("nim c -r order.nim")
-discard execCmd("nim c -r prepared.nim")
-discard execCmd("nim c -r rollback.nim")
-discard execCmd("nim c -r snapshots.nim")
-discard execCmd("nim c -r subqueries.nim")
-discard execCmd("nim c -r union.nim")
-discard execCmd("nim c -r update.nim")
-discard execCmd("nim c -r where.nim")
-discard execCmd("nim c -r txlog.nim")
-discard execCmd("nim c -r txlog_snapshot.nim")
-discard execCmd("nim c -r datetime.nim")
-discard execCmd("nim c -r cast.nim")
+var failure = false
+
+proc execTest(testFile: string) =
+  if execCmd("nim c -r " & testFile) != 0:
+    failure = true
+
+execTest("binary.nim")
+execTest("boolean.nim")
+execTest("char.nim")
+execTest("commit.nim")
+execTest("default.nim")
+execTest("distinct.nim")
+execTest("expjoin.nim")
+execTest("group.nim")
+execTest("impjoin.nim")
+execTest("leftjoin.nim")
+execTest("key.nim")
+execTest("like.nim")
+execTest("null.nim")
+execTest("numeric.nim")
+execTest("order.nim")
+execTest("prepared.nim")
+execTest("rollback.nim")
+execTest("snapshots.nim")
+execTest("subqueries.nim")
+execTest("union.nim")
+execTest("update.nim")
+execTest("where.nim")
+execTest("txlog.nim")
+execTest("txlog_snapshot.nim")
+execTest("datetime.nim")
+execTest("cast.nim")
+
+if failure:
+  echo "FAILURE: One or more tests failed."
