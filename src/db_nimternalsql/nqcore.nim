@@ -625,7 +625,7 @@ func `==`(v1: MatValue, v2: MatValue): bool =
   if v1.kind != v2.kind:
     return false
   case v1.kind:
-    of kInt, kTime:
+    of kInt:
       result = v1.intVal == v2.intVal
     of kDate:
       result = (v1.year == v2.year) and (v1.month == v2.month) and
@@ -638,6 +638,8 @@ func `==`(v1: MatValue, v2: MatValue): bool =
       result = v1.strVal == v2.strVal
     of kBool:
       result = v1.boolVal == v2.boolVal
+    of kTime:
+      result = v1.microsecond == v2.microsecond
     of kNull:
       result = true
 
