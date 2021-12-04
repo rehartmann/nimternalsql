@@ -1,6 +1,6 @@
 # Package
 
-version     = "1.0.0"
+version     = "1.1.0"
 author      = "Rene Hartmann"
 description = "An in-memory SQL database library"
 license     = "MIT"
