@@ -1,7 +1,3 @@
-Examples	db_nimternalsql.html#examples	 Examples	
-Opening a connection to a database	db_nimternalsql.html#examples-opening-a-connection-to-a-database	  Opening a connection to a database	
-Creating a table	db_nimternalsql.html#examples-creating-a-table	  Creating a table	
-Inserting data	db_nimternalsql.html#examples-inserting-data	  Inserting data	
 DbConn	db_nimternalsql.html#DbConn	db_nimternalsql: DbConn	
 Row	db_nimternalsql.html#Row	db_nimternalsql: Row	
 open	db_nimternalsql.html#open,string,string,string,string	db_nimternalsql: open(connection, user, password, database: string): DbConn	
@@ -30,3 +26,7 @@ getValue	db_nimternalsql.html#getValue,DbConn,SqlPrepared,varargs[string,]	db_ni
 save	db_nimternalsql.html#save,DbConn,string	db_nimternalsql: save(conn: DbConn; filename: string)	
 save	db_nimternalsql.html#save,DbConn	db_nimternalsql: save(conn: DbConn)	
 restore	db_nimternalsql.html#restore,DbConn,string	db_nimternalsql: restore(conn: DbConn; filename: string)	
+Examples	db_nimternalsql.html#examples	 Examples	
+Opening a connection to a database	db_nimternalsql.html#examples-opening-a-connection-to-a-database	  Opening a connection to a database	
+Creating a table	db_nimternalsql.html#examples-creating-a-table	  Creating a table	
+Inserting data	db_nimternalsql.html#examples-inserting-data	  Inserting data	

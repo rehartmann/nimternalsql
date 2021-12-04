@@ -25,9 +25,26 @@ The following data types are supported:
 * LONGVARBINARY
 * RAW
 * BYTEA
+* TIME
+* DATE
+* TIMESTAMP
 
 DECIMAL and NUMERIC are internally represented as 64-bit integers. The maximum number of digits is 18.
- 
+
+## Scalar operators
+
+Besides the usual arthmetic, comparison, and logical operators, NimternalSQL supports the following scalar operators:
+
+* || (string concatenation)
+* LOWER
+* UPPER
+* LIKE
+* LENGTH
+* OCTET_LENGTH
+* CHAR_LENGTH
+* SUBSTR
+* POSITION
+
 ## Persistence
 
 Persistence is supported through snapshots or (optionally) a transaction
