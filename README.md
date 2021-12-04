@@ -36,6 +36,7 @@ DECIMAL and NUMERIC are internally represented as 64-bit integers. The maximum n
 Besides the usual arithmetic, comparison, and logical operators, NimternalSQL supports the following scalar operators:
 
 * || (string concatenation)
+* CASE
 * CAST
 * CHAR_LENGTH
 * CURRENT_DATE
