@@ -59,17 +59,6 @@ type
     colName*: string
     exp*: Expression
 
-  SqlTableRefKind* = enum trkSimpleTableRef, trkRelOp
-  SqlTableRef* = ref object
-    case kind*: SqlTableRefKind
-      of trkSimpleTableRef:
-        name*: string
-        rangeVar*: string
-      of trkRelOp:
-        tableRef1*, tableRef2*: SqlTableRef
-        onExp*: Expression
-        leftOuter*: bool
-
 proc raiseDbError*(msg: string) {.noreturn.} =
   var
     e: ref DbError

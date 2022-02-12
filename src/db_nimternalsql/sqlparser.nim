@@ -3,6 +3,17 @@ import sqlscanner
 import strutils
 
 type
+  SqlTableRefKind* = enum trkSimpleTableRef, trkRelOp
+  SqlTableRef* = ref object
+    case kind*: SqlTableRefKind
+      of trkSimpleTableRef:
+        name*: string
+        rangeVar*: string
+      of trkRelOp:
+        tableRef1*, tableRef2*: SqlTableRef
+        onExp*: Expression
+        leftOuter*: bool
+
   SqlStatement* = ref object of RootObj
   SqlCreateTable* = ref object of SqlStatement
     tableName*: string
