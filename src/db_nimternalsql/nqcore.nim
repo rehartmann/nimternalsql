@@ -31,6 +31,13 @@ let
   baseDate = dateTime(2000, mJan, 1, zone = utc())
 
 type
+  BaseTable* = ref object of RootObj
+    name*: string
+    def*: seq[ColumnDef]
+    primaryKey*: seq[Natural]
+  Database* = ref object
+    tables*: Table[string, BaseTable]
+  Record*[T] = seq[T]
 #  SqlError = object of DbError
 #    sqlState: string
 

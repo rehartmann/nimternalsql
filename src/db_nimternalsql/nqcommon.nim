@@ -59,13 +59,6 @@ type
     colName*: string
     exp*: Expression
 
-  Record*[T] = seq[T]
-  BaseTable* = ref object of RootObj
-    name*: string
-    def*: seq[ColumnDef]
-    primaryKey*: seq[Natural]
-  Database* = ref object
-    tables*: Table[string, BaseTable]
   SqlTableRefKind* = enum trkSimpleTableRef, trkRelOp
   SqlTableRef* = ref object
     case kind*: SqlTableRefKind
