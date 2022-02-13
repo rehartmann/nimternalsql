@@ -37,6 +37,8 @@ proc cmp*(v1: NqValue, v2:NqValue): int =
     var b = toNumeric(v2)
     adjustScale(a, b)
     return cmp(a.numericVal, b.numericVal)
+  elif v1.kind == nqkBigint and v2.kind == nqkBigint:
+    return cmp(v1.bigintVal, v2.bigintVal)
   else:
     raiseDbError("comparing incompatible types")
 
