@@ -4,9 +4,11 @@ import times
 
 type
   TokenKind* = enum
-    tokAll, tokAnd, tokAny, tokAs, tokAsc, tokBy, tokChar, tokDefault, tokDrop,
-    tokVarchar, tokNumeric, tokCase, tokCast, tokWhen, tokThen, tokElse,
-    tokEnd, tokCommit, tokRollback, tokCreate, tokCross, tokCount, tokDecimal,
+    tokAll, tokAnd, tokAny, tokAs, tokAsc, tokAutoincrement,
+    tokBy, tokChar, tokDefault,
+    tokDrop, tokVarchar, tokNumeric, tokCase, tokCast, tokWhen,
+    tokThen, tokElse, tokEnd, tokCommit, tokRollback, tokCreate,
+    tokCross, tokCount, tokDecimal,
     tokDelete, tokDesc, tokDistinct, tokDouble, tokTime, tokTimestamp,
     tokTrim, tokLeading, tokTrailing, tokBoth,
     tokPrecision, tokExists,
@@ -94,6 +96,8 @@ proc toToken(s: string): Token =
       return Token(kind: tokAs)
     of "ASC":
       return Token(kind: tokAsc)
+    of "AUTOINCREMENT", "AUTO_INCREMENT":
+      return Token(kind: tokAutoincrement)
     of "BOTH":
       return Token(kind: tokBoth)
     of "BY":

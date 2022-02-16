@@ -50,6 +50,11 @@ proc createBaseTable*(tx: Tx, db: Database, name: string,
   result = newHashBaseTable(name, columns, key)
   for i in 0..<result.def.len:
     checkType(result.def[i])
+    if result.def[i].autoincrement:
+      if result.def[i].typ != "BIGINT":
+        raiseDbError("AUTOINCREMENT is only supported on BIGINT columns")
+      if result.def[i].defaultValue != nil:
+        raiseDbError("AUTOINCREMENT conflicts with default values")
 
     if i < result.def.len - 1:
       for j in i + 1..<result.def.len:
@@ -292,7 +297,11 @@ proc replayLog(f: File, db: Database) =
         let tableName = readName(f)
         let keyRec = readRecord(f)
         let valRec = readRecord(f)
-        HashBaseTable(getTable(db, tableName)).rows[keyRec] = valRec
+        let table = HashBaseTable(getTable(db, tableName))
+        table.rows[keyRec] = valRec
+        for i in 0..<table.def.len:
+          if table.def[i].autoincrement:
+            table.def[i].currentAutoincVal += 1
       of 'D':
         let tableName = readName(f)
         let keyRec = readRecord(f)

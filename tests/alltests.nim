@@ -32,6 +32,8 @@ execTest("txlog.nim")
 execTest("txlog_snapshot.nim")
 execTest("datetime.nim")
 execTest("cast.nim")
+execTest("autoinc.nim")
+execTest("autoinc_txlog.nim")
 
 if failure:
   echo "FAILURE: One or more tests failed."

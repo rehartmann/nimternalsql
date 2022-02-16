@@ -505,13 +505,14 @@ proc parseColumn(scanner: Scanner): ColumnDef =
   var defValue: Expression = nil
   var pk = false;
   var notNull = false;
+  var autoinc = false;
   let typdef = parseType(scanner)
   var t = currentToken(scanner)
   if t.kind == tokDefault:
     t = nextToken(scanner)
     defValue = litTokToValue(t)
     t = nextToken(scanner)
-  while t.kind == tokPrimary or t.kind == tokNot:
+  while t.kind == tokPrimary or t.kind == tokNot or t.kind == tokAutoincrement:
     case t.kind:
     of tokPrimary:
       t = nextToken(scanner)
@@ -523,13 +524,15 @@ proc parseColumn(scanner: Scanner): ColumnDef =
       if t.kind != tokNull:
         raiseDbError("NULL expected")
       notNull = true
+    of tokAutoincrement:
+      autoinc = true
     else: discard
     t = nextToken(scanner)
   return ColumnDef(name: nameTok.identifier, typ: typdef.typ, 
                    size: typdef.size, precision: typdef.precision,
                    scale: typdef.scale,
                    notNull: notNull, defaultValue: defValue,
-                   primaryKey: pk)
+                   primaryKey: pk, autoincrement: autoinc)
 
 proc parseTablePrimaryKey(scanner: Scanner): seq[string] =
   if nextToken(scanner).kind != tokKey:

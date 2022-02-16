@@ -164,6 +164,13 @@ method execute(stmt: SqlInsert, db: Database, tx: Tx, args: varargs[string]): in
       if not valSet[i]:
         if table.def[i].defaultValue != nil:
           insvals[i] = eval(table.def[i].defaultValue, nil, nil)
+        elif table.def[i].autoincrement:
+          if table.def[i].currentAutoincVal == high(int64):
+            raiseDbError("AUTOINCREMENT reached highest possible value on column " &
+                         table.def[i].name)
+          table.def[i].currentAutoincVal += 1
+          insvals[i] = NqValue(kind: nqkBigint,
+                               bigintVal: table.def[i].currentAutoincVal)
         else:
           insvals[i] = NqValue(kind: nqkNull)
     insert(tx, table, insvals)

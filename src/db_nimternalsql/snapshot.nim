@@ -9,6 +9,10 @@ const
   fileVersion = 1
   tHashBaseTable = 1
 
+  defaultValueNone = byte(0)
+  defaultValueDefined = byte(1)
+  defaultValueAutoinc = byte(2)
+
 proc raiseIoError*(msg: string) {.noreturn.} =
   var
     e: ref IoError
@@ -65,7 +69,7 @@ proc writeName*(f: File, name: string) =
     raiseIoError("error writing log entry")
   write(f, name)
 
-proc writeColumnDef(f: File, colDef: ColumnDef) =
+proc writeColumnDef(f: File, colDef: XColumnDef) =
     var intBuf = int32(colDef.name.len)
     if writeBuffer(f, addr(intBuf), sizeof(int32)) < sizeof(int32):
       raiseIoError(writeError)
@@ -91,12 +95,19 @@ proc writeColumnDef(f: File, colDef: ColumnDef) =
     var byteBuf = byte(if colDef.notNull: 0 else: 1)
     if writeBuffer(f, addr(byteBuf), 1) < 1:
       raiseIoError(writeError)
-      
-    byteBuf = byte(if colDef.defaultValue == nil: 0 else: 1)
+
+    byteBuf = if colDef.defaultValue == nil:
+                (if colDef.autoincrement: defaultValueAutoinc else: defaultValueNone)
+              else:
+                defaultValueDefined
     if writeBuffer(f, addr(byteBuf), 1) < 1:
       raiseIoError(writeError)
     if colDef.defaultValue != nil:
       writeValue(f, toMatValue(eval(colDef.defaultValue, nil, nil), colDef))
+    elif colDef.autoincrement:
+      var longintBuf = colDef.currentAutoincVal
+      if writeBuffer(f, addr(longintBuf), sizeof(int64)) < sizeof(int64):
+        raiseIoError(writeError)
 
 proc writeTableDef*(f: File, table: BaseTable) =
   writeName(f, table.name)
@@ -179,7 +190,7 @@ proc readValue*(f: File): MatValue =
       var nVal: int64
       if readBuffer(f, addr(nVal), sizeof(int64)) < sizeof(int64):
         raiseDbError(readErrorMissingData)
-      result = MatValue(kind: kNumeric, numericVal: nVal)
+      result = MatValue(kind: k, numericVal: nVal)
     of kFloat:
       var floatVal: float
       if readBuffer(f, addr(floatVal), sizeof(int64)) < sizeof(int64):
@@ -241,7 +252,7 @@ proc readTableDef*(f: File, table: BaseTable) =
   var colCount: int32
   if readBuffer(f, addr(colCount), sizeof(int32)) < sizeof(int32):
     raiseDbError(readErrorMissingData)
-  var colDef: ColumnDef
+  var colDef: XColumnDef
 
   var intBuf: int32    
   for i in 0..<colCount:
@@ -278,10 +289,21 @@ proc readTableDef*(f: File, table: BaseTable) =
     
     if readBuffer(f, addr(byteBuf), sizeof(byte)) < sizeof(byte):
       raiseDbError(readErrorMissingData)
-    if byteBuf == 1:
-      colDef.defaultValue = toExpr(toNqValue(readValue(f), colDef))
-    else:
-      colDef.defaultValue = nil
+    case byteBuf:
+      of defaultValueNone:
+        colDef.defaultValue = nil
+        colDef.autoincrement = false
+      of defaultValueDefined:
+        colDef.defaultValue = toExpr(toNqValue(readValue(f), colDef))
+        colDef.autoincrement = false
+      of defaultValueAutoinc:
+        colDef.defaultValue = nil
+        colDef.autoincrement = true
+        if readBuffer(f, addr(colDef.currentAutoincVal), sizeof(int64)) < sizeof(int64):
+          raiseDbError(readErrorMissingData)
+      else:
+        raiseDbError("invalid column default value")
+
     table.def.add(colDef)
 
   var keyLen: int16

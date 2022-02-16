@@ -31,9 +31,11 @@ let
   baseDate = dateTime(2000, mJan, 1, zone = utc())
 
 type
+  XColumnDef* = object of ColumnDef
+    currentAutoincVal*: int64 # for Autoincrement
   BaseTable* = ref object of RootObj
     name*: string
-    def*: seq[ColumnDef]
+    def*: seq[XColumnDef]
     primaryKey*: seq[Natural]
   Database* = ref object
     tables*: Table[string, BaseTable]
@@ -88,7 +90,7 @@ type
     of nqkList:
       listVal: seq[NqValue]
     of nqkBigint:
-      bigintVal: int64
+      bigintVal*: int64
     of nqkTime, nqkTimestamp:
       microsecond*: int64
       precision*: Natural
@@ -664,7 +666,7 @@ proc `==`*(r1: seq, r2: seq): bool =
       return false
   result = true
 
-func findColumnName(columns: openArray[ColumnDef],
+func findColumnName(columns: openArray[XColumnDef],
                     name: string): int =
   for i in 0..<columns.len():
     if columns[i].name == name:
@@ -678,7 +680,16 @@ proc newHashBaseTable*(name: string, columns: openArray[ColumnDef],
   rtable.name = name
   newSeq(rtable.def, columns.len)
   for i in 0..<columns.len:
-    rtable.def[i] = columns[i]
+    rtable.def[i].name = columns[i].name
+    rtable.def[i].typ = columns[i].typ
+    rtable.def[i].size = columns[i].size
+    rtable.def[i].precision = columns[i].precision
+    rtable.def[i].scale = columns[i].scale
+    rtable.def[i].notNull = columns[i].notNull
+    rtable.def[i].defaultValue = columns[i].defaultValue
+    rtable.def[i].autoincrement = columns[i].autoincrement
+    if columns[i].autoincrement:
+      rtable.def[i].currentAutoincVal = 0
   newSeq(rtable.primaryKey, key.len)
   for i, keycol in key:
     let n = findColumnName(rtable.def, keycol)
@@ -1235,19 +1246,21 @@ method columnNo(table: GroupTable, name: string, tableName: string): int =
       return i
   result = -1
 
+func columnValueAt(table: HashBaseTable, keyRecord: Record, col: Natural): NqValue =
+  let ki = keyIndex(table, col)
+  if ki != -1:
+    return toNqValue(keyRecord[ki], table.def[col])
+  var vi = 0
+  for i in 0..<table.def.len:
+    if not isKey(table, i):
+      if i == col:
+        return toNqValue(table.rows[keyRecord][vi], table.def[col])
+      vi = vi + 1
+  result = NqValue(kind: nqkNull)
+
 func columnValueAt*(row: InstantRow; col: Natural): NqValue =
   if row.material:
-    let table = HashBaseTable(BaseTableRef(row.table).table)
-    let ki = keyIndex(table, col)
-    if ki != -1:
-      return toNqValue(row.keyRecord[ki], table.def[col])
-    var vi = 0
-    for i in 0..<table.def.len:
-      if not isKey(table, i):
-        if i == col:
-          return toNqValue(table.rows[row.keyRecord][vi], table.def[col])
-        vi = vi + 1
-    result = NqValue(kind: nqkNull)
+    result = columnValueAt(HashBaseTable(BaseTableRef(row.table).table), row.keyRecord, col)
   else:
     result = row.vals[col]
 

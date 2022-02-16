@@ -4,13 +4,12 @@
 # See the file LICENSE for details about the copyright.
 # 
 import db_common
-import tables
 
 const
   defaultDumpName* = "dump.ndb"
 
 type
-  ColumnDef* = object
+  ColumnDef* = object of RootObj
     name*: string
     typ*: string
     size*: Natural
@@ -19,11 +18,12 @@ type
     notNull*: bool
     defaultValue*: Expression
     primaryKey*: bool # unused in BaseTable
+    autoincrement*: bool
   TypeDef* = object
     typ*: string
     size*: Natural
     precision*: Natural
-    scale*: Natural    
+    scale*: Natural
 
   Expression* = ref object of RootObj
   ScalarLit* = ref object of Expression
