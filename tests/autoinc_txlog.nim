@@ -5,7 +5,7 @@ removeDir("db")
 
 var db = open("db", "", "", "")
 exec(db, sql"""CREATE TABLE tst
-                (n numeric, k bigint primary key autoincrement, s text, i bigint autoincrement)""")
+                (n numeric, k bigint primary key autoincrement, s text, i int autoincrement)""")
 
 doAssert execAffectedRows(db, sql"INSERT INTO tst (n, s) VALUES (2, 'Yo')") == 1
 doAssert execAffectedRows(db, sql"INSERT INTO tst (n, s) VALUES (5, 'Yaa')") == 1

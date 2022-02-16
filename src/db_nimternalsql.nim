@@ -165,12 +165,20 @@ method execute(stmt: SqlInsert, db: Database, tx: Tx, args: varargs[string]): in
         if table.def[i].defaultValue != nil:
           insvals[i] = eval(table.def[i].defaultValue, nil, nil)
         elif table.def[i].autoincrement:
-          if table.def[i].currentAutoincVal == high(int64):
-            raiseDbError("AUTOINCREMENT reached highest possible value on column " &
-                         table.def[i].name)
-          table.def[i].currentAutoincVal += 1
-          insvals[i] = NqValue(kind: nqkBigint,
-                               bigintVal: table.def[i].currentAutoincVal)
+          if table.def[i].typ == "INTEGER" or table.def[i].typ == "INT":
+            if table.def[i].currentAutoincVal >= high(int32):
+              raiseDbError("AUTOINCREMENT reached highest possible value on column " &
+                          table.def[i].name)
+            table.def[i].currentAutoincVal += 1
+            insvals[i] = NqValue(kind: nqkInt,
+                                intVal: int32(table.def[i].currentAutoincVal))
+          else:
+            if table.def[i].currentAutoincVal == high(int64):
+              raiseDbError("AUTOINCREMENT reached highest possible value on column " &
+                          table.def[i].name)
+            table.def[i].currentAutoincVal += 1
+            insvals[i] = NqValue(kind: nqkBigint,
+                                bigintVal: table.def[i].currentAutoincVal)
         else:
           insvals[i] = NqValue(kind: nqkNull)
     insert(tx, table, insvals)

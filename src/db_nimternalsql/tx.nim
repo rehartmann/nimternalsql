@@ -51,8 +51,9 @@ proc createBaseTable*(tx: Tx, db: Database, name: string,
   for i in 0..<result.def.len:
     checkType(result.def[i])
     if result.def[i].autoincrement:
-      if result.def[i].typ != "BIGINT":
-        raiseDbError("AUTOINCREMENT is only supported on BIGINT columns")
+      if result.def[i].typ != "BIGINT" and result.def[i].typ != "INTEGER" and
+          result.def[i].typ != "INT":
+        raiseDbError("AUTOINCREMENT is only supported on INTEGER and BIGINT columns")
       if result.def[i].defaultValue != nil:
         raiseDbError("AUTOINCREMENT conflicts with default values")
 
