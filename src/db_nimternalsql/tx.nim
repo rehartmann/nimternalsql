@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2020 Rene Hartmann
+# Copyright (c) 2020-2022 Rene Hartmann
 #
 # See the file LICENSE for details about the copyright.
 #
@@ -28,7 +28,7 @@ type
       of tleCreate, tleDrop:
         discard
   Tx* = ref object
-    ## A transaction object which can be used seially to begin and commit
+    ## A transaction object which can be used serially to begin and commit
     ## multiple transactions. Transactions are started implicitly.
     log: seq[TxLogEntry]
     logDir*: string

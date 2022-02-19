@@ -1,3 +1,8 @@
+#
+# Copyright (c) 2020, 2022 Rene Hartmann
+#
+# See the file LICENSE for details about the copyright.
+# 
 import strutils
 import nqcommon
 import times

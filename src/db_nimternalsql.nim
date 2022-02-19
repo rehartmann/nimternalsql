@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2020 Rene Hartmann
+# Copyright (c) 2020, 2022 Rene Hartmann
 #
 # See the file LICENSE for details about the copyright.
 # 
