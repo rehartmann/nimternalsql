@@ -2,7 +2,7 @@ import db_nimternalsql
 
 var db = open("", "", "", "")
 exec(db, sql"""CREATE TABLE tst
-                (k integer primary key autoincrement, n numeric, s text, i bigint autoincrement)""")
+                (k integer primary key autoincrement, n numeric, s text, i bigint not null autoincrement)""")
 
 doAssert execAffectedRows(db, sql"INSERT INTO tst (n, s) VALUES (2, 'Yo')") == 1
 doAssert execAffectedRows(db, sql"INSERT INTO tst (n, s) VALUES (5, 'Yaa')") == 1
