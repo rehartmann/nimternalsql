@@ -85,17 +85,17 @@ proc parseType(scanner: Scanner): TypeDef =
       if t.kind == tokLeftParen:
         t = nextToken(scanner)
         if t.kind != tokInt:
-          raiseDbError("number expected")
+          raiseDbError("number expected", syntaxError)
         precision = parseInt(t.value)
         t = nextToken(scanner)
         if t.kind == tokComma:
           t = nextToken(scanner)
           if t.kind != tokInt:
-            raiseDbError("number expected")
+            raiseDbError("number expected", syntaxError)
           scale = parseInt(t.value)
           t = nextToken(scanner)
         if t.kind != tokRightParen:
-          raiseDbError("\")\" expected")
+          raiseDbError("\")\" expected", syntaxError)
         discard nextToken(scanner)
     of tokChar:
       typ = "CHAR"
@@ -103,11 +103,11 @@ proc parseType(scanner: Scanner): TypeDef =
       if t.kind == tokLeftParen:
         t = nextToken(scanner)
         if t.kind != tokInt:
-          raiseDbError("number expected")
+          raiseDbError("number expected", syntaxError)
         size = parseInt(t.value)
         t = nextToken(scanner)
         if t.kind != tokRightParen:
-          raiseDbError("\")\" expected")
+          raiseDbError("\")\" expected", syntaxError)
         discard nextToken(scanner)
       else:
         size = 1
@@ -115,18 +115,18 @@ proc parseType(scanner: Scanner): TypeDef =
       typ = "VARCHAR"
       var t = nextToken(scanner)
       if t.kind != tokLeftParen:
-        raiseDbError("\")\" expected")
+        raiseDbError("\")\" expected", syntaxError)
       t = nextToken(scanner)
       if t.kind != tokInt:
-        raiseDbError("number expected")
+        raiseDbError("number expected", syntaxError)
       size = parseInt(t.value)
       t = nextToken(scanner)
       if t.kind != tokRightParen:
-        raiseDbError("\")\" expected")
+        raiseDbError("\")\" expected", syntaxError)
       discard nextToken(scanner)
     of tokDouble:
       if nextToken(scanner).kind != tokPrecision:
-        raiseDbError("PRECISION expected")
+        raiseDbError("PRECISION expected", syntaxError)
       typ = "REAL"
       discard nextToken(scanner)
     of tokTime:
@@ -134,11 +134,11 @@ proc parseType(scanner: Scanner): TypeDef =
       if t.kind == tokLeftParen:
         t = nextToken(scanner)
         if t.kind != tokInt:
-          raiseDbError("number expected")
+          raiseDbError("number expected", syntaxError)
         precision = parseInt(t.value)
         t = nextToken(scanner)
         if t.kind != tokRightParen:
-          raiseDbError("\")\" expected")
+          raiseDbError("\")\" expected", syntaxError)
         discard nextToken(scanner)
       else:
         precision = 0
@@ -148,17 +148,17 @@ proc parseType(scanner: Scanner): TypeDef =
       if t.kind == tokLeftParen:
         t = nextToken(scanner)
         if t.kind != tokInt:
-          raiseDbError("number expected")
+          raiseDbError("number expected", syntaxError)
         precision = parseInt(t.value)
         t = nextToken(scanner)
         if t.kind != tokRightParen:
-          raiseDbError("\")\" expected")
+          raiseDbError("\")\" expected", syntaxError)
         discard nextToken(scanner)
       else:
         precision = 6
       typ = "TIMESTAMP"
     else:
-      raiseDbError("type expected")
+      raiseDbError("type expected", syntaxError)
   return TypeDef(typ: typ, size: size, precision: precision, scale: scale)
 
 proc parseSum(scanner: Scanner, argCount: var int): Expression
@@ -172,14 +172,14 @@ proc parseOperand(scanner: Scanner, argCount: var int): Expression =
   case t.kind:
     of tokString:
       if sign != 0:
-        raiseDbError("invalid " & (if sign == 1: "+" else: "-"))
+        raiseDbError("invalid " & (if sign == 1: "+" else: "-"), syntaxError)
       result = newStringLit(t.value)
     of tokInt, tokRat:
       result = newNumericLit(t.value)
     of tokCount:
       t = nextToken(scanner)
       if t.kind != tokLeftParen:
-        raiseDbError("\"(\" expected")
+        raiseDbError("\"(\" expected", syntaxError)
       t = nextToken(scanner)
       if t.kind == tokAsterisk:
         result = newScalarOpExp("COUNT")
@@ -187,22 +187,22 @@ proc parseOperand(scanner: Scanner, argCount: var int): Expression =
       else:
         result = newScalarOpExp("COUNT", parseExpression(scanner, argCount, false))
       if currentToken(scanner).kind != tokRightParen:
-        raiseDbError("\")\" expected")
+        raiseDbError("\")\" expected", syntaxError)
     of tokCast:
       t = nextToken(scanner)
       if t.kind != tokLeftParen:
-        raiseDbError("\"(\" expected")
+        raiseDbError("\"(\" expected", syntaxError)
       let exp = parseExpression(scanner, argCount, true)
       if currentToken(scanner).kind != tokAs:
-        raiseDbError("AS expected")
+        raiseDbError("AS expected", syntaxError)
       result = newCastExp(exp, parseType(scanner))
       if currentToken(scanner).kind != tokRightParen:
-        raiseDbError("\")\" expected")
+        raiseDbError("\")\" expected", syntaxError)
     of tokIdentifier:
       if t.identifier == "DATE":
         t = nextToken(scanner)
         if t.kind != tokString or not isValidDate(t.value):
-          raiseDbError("invalid date")
+          raiseDbError("invalid date", invalidDatetimeValue)
         result = newDateLit(t.value)
       else:
         let t2 = nextToken(scanner)
@@ -215,12 +215,12 @@ proc parseOperand(scanner: Scanner, argCount: var int): Expression =
             if t.kind == tokRightParen:
               break
             if t.kind != tokComma:
-              raiseDbError("\")\" or comma expected")
+              raiseDbError("\")\" or comma expected", syntaxError)
           result = newScalarOpExp(opname, exps)
         elif t2.kind == tokDot:
           let colToken = nextToken(scanner)
           if colToken.kind != tokIdentifier:
-            raiseDbError("identifier expected")
+            raiseDbError("identifier expected", syntaxError)
           result = newQVarExp(colToken.identifier, t.identifier)
         else:
           result = newQVarExp(t.identifier)
@@ -233,7 +233,7 @@ proc parseOperand(scanner: Scanner, argCount: var int): Expression =
       else:
         result = parseExpression(scanner, argCount, false)
       if currentToken(scanner).kind != tokRightParen:
-        raiseDbError("\")\" expected")
+        raiseDbError("\")\" expected", syntaxError)
     of tokPlaceholder:
       argCount = argCount + 1
       discard nextToken(scanner)
@@ -241,7 +241,7 @@ proc parseOperand(scanner: Scanner, argCount: var int): Expression =
     of tokNumPlaceholder:
       t = nextToken(scanner)
       if t.kind != tokInt:
-        raiseDbError("number expected after \"$\"")
+        raiseDbError("number expected after \"$\"", syntaxError)
       discard nextToken(scanner)
       return newQVarExp("$" & t.value)
     of tokTrue:
@@ -253,12 +253,12 @@ proc parseOperand(scanner: Scanner, argCount: var int): Expression =
     of tokTime:
       t = nextToken(scanner)
       if t.kind != tokString or not isValidTime(t.value):
-        raiseDbError("invalid time")
+        raiseDbError("invalid time", invalidDatetimeValue)
       result = newTimeLit(t.value)
     of tokTimestamp:
       t = nextToken(scanner)
       if t.kind != tokString or not isValidTimestamp(t.value):
-        raiseDbError("invalid timestamp")
+        raiseDbError("invalid timestamp", invalidDatetimeValue)
       result = newTimestampLit(t.value)
     of tokCase:
       var exp, elseExp: Expression
@@ -270,22 +270,22 @@ proc parseOperand(scanner: Scanner, argCount: var int): Expression =
       while t.kind == tokWhen:
         let whenExp = parseExpression(scanner, argCount)
         if currentToken(scanner).kind != tokThen:
-          raiseDbError("THEN expected")
+          raiseDbError("THEN expected", syntaxError)
         let exp = parseExpression(scanner, argCount)
         whens.add((cond: whenExp, exp: exp))
         t = currentToken(scanner)
       if t.kind == tokElse:
         elseExp = parseExpression(scanner, argCount)
       elif t.kind != tokEnd: 
-        raiseDbError("WHEN, ELSE, or END expected")
+        raiseDbError("WHEN, ELSE, or END expected", syntaxError)
       if currentToken(scanner).kind != tokEnd:
-        raiseDbError("END expected")
+        raiseDbError("END expected", syntaxError)
       result = newCaseExp(exp, whens, elseExp)
     of tokTrim:
       var exp: Expression
       t = nextToken(scanner)
       if t.kind != tokLeftParen:
-        raiseDbError("\"(\" expected")
+        raiseDbError("\"(\" expected", syntaxError)
       t = nextToken(scanner)
       case t.kind:
         of tokLeading, tokTrailing, tokBoth:
@@ -309,7 +309,7 @@ proc parseOperand(scanner: Scanner, argCount: var int): Expression =
           else:
             exp = parseExpression(scanner, argCount, false)
             if currentToken(scanner).kind != tokFrom:
-              raiseDbError("FROM expected")
+              raiseDbError("FROM expected", syntaxError)
             result = newTrimExp(parseExpression(scanner, argCount), leading, trailing, exp)
         else:
           exp = parseExpression(scanner, argCount, false)
@@ -318,21 +318,21 @@ proc parseOperand(scanner: Scanner, argCount: var int): Expression =
           else:
             result = newTrimExp(exp, true, true)
       if currentToken(scanner).kind != tokRightParen:
-        raiseDbError(") expected")
+        raiseDbError(") expected", syntaxError)
     of tokPosition:
       t = nextToken(scanner)
       if t.kind != tokLeftParen:
-        raiseDbError("\"(\" expected")
+        raiseDbError("\"(\" expected", syntaxError)
       discard nextToken(scanner)
       let subs = parseSum(scanner, argCount)
       t = currentToken(scanner)
       if t.kind != tokIn:
-        raiseDbError("IN expected, found " & $t)
+        raiseDbError("IN expected, found " & $t, syntaxError)
       result = newScalarOpExp("POSITION", [subs, parseExpression(scanner, argCount)])
       if currentToken(scanner).kind != tokRightParen:
-        raiseDbError(") expected")
+        raiseDbError(") expected", syntaxError)
     else:
-      raiseDbError("unsupported primitive: " & $t.kind)
+      raiseDbError("unsupported primitive: " & $t.kind, syntaxError)
   discard nextToken(scanner) 
   if sign == -1:
      result = newScalarOpExp("-", result)
@@ -361,24 +361,24 @@ proc parseSum(scanner: Scanner, argCount: var int): Expression =
       of tokConcat:
         exp = newScalarOpExp("||", exp, exp2)
       else:
-        raiseDbError("internal error")
+        raiseDbError("internal error: invalid operator " & $t, internalError)
     t = currentToken(scanner)
   result = exp
 
 proc parseExpListOrTableExp(scanner: Scanner, argCount: var int): Expression =
   if currentToken(scanner).kind != tokLeftParen:
-    raiseDbError("\"(\" expected")
+    raiseDbError("\"(\" expected", syntaxError)
   if nextToken(scanner).kind == tokSelect:
     result = parseTableExp(scanner, argCount)
     if currentToken(scanner).kind != tokRightParen:
-      raiseDbError("\")\" expected")
+      raiseDbError("\")\" expected", syntaxError)
     discard nextToken(scanner)
   else:
     var exps = @[parseExpression(scanner, argCount, false)]
     while currentToken(scanner).kind == tokComma:
       exps.add(parseExpression(scanner, argCount))
     if currentToken(scanner).kind != tokRightParen:
-      raiseDbError("\")\" expected")
+      raiseDbError("\")\" expected", syntaxError)
     discard nextToken(scanner)
     result = newListExp(exps)
 
@@ -386,13 +386,13 @@ proc parseSumOrAllOrAny(scanner: Scanner, argCount: var int): Expression =
   let t = currentToken(scanner)
   if t.kind == tokAll or t.kind == tokAny:
     if nextToken(scanner).kind != tokLeftParen:
-      raiseDbError("\"(\" expected")
+      raiseDbError("\"(\" expected", syntaxError)
     if nextToken(scanner).kind != tokSelect:
-      raiseDbError("SELECT expected")
+      raiseDbError("SELECT expected", syntaxError)
     result = newScalarOpExp(if t.kind == tokAll: "ALL" else: "ANY",
                             parseTableExp(scanner, argCount))
     if currentToken(scanner).kind != tokRightParen:
-      raiseDbError("\")\" expected")
+      raiseDbError("\")\" expected", syntaxError)
   else:
     result = parseSum(scanner, argCount)
 
@@ -400,12 +400,12 @@ proc parseCondPrimitive(scanner: Scanner, argCount: var int): Expression =
   # The first token has been read
   if currentToken(scanner).kind == tokExists:
     if nextToken(scanner).kind != tokLeftParen:
-      raiseDbError("\"(\" expected")
+      raiseDbError("\"(\" expected", syntaxError)
     if nextToken(scanner).kind != tokSelect:
-      raiseDbError("SELECT expected")
+      raiseDbError("SELECT expected", syntaxError)
     result = newScalarOpExp("EXISTS", parseTableExp(scanner, argCount))
     if currentToken(scanner).kind != tokRightParen:
-      raiseDbError("\")\" expected")
+      raiseDbError("\")\" expected", syntaxError)
     discard nextToken(scanner)
     return
   var exp = parseSum(scanner, argCount)
@@ -436,7 +436,7 @@ proc parseCondPrimitive(scanner: Scanner, argCount: var int): Expression =
       return newScalarOpExp("IN", exp, parseExpListOrTableExp(scanner, argCount))
     of tokNot:
       if nextToken(scanner).kind != tokIn:
-        raiseDbError("IN expected")
+        raiseDbError("IN expected", syntaxError)
       discard nextToken(scanner)      
       return newScalarOpExp("NOT",
                  newScalarOpExp("IN", exp,
@@ -448,7 +448,7 @@ proc parseCondPrimitive(scanner: Scanner, argCount: var int): Expression =
         notNull = true
         t = nextToken(scanner)
       if t.kind != tokNull:
-        raiseDbError("NULL expected")
+        raiseDbError("NULL expected", syntaxError)
       discard nextToken(scanner)
       result = newScalarOpExp("isNull", exp)
       if notNull:
@@ -500,13 +500,13 @@ func litTokToValue(lit: Token): Expression =
     of tokNull:
       result = NullLit()
     else:
-      raiseDbError("invalid value")
+      raiseDbError("invalid value", syntaxError)
 
 proc parseColumn(scanner: Scanner): ColumnDef =
   ## Parses a column definition, including the trailing comma or paren
   let nameTok = currentToken(scanner)
   if nameTok.kind != tokIdentifier:
-    raiseDbError("column name expected")
+    raiseDbError("column name expected", syntaxError)
   var defValue: Expression = nil
   var pk = false;
   var notNull = false;
@@ -522,12 +522,12 @@ proc parseColumn(scanner: Scanner): ColumnDef =
     of tokPrimary:
       t = nextToken(scanner)
       if t.kind != tokKey:
-        raiseDbError("KEY expected")
+        raiseDbError("KEY expected", syntaxError)
       pk = true
     of tokNot:
       t = nextToken(scanner)
       if t.kind != tokNull:
-        raiseDbError("NULL expected")
+        raiseDbError("NULL expected", syntaxError)
       notNull = true
     of tokAutoincrement:
       autoinc = true
@@ -541,52 +541,52 @@ proc parseColumn(scanner: Scanner): ColumnDef =
 
 proc parseTablePrimaryKey(scanner: Scanner): seq[string] =
   if nextToken(scanner).kind != tokKey:
-    raiseDbError("KEY expected")
+    raiseDbError("KEY expected", syntaxError)
   if nextToken(scanner).kind != tokLeftParen:
-    raiseDbError("( expected")
+    raiseDbError("( expected", syntaxError)
   var colTok = nextToken(scanner)
   if colTok.kind != tokIdentifier:
-    raiseDbError("Identifier expected")
+    raiseDbError("Identifier expected", syntaxError)
   result = @[colTok.identifier]
   var t = nextToken(scanner)
   while t.kind == tokComma:
     colTok = nextToken(scanner)
     if colTok.kind != tokIdentifier:
-      raiseDbError("Identifier expected")
+      raiseDbError("Identifier expected", syntaxError)
     result.add(colTok.identifier)
     t = nextToken(scanner)
   if t.kind != tokRightParen:
     if currentToken(scanner).kind != tokRightParen:
-      raiseDbError(") expected")
+      raiseDbError(") expected", syntaxError)
   discard nextToken(scanner)
 
 proc parseCreate(scanner: Scanner): SqlStatement =
   var pKey: seq[string]
   var t = nextToken(scanner)
   if t.kind != tokTable:
-    raiseDbError("TABLE expected")
+    raiseDbError("TABLE expected", syntaxError)
   let nameTok = nextToken(scanner)
   if nameTok.kind != tokIdentifier:
-    raiseDbError("identifier expected")
+    raiseDbError("identifier expected", syntaxError)
   t = nextToken(scanner)
   if t.kind != tokLeftParen:
-    raiseDbError("( expected")
+    raiseDbError("( expected", syntaxError)
   var cols: seq[ColumnDef]
   if nextToken(scanner).kind == tokPrimary:
     if pKey.len > 0:
-      raiseDbError("multiple primary keys are not allowed")
+      raiseDbError("multiple primary keys are not allowed", syntaxError)
     pKey = parseTablePrimaryKey(scanner)
   else:
     cols.add(parseColumn(scanner))
   while currentToken(scanner).kind == tokComma:
     if nextToken(scanner).kind == tokPrimary:
       if pKey.len > 0:
-        raiseDbError("multiple primary keys are not allowed")
+        raiseDbError("multiple primary keys are not allowed", syntaxError)
       pKey = parseTablePrimaryKey(scanner)
     else:
       cols.add(parseColumn(scanner))
   if currentToken(scanner).kind != tokRightParen:
-    raiseDbError(") expected")
+    raiseDbError(") expected", syntaxError)
   result = SqlCreateTable(tableName: nameTok.identifier, columns: cols,
                           primaryKey: pkey)
 
@@ -594,59 +594,59 @@ proc parseDrop(scanner: Scanner): SqlStatement =
   var ifExists = false
   var t = nextToken(scanner)
   if t.kind != tokTable:
-    raiseDbError("TABLE expected")
+    raiseDbError("TABLE expected", syntaxError)
   t = nextToken(scanner)
   if t.kind == tokIf:
     if nextToken(scanner).kind != tokExists:
-      raiseDbError("EXISTS expected")
+      raiseDbError("EXISTS expected", syntaxError)
     ifExists = true
     t = nextToken(scanner)
     if t.kind != tokIdentifier:
-      raiseDbError("identifier expected")
+      raiseDbError("identifier expected", syntaxError)
   elif t.kind != tokIdentifier:
-    raiseDbError("identifier expected")
+    raiseDbError("identifier expected", syntaxError)
   result = SqlDropTable(tableName: t.identifier, ifExists: ifExists)
 
 proc parseInsert(scanner: Scanner): SqlStatement =
   var t = nextToken(scanner)
   if t.kind != tokInto:
-    raiseDbError("INTO expected")
+    raiseDbError("INTO expected", syntaxError)
   let nameTok = nextToken(scanner)
   if nameTok.kind != tokIdentifier:
-    raiseDbError("identifier expected")
+    raiseDbError("identifier expected", syntaxError)
   var columns: seq[string]
   t = nextToken(scanner)
   if t.kind == tokDefault:
     if nextToken(scanner).kind != tokValues:
-      raiseDbError("VALUES expected")
+      raiseDbError("VALUES expected", syntaxError)
     return SqlInsert(tableName: nameTok.identifier, columns: @[], values: @[])
   elif t.kind == tokLeftParen:
     t = nextToken(scanner)
     if t.kind != tokIdentifier:
-      raiseDbError("identifier expected")
+      raiseDbError("identifier expected", syntaxError)
     columns.add(t.identifier)
     t = nextToken(scanner)
     while t.kind == tokComma:
       t = nextToken(scanner)
       if t.kind != tokIdentifier:
-        raiseDbError("identifier expected")
+        raiseDbError("identifier expected", syntaxError)
       columns.add(t.identifier)
       t = nextToken(scanner)
     if t.kind != tokRightParen:
-      raiseDbError("\")\" expected")
+      raiseDbError("\")\" expected", syntaxError)
     t = nextToken(scanner)
   if t.kind != tokValues:
-    raiseDbError("VALUES expected")
+    raiseDbError("VALUES expected", syntaxError)
   t = nextToken(scanner)
   if t.kind != tokLeftParen:
-    raiseDbError("( expected")
+    raiseDbError("( expected", syntaxError)
   var vals: seq[Expression]
   var argCount = 0
   vals.add(parseExpression(scanner, argCount))
   while currentToken(scanner).kind == tokComma:
     vals.add(parseExpression(scanner, argCount))
   if currentToken(scanner).kind != tokRightParen:
-    raiseDbError(") expected")
+    raiseDbError(") expected", syntaxError)
   result = SqlInsert(tableName: nameTok.identifier, columns: columns, values: vals)
 
 proc parseSelectElement(scanner: Scanner, argCount: var int): SelectElement =
@@ -661,7 +661,7 @@ proc parseSelectElement(scanner: Scanner, argCount: var int): SelectElement =
     if t.kind == tokAs:
       t = nextToken(scanner)
       if t.kind != tokIdentifier:
-        raiseDbError("identifier expected")
+        raiseDbError("identifier expected", syntaxError)
     if t.kind == tokIdentifier:
       colName = t.identifier
       discard nextToken(scanner)
@@ -683,7 +683,7 @@ proc parseTableRef(scanner: Scanner, argCount: var int): SqlTableRef =
     if t.kind == tokAs:
       t = nextToken(scanner)
       if t.kind != tokIdentifier:
-        raiseDbError("identifier expected")
+        raiseDbError("identifier expected", syntaxError)
       rangeVar = t.identifier
       t = nextToken(scanner)
     elif t.kind == tokIdentifier:
@@ -697,19 +697,19 @@ proc parseTableRef(scanner: Scanner, argCount: var int): SqlTableRef =
     else:
       if t.kind == tokOn:
         if crossJoin:
-          raiseDbError("ON is not allowed with CROSS JOIN")
+          raiseDbError("ON is not allowed with CROSS JOIN", syntaxError)
         result = SqlTableRef(kind: trkRelOp, tableRef1: result, tableRef2: tref,
                              onExp: parseExpression(scanner, argCount),
                              leftOuter: leftOuter)
       else:
         if not crossJoin:
-          raiseDbError("ON is required with JOIN")
+          raiseDbError("ON is required with JOIN", syntaxError)
         result = SqlTableRef(kind: trkRelOp, tableRef1: result, tableRef2: tref,
                              leftOuter: false)
     case t.kind:
       of tokCross:
         if nextToken(scanner).kind != tokJoin:
-          raiseDbError("JOIN expected")
+          raiseDbError("JOIN expected", syntaxError)
         crossJoin = true
         leftOuter = false
       of tokJoin:
@@ -717,7 +717,7 @@ proc parseTableRef(scanner: Scanner, argCount: var int): SqlTableRef =
         leftOuter = false
       of tokInner:
         if nextToken(scanner).kind != tokJoin:
-          raiseDbError("JOIN expected")
+          raiseDbError("JOIN expected", syntaxError)
         crossJoin = false
         leftOuter = false
       of tokLeft:
@@ -725,7 +725,7 @@ proc parseTableRef(scanner: Scanner, argCount: var int): SqlTableRef =
         if tk == tokOuter:
           tk = nextToken(scanner).kind
         if tk != tokJoin:
-          raiseDbError("JOIN expected")
+          raiseDbError("JOIN expected", syntaxError)
         crossJoin = false
         leftOuter = true
       else:
@@ -742,12 +742,12 @@ proc parseOrderByElement(scanner: Scanner): OrderByElement =
   var asc: bool
   let t = nextToken(scanner)
   if t.kind != tokIdentifier:
-    raiseDbError("identifier expected")
+    raiseDbError("identifier expected", syntaxError)
   let t2 = nextToken(scanner)
   if t2.kind == tokDot:
     let tokCol = nextToken(scanner)
     if tokCol.kind != tokIdentifier:
-      raiseDbError("identifier expected")
+      raiseDbError("identifier expected", syntaxError)
     discard nextToken(scanner)
     colName = tokCol.identifier
     tableName = t.identifier
@@ -767,7 +767,7 @@ proc parseOrderByElement(scanner: Scanner): OrderByElement =
 proc parseOrderBy(scanner: Scanner): seq[OrderByElement] =
   let t = nextToken(scanner)
   if t.kind != tokBy:
-    raiseDbError("BY expected")
+    raiseDbError("BY expected", syntaxError)
   result = @[parseOrderByElement(scanner)]
   while currentToken(scanner).kind == tokComma:
     result.add(parseOrderByElement(scanner))
@@ -775,12 +775,12 @@ proc parseOrderBy(scanner: Scanner): seq[OrderByElement] =
 proc parseColRef(scanner: Scanner): QVarExp =
   let t = nextToken(scanner)
   if t.kind != tokIdentifier:
-    raiseDbError("identifier expected")
+    raiseDbError("identifier expected", syntaxError)
   let t2 = nextToken(scanner)
   if t2.kind == tokDot:
     let colToken = nextToken(scanner)
     if (colToken.kind != tokIdentifier):
-      raiseDbError("identifier expected")
+      raiseDbError("identifier expected", syntaxError)
     result = newQVarExp(colToken.identifier, t.identifier)
     discard nextToken(scanner)
   else:
@@ -789,7 +789,7 @@ proc parseColRef(scanner: Scanner): QVarExp =
 proc parseGroupBy(scanner: Scanner): seq[QVarExp] =
   var t = nextToken(scanner)
   if t.kind != tokBy:
-    raiseDbError("BY expected")
+    raiseDbError("BY expected", syntaxError)
   result.add(parseColRef(scanner))
   t = currentToken(scanner)
   while t.kind == tokComma:
@@ -807,7 +807,7 @@ proc parseSelect(scanner: Scanner, argCount: var int): SqlSelect =
   let selectElements = parseSelectElements(scanner, argCount)
   t = currentToken(scanner)
   if t.kind != tokFrom:
-    raiseDbError("FROM expected")
+    raiseDbError("FROM expected", syntaxError)
   let tableRefs = parseTableRefs(scanner, argCount)
   var whereExp: Expression = nil
   t = currentToken(scanner)
@@ -839,7 +839,7 @@ proc parseTableExp(scanner: Scanner, argCount: var int): TableExp =
     else:
       allowDuplicates = false
     if currentToken(scanner).kind != tokSelect:
-      raiseDbError("SELECT expected")
+      raiseDbError("SELECT expected", syntaxError)
 
 proc parseQueryExp(scanner: Scanner): QueryExp =
   var argCount = 0
@@ -852,10 +852,10 @@ proc parseQueryExp(scanner: Scanner): QueryExp =
 proc parseAssignment(scanner: Scanner, argCount: var int): UpdateAssignment =
   let colTok = nextToken(scanner)
   if colTok.kind != tokIdentifier:
-    raiseDbError("identifier expected")
+    raiseDbError("identifier expected", syntaxError)
   let t = nextToken(scanner)
   if t.kind != tokEq:
-    raiseDbError("\"=\" expected")
+    raiseDbError("\"=\" expected", syntaxError)
   let exp = parseExpression(scanner, argCount, true)
   result = UpdateAssignment(column: colTok.identifier, src: exp)
 
@@ -863,10 +863,10 @@ proc parseUpdate(scanner: Scanner): SqlStatement =
   var argCount = 0
   let nameTok = nextToken(scanner)
   if nameTok.kind != tokIdentifier:
-    raiseDbError("identifier expected")
+    raiseDbError("identifier expected", syntaxError)
   var t = nextToken(scanner)
   if t.kind != tokSet:
-    raiseDbError("SET expected")
+    raiseDbError("SET expected", syntaxError)
   var assignments: seq[UpdateAssignment]
   assignments.add(parseAssignment(scanner, argCount))
   t = currentToken(scanner)
@@ -883,10 +883,10 @@ proc parseDelete(scanner: Scanner): SqlStatement =
   var argCount = 0
   var t = nextToken(scanner)
   if t.kind != tokFrom:
-    raiseDbError("FROM expected")
+    raiseDbError("FROM expected", syntaxError)
   let nameTok = nextToken(scanner)
   if nameTok.kind != tokIdentifier:
-    raiseDbError("identifier expected")
+    raiseDbError("identifier expected", syntaxError)
   var whereExp: Expression
   t = nextToken(scanner)
   if t.kind == tokWhere:
@@ -920,6 +920,6 @@ proc parseStatement*(reader: Reader): SqlStatement =
     of tokRollback:
       result = parseRollback(scanner);
     else:
-      raiseDbError("invalid statement")
+      raiseDbError("invalid statement", syntaxError)
   if nextToken(scanner).kind != tokEndOfInput:
-    raiseDbError("unexpected input near " & $currentToken(scanner))
+    raiseDbError("unexpected input near " & $currentToken(scanner), syntaxError)

@@ -36,7 +36,7 @@ method columnNo(table: JoinTable, name: string, tableName: string): int =
     return -1;
   if col1 != -1 and col2 != -1:
     raiseDbError("column reference \"" & (if tableName != "": tableName & "." else: "") &
-        name & "\" is ambiguous")
+        name & "\" is ambiguous", columnRefAmbiguous)
   result = if col1 != -1: col1 else: columnCount(table.children[0]) + col2
 
 func join(row1: InstantRow, row2: InstantRow, table: VTable): InstantRow =
@@ -64,7 +64,7 @@ method newCursor(rtable: JoinTable, args: openArray[string]): Cursor =
                 if thisColNo != -1:
                       raiseDbError("column reference \"" &
                           (if colRef.tableName != "": colRef.tableName & "." else: "") &
-                          colRef.name & "\" is ambiguous")
+                          colRef.name & "\" is ambiguous", columnRefAmbiguous)
                 result = true
               else:
                 result = false,
@@ -93,7 +93,8 @@ func evalJoinCond(cursor: JoinTableCursor, row: InstantRow): bool =
           let col = columnNo(cursor.table, name, rangeVar)
           if col == -1:
             raiseDbError("column " &
-                        (if rangeVar != "": rangeVar & "." else: "") & name & " does not exist")
+                        (if rangeVar != "": rangeVar & "." else: "") & name & " does not exist",
+                        undefinedColumnName)
           return columnValueAt(row, col)).boolVal
 
 proc nextByKey(cursor: JoinTableCursor, row: var InstantRow, varResolver: VarResolver): bool =

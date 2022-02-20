@@ -40,8 +40,6 @@ type
   Database* = ref object
     tables*: Table[string, BaseTable]
   Record*[T] = seq[T]
-#  SqlError = object of DbError
-#    sqlState: string
 
   MatValueKind* = enum kInt, kNumeric, kFloat, kString, kBool, kNull, kBigint,
                        kTime, kDate
@@ -162,7 +160,7 @@ func newProjectTable*(child: VTable, columns: seq[SelectElement]): VTable =
   result = ProjectTable(child: child, columns: columns)
 
 method columnNo*(rtable: VTable, name: string, tableName: string): int {.base.} =
-  raiseDbError("not implemented")
+  raiseDbError("not implemented", internalError)
 
 func isQVarExp*(exp: Expression): bool =
   result = exp of QVarExp
@@ -209,8 +207,8 @@ func toNum*(v: NqValue): NqValue =
                             v.strVal[dotPos + 1 .. ^1]),
                         scale: v.strVal.len - 1 - dotPos)
       except ValueError:
-        raiseDbError("invalid numeric value: " & v.strVal)
-    else: raiseDbError("numeric value required")
+        raiseDbError("invalid numeric value: " & v.strVal, valueOutOfRange)
+    else: raiseDbError("numeric value required", typeMismatch)
 
 func toNumeric*(v: NqValue): NqValue =
   case v.kind
@@ -232,7 +230,7 @@ func toNumeric*(v: NqValue): NqValue =
           val = parseBiggestInt(v.strVal[0 .. dotPos - 1] &
                             v.strVal[dotPos + 1 .. ^1])
         if val > high(int64) or val < low(int64):
-          raiseDbError("numeric value too larg: " & v.strVal)
+          raiseDbError("numeric value too large: " & v.strVal, valueOutOfRange)
         if dotPos == -1:
           result = NqValue(kind: nqkNumeric, numericVal: int64(val))
         else:
@@ -240,8 +238,8 @@ func toNumeric*(v: NqValue): NqValue =
                         numericVal: int64(val),
                         scale: v.strVal.len - 1 - dotPos)
       except ValueError:
-        raiseDbError("invalid numeric value: " & v.strVal)
-    else: raiseDbError("numeric value required")
+        raiseDbError("invalid numeric value: " & v.strVal, typeMismatch)
+    else: raiseDbError("numeric value required", typeMismatch)
 
 func toInt64(v: NqValue): int64 =
   case v.kind
@@ -258,7 +256,7 @@ func toInt64(v: NqValue): int64 =
       if scale == 1:
         num = num div 10 + (if num mod 10 >= 5: 1 else: 0)
       if num > int64(high(int)) or num < int64(low(int)):
-        raiseDbError("value out of range")
+        raiseDbError("value out of range", valueOutOfRange)
       result = num
     of nqkBigint:
       result = v.bigintVal
@@ -266,8 +264,8 @@ func toInt64(v: NqValue): int64 =
       try:
         result = int64(parseBiggestInt(v.strVal))
       except ValueError:
-        raiseDbError("invalid integer value: " & v.strVal)
-    else: raiseDbError("invalid integer value")
+        raiseDbError("invalid integer value: " & v.strVal, typeMismatch)
+    else: raiseDbError("invalid integer value", typeMismatch)
 
 func toFloat*(v: NqValue): float =
   case v.kind
@@ -287,8 +285,8 @@ func toFloat*(v: NqValue): float =
       try:
         result = parseFloat(v.strVal)
       except ValueError:
-        raiseDbError("invalid float value: " & v.strVal)
-    else: raiseDbError("invalid float value")
+        raiseDbError("invalid float value: " & v.strVal, typeMismatch)
+    else: raiseDbError("invalid float value", typeMismatch)
 
 func toBool(v: NqValue): bool =
   case v.kind
@@ -299,8 +297,8 @@ func toBool(v: NqValue): bool =
       elif toUpperAscii(v.strVal) == "FALSE":
         result = false
       else:
-        raiseDbError("invalid boolean value: " & v.strVal)
-    else: raiseDbError("invalid boolean value")
+        raiseDbError("invalid boolean value: " & v.strVal, typeMismatch)
+    else: raiseDbError("invalid boolean value", typeMismatch)
 
 proc adjustScaleFirstGreater(a: var NqValue, b: var NqValue) =
   # Increase scale of b if possible
@@ -389,7 +387,7 @@ proc `==`(v1: NqValue, v2: NqValue): bool =
   elif v1.kind == nqkString and v2.kind == nqkTimestamp:
     result = toTimestamp(v1.strVal) == v2
   else:
-    raiseDbError("comparing incompatible types")
+    raiseDbError("comparing incompatible types", typeMismatch)
 
 proc `!=`(f1: NqValue, f2: NqValue): bool =
   result = not (f1 == f2)
@@ -437,7 +435,7 @@ proc `<=`(v1: NqValue, v2: NqValue): bool =
   elif v1.kind == nqkString and v2.kind == nqkTimestamp:
     result = toTimestamp(v1.strVal) <= v2
   else:
-    raiseDbError("comparing incompatible types")
+    raiseDbError("comparing incompatible types", typeMismatch)
 
 proc `>=`(f1: NqValue, f2: NqValue): bool =
   result = f2 <= f1
@@ -486,7 +484,7 @@ func typeKind(typ: string): MatValueKind =
     of "DATE":
       return kDate
     else:
-      raiseDbError("Unsupported type definition, type: " & typ)
+      raiseDbError("Unsupported type definition, type: " & typ, undefinedObjectName)
 
 func typeKind(def: ColumnDef): MatValueKind =
   result = typeKind(def.typ)
@@ -517,14 +515,14 @@ proc toMatValue*(v: NqValue, colDef: ColumnDef): MatValue =
 
   if v.kind == nqkNull:
     if colDef.notNull:
-      raiseDbError("destination column " & colDef.name & " is not nullable")
+      raiseDbError("destination column " & colDef.name & " is not nullable", columnNotNullable)
     return MatValue(kind: kNull)
   var val: int64
   case typeKind(colDef):
     of kInt:
       val = toInt64(v)
       if val > high(int32) or val < low(int32):
-        raiseDBError("value out of range for int")
+        raiseDBError("value out of range for int", valueOutOfRange)
       result = MatValue(kind: kInt, intVal: int32(val))
     of kBigint:
       result = MatValue(kind: kBigint, numericVal: toInt64(v))
@@ -544,10 +542,10 @@ proc toMatValue*(v: NqValue, colDef: ColumnDef): MatValue =
         of nqkString:
           val = parseInt(v.strVal)
         else:
-          raiseDbError("invalid value for type " & colDef.typ)
+          raiseDbError("invalid value for type " & colDef.typ, typeMismatch)
       if colDef.precision > 0 and val > maxByPrecision[colDef.precision]:
         raiseDbError("value is too large for precision " & $colDef.precision &
-                     ", scale " & $colDef.scale)
+                     ", scale " & $colDef.scale, valueOutOfRange)
       result = MatValue(kind: kNumeric, numericVal: val)
     of kFloat:
       var val: float
@@ -563,17 +561,17 @@ proc toMatValue*(v: NqValue, colDef: ColumnDef): MatValue =
         of nqkString:
           val = parseFloat(v.strVal)
         else:
-          raiseDbError("invalid value for type " & colDef.typ)
+          raiseDbError("invalid value for type " & colDef.typ, typeMismatch)
       result = MatValue(kind: kFloat, floatVal: val)
     of kString:
       if v.kind != nqkString:
-        raiseDbError("invalid value for type " & colDef.typ & $ord(v.kind))
+        raiseDbError("invalid value for type " & colDef.typ & $ord(v.kind), typeMismatch)
       var s = v.strVal
       if colDef.typ == "CHAR" or colDef.typ == "VARCHAR":
         if s.len > colDef.size:
           for i in colDef.size..s.high:
             if s[i] != ' ':
-              raiseDbError("value too long: '" & s & "'")
+              raiseDbError("string value too long: '" & s & "'", stringTooLong)
           s = substr(s, 0, colDef.size)
       if colDef.typ == "CHAR":
         while s.len < colDef.size:
@@ -590,20 +588,20 @@ proc toMatValue*(v: NqValue, colDef: ColumnDef): MatValue =
           elif toUpperAscii(v.strVal) == "FALSE":
             val = false
           else:
-            raiseDbError("invalid value for type " & colDef.typ)
+            raiseDbError("invalid value for type " & colDef.typ, typeMismatch)
         else:
-          raiseDbError("invalid value for type " & colDef.typ)
+          raiseDbError("invalid value for type " & colDef.typ, typeMismatch)
       result = MatValue(kind: kBool, boolVal: val)
     of kTime:
       case v.kind:
         of nqkTime:
           if colDef.typ != "TIME":
-            raiseDbError("invalid time value")
+            raiseDbError("invalid time value", invalidDatetimeValue)
           result = MatValue(kind: kTime,
                             microsecond: precisionMicroseconds(v.microsecond, colDef.precision))
         of nqkTimestamp:
           if colDef.typ != "TIMESTAMP":
-            raiseDbError("invalid timestamp value")
+            raiseDbError("invalid timestamp value", invalidDatetimeValue)
           result = MatValue(kind: kTime,
                             microsecond: withPrecision(v.microsecond, colDef.precision))
         of nqkString:
@@ -618,7 +616,7 @@ proc toMatValue*(v: NqValue, colDef: ColumnDef): MatValue =
           else:
             result = toMatValue(toTime(v.strVal), colDef)
         else:
-          raiseDbError("invalid value for type " & colDef.typ)
+          raiseDbError("invalid value for type " & colDef.typ, invalidDatetimeValue)
     of kDate:
       case v.kind:
         of nqkDate:
@@ -626,9 +624,9 @@ proc toMatValue*(v: NqValue, colDef: ColumnDef): MatValue =
         of nqkString:
           result = toMatValue(toDate(v.strVal), colDef)
         else:
-          raiseDbError("invalid value for type " & colDef.typ)
+          raiseDbError("invalid value for type " & colDef.typ, typeMismatch)
     of kNull:
-      raiseDbError("internal error: invalid column definition")
+      raiseDbError("internal error: invalid column definition", internalError)
 
 func `==`(v1: MatValue, v2: MatValue): bool =
   if v1.kind != v2.kind:
@@ -694,7 +692,7 @@ proc newHashBaseTable*(name: string, columns: openArray[ColumnDef],
   for i, keycol in key:
     let n = findColumnName(rtable.def, keycol)
     if n == -1:
-      raiseDbError("invalid key column" & keycol)
+      raiseDbError("invalid key column " & keycol, undefinedColumnName)
     rtable.primaryKey[i] = n
   rtable.rows = initTable[Record[MatValue], Record[MatValue]]()
   result = rtable
@@ -715,15 +713,15 @@ func getTable*(db: Database, tableName: string): BaseTable =
   try:
     return db.tables[tableName]
   except KeyError:
-    raiseDbError("table " & tableName & " does not exist")
+    raiseDbError("table " & tableName & " does not exist", undefinedObjectName)
 
 method eval*(exp: Expression, varResolver: VarResolver,
              aggrResolver: AggrResolver = proc(exp: ScalarOpExp): NqValue =
-                raiseDbError(exp.opName & " not supported")
+                raiseDbError(exp.opName & " not supported", undefinedFunction)
              ): NqValue {.base.} =
   ## Evaluates an expression using varResolver to resolve variable references.
   ## varResolver may raise KeyError to signal that a variable could not be resolved.
-  raiseDbError("internal error: not implemented")
+  raiseDbError("internal error: not implemented", internalError)
 
 method eval*(exp: StringLit, varResolver: VarResolver,
     aggrResolver: AggrResolver): NqValue =
@@ -791,14 +789,14 @@ proc `-`(a: NqValue, b: NqValue): NqValue =
                         scale: adja.scale)
 
 method newCursor*(table: VTable, args: openArray[string]): Cursor {.base.} =
-  raiseDbError("not supported")
+  raiseDbError("not supported", internalError)
 
 method next*(cursor: Cursor, row: var InstantRow,
     varResolver: VarResolver = nil): bool {.base.} =
   ## Reads the next row from the cursor.
   ## If a row could be read, true is returned and row is set to the row read.
   ## If there are no more rows, false is returned and the value of row is undefined.
-  raiseDbError("not supported")
+  raiseDbError("not supported", internalError)
 
 iterator instantRows*(rtable: VTable, args: varargs[string]): InstantRow =
   let cursor = rtable.newCursor(args)
@@ -819,7 +817,7 @@ iterator instantRows(rtable: VTable, varResolver: VarResolver): InstantRow =
 func columnValueAt*(row: InstantRow; col: Natural): NqValue
 
 method columnCount*(table: VTable): Natural {.base.} =
-  raiseDbError("internal error: not implemented")
+  raiseDbError("internal error: not implemented", internalError)
 
 func columnCount*(row: InstantRow): int =
   result = columnCount(row.table)
@@ -832,7 +830,7 @@ func evalCmpAllOrAny(arg0: NqValue, exp: ScalarOpExp,
                      cmp: proc(v1: NqValue, v2: NqValue): bool,
                      varResolver: VarResolver): NqValue =
   if columnCount(VTable(exp.args[0])) != 1:
-    raiseDbError("subquery must have exactly one column")
+    raiseDbError("subquery must have exactly one column", syntaxError)
   if exp.opName == "ALL":
     result = NqValue(kind: nqkBool, boolVal: true)
     for row in instantRows(VTable(exp.args[0]), varResolver):
@@ -847,7 +845,7 @@ func evalCmpAllOrAny(arg0: NqValue, exp: ScalarOpExp,
 proc toInt(val: NqValue): int =
   let v = toInt64(val)
   if v > int.high or v < int.low:
-    raiseDbError("value out of range")
+    raiseDbError("value out of range", valueOutOfRange)
   result = int(v)
 
 method eval*(exp: ScalarOpExp, varResolver: VarResolver,
@@ -857,7 +855,7 @@ method eval*(exp: ScalarOpExp, varResolver: VarResolver,
       return aggrResolver(exp)
     of "EXISTS":
       if not (exp.args[0] of VTable):
-        raiseDbError("argument of EXISTS must be a table expression")
+        raiseDbError("argument of EXISTS must be a table expression", syntaxError)
       for row in instantRows(VTable(exp.args[0]), varResolver):
         return NqValue(kind: nqkBool, boolVal: true)
       return NqValue(kind: nqkBool, boolVal: false)
@@ -933,7 +931,7 @@ method eval*(exp: ScalarOpExp, varResolver: VarResolver,
     of "IN":
       if exp.args[1] of VTable:
         if columnCount(VTable(exp.args[1])) != 1:
-          raiseDbError("subquery must have exactly one column")
+          raiseDbError("subquery must have exactly one column", syntaxError)
         for row in instantRows(VTable(exp.args[1]), varResolver):
           if row.columnValueAt(0) == arg0:
             return NqValue(kind: nqkBool, boolVal: true)
@@ -945,7 +943,7 @@ method eval*(exp: ScalarOpExp, varResolver: VarResolver,
         result = NqValue(kind: nqkBool,
             boolVal: any(lv.listVal, proc(v: NqValue): bool = return v == arg0))
       else:
-        raiseDbError("Invalid argument to IN")
+        raiseDbError("Invalid argument to IN", syntaxError)
     of "+":
       let arg1 = eval(exp.args[1], varResolver, aggrResolver).toNum()
       if arg1.kind == nqkNull:
@@ -986,7 +984,7 @@ method eval*(exp: ScalarOpExp, varResolver: VarResolver,
       if arg1.kind == nqkNull:
         return NqValue(kind: nqkNull)
       if arg0.kind != nqkString or arg1.kind != nqkString:
-        raiseDbError("arguments of || must be of a character type")
+        raiseDbError("arguments of || must be of a character type", undefinedFunction)
       result = NqValue(kind: nqkString,
           strVal: arg0.strVal & arg1.strVal)
     of "LOWER":
@@ -1005,11 +1003,11 @@ method eval*(exp: ScalarOpExp, varResolver: VarResolver,
       result = NqValue(kind: nqkInt, intVal: int32(runeLen(arg0.strVal)))
     of "SUBSTR":
       if exp.args.len < 2:
-        raiseDbError("missing SUBSTR argument(s)")
+        raiseDbError("missing SUBSTR argument(s)", undefinedFunction)
       if exp.args.len > 3:
-        raiseDbError("too many SUBSTR arguments")
+        raiseDbError("too many SUBSTR arguments", undefinedFunction)
       if arg0.kind != nqkString:
-        raiseDbError("Character argument expected")
+        raiseDbError("Character argument expected", undefinedFunction)
       var pos = toInt(eval(exp.args[1], varResolver, aggrResolver))
       if pos > 0:
         pos -= 1
@@ -1026,12 +1024,12 @@ method eval*(exp: ScalarOpExp, varResolver: VarResolver,
                            strVal: runeSubStr(arg0.strVal, pos, len))
     of "POSITION":
       if exp.args.len != 2:
-        raiseDbError("Invalid number of arguments")
+        raiseDbError("Invalid number of arguments", undefinedFunction)
       if arg0.kind != nqkString:
-        raiseDbError("Character argument expected")
+        raiseDbError("Character argument expected", undefinedFunction)
       let str = eval(exp.args[1], varResolver, aggrResolver)
       if str.kind != nqkString:
-        raiseDbError("Character argument expected")
+        raiseDbError("Character argument expected", undefinedFunction)
       let pos = find(str.strVal, arg0.strVal)
       if pos < 0:
         result = NqValue(kind: nqkInt, intVal: 0)
@@ -1039,7 +1037,7 @@ method eval*(exp: ScalarOpExp, varResolver: VarResolver,
         result = NqValue(kind: nqkInt,
                          intVal: int32(runeLen(str.strVal[0..<pos]) + 1))
     else:
-      raiseDbError("Unknown operator: " & exp.opName)
+      raiseDbError("Unknown operator: " & exp.opName, undefinedFunction)
 
 method getAggrs(exp: Expression): seq[Expression] {.base.} =
   result = @[]
@@ -1073,7 +1071,7 @@ method eval*(exp: QVarExp, varResolver: VarResolver,
                      precision: 6)
     result = varResolver(exp.name, exp.tableName)
   except KeyError:
-    raiseDbError("Not found: " & exp.name)
+    raiseDbError("Not found: " & exp.name, undefinedColumnName)
 
 method eval*(exp: ListExp, varResolver: VarResolver,
     aggrResolver: AggrResolver): NqValue =
@@ -1085,11 +1083,12 @@ method eval*(exp: ListExp, varResolver: VarResolver,
 method eval*(exp: VTable, varResolver: VarResolver,
     aggrResolver: AggrResolver): NqValue =
   if columnCount(exp) != 1:
-    raiseDbError("subquery has too many columns")
+    raiseDbError("subquery has too many columns", syntaxError)
   var count = 0
   for row in instantRows(exp, varResolver):
     if count > 0:
-      raiseDbError("more than one row returned by a subquery used as an expression")
+      raiseDbError("more than one row returned by a subquery used as an expression",
+                   tooManyRowsReturnedBySubquery)
     result = columnValueAt(row, 0)
     count += 1
   if count == 0:
@@ -1107,7 +1106,7 @@ method eval*(exp: CaseExp, varResolver: VarResolver,
     for i in 0..<exp.whens.len:
       let cond = eval(exp.whens[i].cond, varResolver, aggrResolver)
       if cond.kind != nqkBool:
-        raiseDbError("WHEN expression must be of type BOOLEAN")
+        raiseDbError("WHEN expression must be of type BOOLEAN", typeMismatch)
       if cond.boolVal:
         return eval(exp.whens[i].exp, varResolver, aggrResolver)
   result = if exp.elseExp != nil: eval(exp.elseExp, varResolver, aggrResolver)
@@ -1119,7 +1118,7 @@ method eval*(exp: TrimExp, varResolver: VarResolver,
   if exp.char != nil:
     let ch = eval(exp.char, varResolver, aggrResolver)
     if ch.kind != nqkString or ch.strVal.runeLen != 1:
-      raiseDbError("single character expected")
+      raiseDbError("single character expected", stringTooLong)
     result = NqValue(kind: nqkString,
                      strVal: unicode.strip(src.strVal, exp.leading, exp.trailing, [runeAt(ch.strVal, 0)]))
   else:
@@ -1159,7 +1158,7 @@ proc `$`*(val: NqValue): string =
         result &= "."
         result &= frac.substr(0, val.precision - 1)
     of nqkNull: result = ""
-    of nqkList: raiseDbError("conversion of list to string not supported")
+    of nqkList: raiseDbError("conversion of list to string not supported", typeMismatch)
 
 method eval*(exp: CastExp, varResolver: VarResolver,
     aggrResolver: AggrResolver): NqValue =
@@ -1169,7 +1168,7 @@ method eval*(exp: CastExp, varResolver: VarResolver,
     of kInt:
       let v = toInt64(arg)
       if v > high(int32) or v < low(int32):
-        raiseDBError("value out of range for int")
+        raiseDBError("value out of range for int", valueOutOfRange)
       result = NqValue(kind: nqkInt, intVal: int32(v))
     of kNumeric:
       result = toNumeric(arg)
@@ -1189,7 +1188,7 @@ method eval*(exp: CastExp, varResolver: VarResolver,
     of kBool:
       result = NqValue(kind: nqkBool, boolVal: toBool(arg))
     of kNull:
-      raiseDbError("internal error")
+      raiseDbError("internal error", internalError)
     of kBigint:
       result = NqValue(kind: nqkBigint, bigintVal: toInt64(arg))
     of kTime:
@@ -1218,7 +1217,7 @@ method columnCount(table: GroupTable): Natural =
   result = table.columns.len
 
 method columnNo*(rtable: BaseTable, name: string): int {.base.} =
-  raiseDbError("not implemented")
+  raiseDbError("not implemented", internalError)
 
 method columnNo(rtable: HashBaseTable, name: string): int =
   for i in 0..<rtable.def.len:
@@ -1272,7 +1271,7 @@ func newGroupTable*(table: VTable, aggrs: seq[Expression], groupBy: seq[
   for colRef in groupBy:
     if columnNo(table, colRef) == -1:
       raiseDbError("column " & (if colRef.tableName != "": colRef.tableName &
-          "." else: "") & colRef.name & " does not exist")
+          "." else: "") & colRef.name & " does not exist", undefinedColumnName)
   if table of ProjectTable:
     result = GroupTable(child: ProjectTable(table).child,
                        groupBy: groupBy, columns: ProjectTable(table).columns)
@@ -1373,7 +1372,7 @@ proc expKeyColVals(exp: Expression, tableRef: BaseTableRef, isConstProc: proc(ex
     if c.exp of QVarExp:
       let arg = QVarExp(c.exp)
       if arg.name[0] != '$':
-        raiseDbError("column " & arg.name & " does not exist")
+        raiseDbError("column " & arg.name & " does not exist", undefinedColumnName)
       val = NqValue(kind: nqkString,
                         strVal: args[parseInt(arg.name[1..arg.name.high]) - 1])
     else:
@@ -1421,7 +1420,7 @@ method next(cursor: WhereTableCursor, row: var InstantRow,
           if varResolver != nil:
             return varResolver(name, rangeVar)
           raiseDbError("column " & (if rangeVar != "": rangeVar &
-              "." else: "") & name & " does not exist")
+              "." else: "") & name & " does not exist", undefinedColumnName)
         return columnValueAt(rowCopy, col))
       return val.kind != nqkNull and val.boolVal
     else:
@@ -1440,7 +1439,7 @@ method next(cursor: WhereTableCursor, row: var InstantRow,
         if varResolver != nil:
           return varResolver(name, rangeVar)
         raiseDbError("column " & (if rangeVar != "": rangeVar & "." else: "") &
-            name & " does not exist")
+            name & " does not exist", undefinedColumnName)
       return columnValueAt(rowCopy, col))
     if val.kind != nqkNull and val.boolVal:
       return true
@@ -1466,7 +1465,7 @@ method next(cursor: ProjectTableCursor, row: var InstantRow,
         let col = columnNo(cursor.table.child, name, rangeVar)
         if col == -1:
           raiseDbError("column " & (if rangeVar != "": rangeVar &
-              "." else: "") & name & " does not exist")
+              "." else: "") & name & " does not exist", undefinedColumnName)
         return columnValueAt(baseRow, col)))
     else:
       vals.add(NqValue(kind: nqkNull))
@@ -1504,14 +1503,14 @@ proc aggrMax(table: VTable, groupBy: seq[QVarExp],
   let col = columnNo(table, colRef)
   if col == -1:
     raiseDbError("column " & (if colRef.tableName != "": colRef.tableName &
-        "." else: "") & colRef.name & " does not exist")
+        "." else: "") & colRef.name & " does not exist", undefinedColumnName)
   result = NqValue(kind: nqkNull)
   for row in instantRows(table, args):
     if groupByVals == groupVals(groupBy, columns, row):
       let val = columnValueAt(row, col)
       if val.kind != nqkNull:
         if val.kind != nqkNumeric and val.kind != nqkFloat and val.kind != nqkInt:
-          raiseDbError("column is not numeric")
+          raiseDbError("column is not numeric", undefinedFunction)
         if result.kind == nqkNull:
           result = val
         elif result.kind == nqkInt:
@@ -1533,14 +1532,14 @@ proc aggrMin(table: VTable, groupBy: seq[QVarExp],
   let col = columnNo(table, colRef)
   if col == -1:
     raiseDbError("column " & (if colRef.tableName != "": colRef.tableName &
-        "." else: "") & colRef.name & " does not exist")
+        "." else: "") & colRef.name & " does not exist", undefinedColumnName)
   result = NqValue(kind: nqkNull)
   for row in instantRows(table, args):
     if groupByVals == groupVals(groupBy, columns, row):
       let val = columnValueAt(row, col)
       if val.kind != nqkNull:
         if val.kind != nqkNumeric and val.kind != nqkFloat and val.kind != nqkInt:
-          raiseDbError("column is not numeric")
+          raiseDbError("column is not numeric", undefinedFunction)
         if result.kind == nqkNull:
           result = val
         elif result.kind == nqkInt:
@@ -1563,14 +1562,14 @@ proc aggrSum(table: VTable, groupBy: seq[QVarExp],
   let col = columnNo(table, colRef)
   if col == -1:
     raiseDbError("column " & (if colRef.tableName != "": colRef.tableName &
-        "." else: "") & colRef.name & " does not exist")
+        "." else: "") & colRef.name & " does not exist", undefinedColumnName)
   result = NqValue(kind: nqkNull)
   for row in instantRows(table, args):
     if groupByVals == groupVals(groupBy, columns, row):
       let val = columnValueAt(row, col)
       if val.kind != nqkNull:
         if val.kind != nqkNumeric and val.kind != nqkFloat and val.kind != nqkInt:
-          raiseDbError("column is not numeric")
+          raiseDbError("column is not numeric", undefinedFunction)
         if result.kind == nqkNull:
           result = val
         else:
@@ -1584,7 +1583,7 @@ proc aggrAvg(table: VTable, groupBy: seq[QVarExp],
   let col = columnNo(table, colRef)
   if col == -1:
     raiseDbError("column " & (if colRef.tableName != "": colRef.tableName &
-        "." else: "") & colRef.name & " does not exist")
+        "." else: "") & colRef.name & " does not exist", undefinedColumnName)
   var n: int64 = 0
   var avg: float
   for row in instantRows(table, args):
@@ -1592,7 +1591,7 @@ proc aggrAvg(table: VTable, groupBy: seq[QVarExp],
       let val = columnValueAt(row, col)
       if val.kind != nqkNull:
         if val.kind != nqkNumeric and val.kind != nqkFloat and val.kind != nqkInt:
-          raiseDbError("column is not numeric")
+          raiseDbError("column is not numeric", undefinedFunction)
         n += 1
         avg += (toFloat(val) - avg) / float(n)
   result = if n == 0: NqValue(kind: nqkNull)
@@ -1614,7 +1613,7 @@ method newCursor(rtable: GroupTable, args: openArray[string]): Cursor =
       let col = columnNo(rtable.child, mapColRef(colRef, rtable.columns))
       if col == -1:
         raiseDbError("column " & (if colRef.tableName != "": colRef.tableName & "." else: "") &
-                     colRef.name & " does not exist")
+                     colRef.name & " does not exist", undefinedColumnName)
       key.add(columnValueAt(row, col))
     if not groupTable.hasKey(key):
       groupTable[key] = Record[NqValue](@[])
@@ -1643,7 +1642,7 @@ method next(cursor: GroupTableCursor, row: var InstantRow,
     if isAggrCol:
       vals.add(eval(cursor.table.columns[i].exp,
           proc(name: string, rangeVar: string): NqValue =
-        raiseDbError(name & " does not exist"),
+        raiseDbError(name & " does not exist", undefinedColumnName),
           proc(exp: ScalarOpExp): NqValue =
         case exp.opName
           of "COUNT":
@@ -1651,9 +1650,9 @@ method next(cursor: GroupTableCursor, row: var InstantRow,
                                cursor.table.columns, k, cursor.args)
           of "AVG", "MAX", "MIN", "SUM":
             if exp.args.len != 1:
-              raiseDbError("1 argument to " & exp.opName & " required")
+              raiseDbError("1 argument to " & exp.opName & " required", undefinedFunction)
             if not (exp.args[0] of QVarExp):
-              raiseDbError("column reference required")
+              raiseDbError("column reference required", syntaxError)
             let colRef = QVarExp(exp.args[0])
             case exp.opName
               of "MAX":

@@ -304,7 +304,7 @@ proc readNextToken(s: Scanner): Token =
       return Token(kind: tokGt)
     of '|':
       if s.reader.read() != '|':
-        raiseDbError("invalid operator: |")
+        raiseDbError("invalid operator: |", syntaxError)
       return Token(kind: tokConcat)
     of '\'':
       var str = ""
@@ -324,7 +324,7 @@ proc readNextToken(s: Scanner): Token =
     of '$':
       return Token(kind: tokNumPlaceholder)
     else:
-      raiseDbError("Invalid character: " & c)
+      raiseDbError("Invalid character: " & c, syntaxError)
 
 proc nextToken*(s: Scanner): Token =
   s.current = readNextToken(s)

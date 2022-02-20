@@ -1,4 +1,24 @@
 defaultDumpName	db_nimternalsql/nqcommon.html#defaultDumpName	nqcommon: defaultDumpName	
+tooManyRowsReturnedBySubquery	db_nimternalsql/nqcommon.html#tooManyRowsReturnedBySubquery	nqcommon: tooManyRowsReturnedBySubquery	
+stringTooLong	db_nimternalsql/nqcommon.html#stringTooLong	nqcommon: stringTooLong	
+valueOutOfRange	db_nimternalsql/nqcommon.html#valueOutOfRange	nqcommon: valueOutOfRange	
+invalidDatetimeValue	db_nimternalsql/nqcommon.html#invalidDatetimeValue	nqcommon: invalidDatetimeValue	
+invalidParameterValue	db_nimternalsql/nqcommon.html#invalidParameterValue	nqcommon: invalidParameterValue	
+columnNotNullable	db_nimternalsql/nqcommon.html#columnNotNullable	nqcommon: columnNotNullable	
+uniqueConstraintViolation	db_nimternalsql/nqcommon.html#uniqueConstraintViolation	nqcommon: uniqueConstraintViolation	
+syntaxError	db_nimternalsql/nqcommon.html#syntaxError	nqcommon: syntaxError	
+columnRefAmbiguous	db_nimternalsql/nqcommon.html#columnRefAmbiguous	nqcommon: columnRefAmbiguous	
+undefinedColumnName	db_nimternalsql/nqcommon.html#undefinedColumnName	nqcommon: undefinedColumnName	
+undefinedObjectName	db_nimternalsql/nqcommon.html#undefinedObjectName	nqcommon: undefinedObjectName	
+typeMismatch	db_nimternalsql/nqcommon.html#typeMismatch	nqcommon: typeMismatch	
+undefinedFunction	db_nimternalsql/nqcommon.html#undefinedFunction	nqcommon: undefinedFunction	
+tableExists	db_nimternalsql/nqcommon.html#tableExists	nqcommon: tableExists	
+generalError	db_nimternalsql/nqcommon.html#generalError	nqcommon: generalError	
+internalError	db_nimternalsql/nqcommon.html#internalError	nqcommon: internalError	
+fileIoError	db_nimternalsql/nqcommon.html#fileIoError	nqcommon: fileIoError	
+fileNotValid	db_nimternalsql/nqcommon.html#fileNotValid	nqcommon: fileNotValid	
+notADirectory	db_nimternalsql/nqcommon.html#notADirectory	nqcommon: notADirectory	
+restoreNotSupported	db_nimternalsql/nqcommon.html#restoreNotSupported	nqcommon: restoreNotSupported	
 ColumnDef	db_nimternalsql/nqcommon.html#ColumnDef	nqcommon: ColumnDef	
 TypeDef	db_nimternalsql/nqcommon.html#TypeDef	nqcommon: TypeDef	
 Expression	db_nimternalsql/nqcommon.html#Expression	nqcommon: Expression	
@@ -17,7 +37,8 @@ CaseExp	db_nimternalsql/nqcommon.html#CaseExp	nqcommon: CaseExp
 CastExp	db_nimternalsql/nqcommon.html#CastExp	nqcommon: CastExp	
 TrimExp	db_nimternalsql/nqcommon.html#TrimExp	nqcommon: TrimExp	
 SelectElement	db_nimternalsql/nqcommon.html#SelectElement	nqcommon: SelectElement	
-raiseDbError	db_nimternalsql/nqcommon.html#raiseDbError,string	nqcommon: raiseDbError(msg: string)	
+SqlError	db_nimternalsql/nqcommon.html#SqlError	nqcommon: SqlError	
+raiseDbError	db_nimternalsql/nqcommon.html#raiseDbError,string,string	nqcommon: raiseDbError(msg: string; sqlstate: string)	
 newStringLit	db_nimternalsql/nqcommon.html#newStringLit,string	nqcommon: newStringLit(v: string): Expression	
 newNumericLit	db_nimternalsql/nqcommon.html#newNumericLit,string	nqcommon: newNumericLit(v: string): Expression	
 newTimeLit	db_nimternalsql/nqcommon.html#newTimeLit,string	nqcommon: newTimeLit(v: string): Expression	

@@ -147,6 +147,14 @@ window.addEventListener('DOMContentLoaded', main);
           <li><a class="reference external"
           data-doc-search-tag="union: columnNo(table: UnionTable; name: string; tableName: string): int" href="db_nimternalsql/union.html#columnNo.e%2CUnionTable%2Cstring%2Cstring">union: columnNo(table: UnionTable; name: string; tableName: string): int</a></li>
           </ul></dd>
+<dt><a name="columnNotNullable" href="#columnNotNullable"><span>columnNotNullable:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="nqcommon: columnNotNullable" href="db_nimternalsql/nqcommon.html#columnNotNullable">nqcommon: columnNotNullable</a></li>
+          </ul></dd>
+<dt><a name="columnRefAmbiguous" href="#columnRefAmbiguous"><span>columnRefAmbiguous:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="nqcommon: columnRefAmbiguous" href="db_nimternalsql/nqcommon.html#columnRefAmbiguous">nqcommon: columnRefAmbiguous</a></li>
+          </ul></dd>
 <dt><a name="columnValueAt" href="#columnValueAt"><span>columnValueAt:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="nqtables: columnValueAt(row: InstantRow; col: Natural): NqValue" href="db_nimternalsql/nqtables.html#columnValueAt%2CInstantRow%2CNatural">nqtables: columnValueAt(row: InstantRow; col: Natural): NqValue</a></li>
@@ -208,8 +216,10 @@ window.addEventListener('DOMContentLoaded', main);
           data-doc-search-tag="nqtables: eval(exp: DateLit; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue" href="db_nimternalsql/nqtables.html#eval.e%2CDateLit%2CVarResolver%2CAggrResolver">nqtables: eval(exp: DateLit; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue</a></li>
           <li><a class="reference external"
           data-doc-search-tag="nqtables: eval(exp: Expression; varResolver: VarResolver; aggrResolver: AggrResolver = proc (
-    exp: ScalarOpExp): NqValue = raiseDbError(exp.opName &amp; &quot; not supported&quot;)): NqValue" href="db_nimternalsql/nqtables.html#eval.e%2CExpression%2CVarResolver%2CAggrResolver">nqtables: eval(exp: Expression; varResolver: VarResolver; aggrResolver: AggrResolver = proc (
-    exp: ScalarOpExp): NqValue = raiseDbError(exp.opName &amp; &quot; not supported&quot;)): NqValue</a></li>
+    exp: ScalarOpExp): NqValue = raiseDbError(exp.opName &amp; &quot; not supported&quot;,
+    undefinedFunction)): NqValue" href="db_nimternalsql/nqtables.html#eval.e%2CExpression%2CVarResolver%2CAggrResolver">nqtables: eval(exp: Expression; varResolver: VarResolver; aggrResolver: AggrResolver = proc (
+    exp: ScalarOpExp): NqValue = raiseDbError(exp.opName &amp; &quot; not supported&quot;,
+    undefinedFunction)): NqValue</a></li>
           <li><a class="reference external"
           data-doc-search-tag="nqtables: eval(exp: ListExp; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue" href="db_nimternalsql/nqtables.html#eval.e%2CListExp%2CVarResolver%2CAggrResolver">nqtables: eval(exp: ListExp; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue</a></li>
           <li><a class="reference external"
@@ -255,9 +265,21 @@ window.addEventListener('DOMContentLoaded', main);
 <li><a class="reference external"
           data-doc-search-tag="nqcommon: Expression" href="db_nimternalsql/nqcommon.html#Expression">nqcommon: Expression</a></li>
           </ul></dd>
+<dt><a name="fileIoError" href="#fileIoError"><span>fileIoError:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="nqcommon: fileIoError" href="db_nimternalsql/nqcommon.html#fileIoError">nqcommon: fileIoError</a></li>
+          </ul></dd>
+<dt><a name="fileNotValid" href="#fileNotValid"><span>fileNotValid:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="nqcommon: fileNotValid" href="db_nimternalsql/nqcommon.html#fileNotValid">nqcommon: fileNotValid</a></li>
+          </ul></dd>
 <dt><a name="FileReader" href="#FileReader"><span>FileReader:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="sqlscanner: FileReader" href="db_nimternalsql/sqlscanner.html#FileReader">sqlscanner: FileReader</a></li>
+          </ul></dd>
+<dt><a name="generalError" href="#generalError"><span>generalError:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="nqcommon: generalError" href="db_nimternalsql/nqcommon.html#generalError">nqcommon: generalError</a></li>
           </ul></dd>
 <dt><a name="getAggrs" href="#getAggrs"><span>getAggrs:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -310,6 +332,18 @@ window.addEventListener('DOMContentLoaded', main);
           data-doc-search-tag="nqtables: instantRows(tableRef: BaseTableRef): InstantRow" href="db_nimternalsql/nqtables.html#instantRows.i%2CBaseTableRef">nqtables: instantRows(tableRef: BaseTableRef): InstantRow</a></li>
           <li><a class="reference external"
           data-doc-search-tag="nqtables: instantRows(rtable: VTable; args: varargs[string]): InstantRow" href="db_nimternalsql/nqtables.html#instantRows.i%2CVTable%2Cvarargs%5Bstring%5D">nqtables: instantRows(rtable: VTable; args: varargs[string]): InstantRow</a></li>
+          </ul></dd>
+<dt><a name="internalError" href="#internalError"><span>internalError:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="nqcommon: internalError" href="db_nimternalsql/nqcommon.html#internalError">nqcommon: internalError</a></li>
+          </ul></dd>
+<dt><a name="invalidDatetimeValue" href="#invalidDatetimeValue"><span>invalidDatetimeValue:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="nqcommon: invalidDatetimeValue" href="db_nimternalsql/nqcommon.html#invalidDatetimeValue">nqcommon: invalidDatetimeValue</a></li>
+          </ul></dd>
+<dt><a name="invalidParameterValue" href="#invalidParameterValue"><span>invalidParameterValue:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="nqcommon: invalidParameterValue" href="db_nimternalsql/nqcommon.html#invalidParameterValue">nqcommon: invalidParameterValue</a></li>
           </ul></dd>
 <dt><a name="isConst" href="#isConst"><span>isConst:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -545,6 +579,10 @@ window.addEventListener('DOMContentLoaded', main);
 <li><a class="reference external"
           data-doc-search-tag="sqlscanner: nextToken(s: Scanner): Token" href="db_nimternalsql/sqlscanner.html#nextToken%2CScanner">sqlscanner: nextToken(s: Scanner): Token</a></li>
           </ul></dd>
+<dt><a name="notADirectory" href="#notADirectory"><span>notADirectory:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="nqcommon: notADirectory" href="db_nimternalsql/nqcommon.html#notADirectory">nqcommon: notADirectory</a></li>
+          </ul></dd>
 <dt><a name="nqkBigint" href="#nqkBigint"><span>nqkBigint:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="NqValueKind.nqkBigint" href="db_nimternalsql/nqtables.html#nqkBigint">NqValueKind.nqkBigint</a></li>
@@ -635,11 +673,7 @@ window.addEventListener('DOMContentLoaded', main);
           </ul></dd>
 <dt><a name="raiseDbError" href="#raiseDbError"><span>raiseDbError:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="nqcommon: raiseDbError(msg: string)" href="db_nimternalsql/nqcommon.html#raiseDbError%2Cstring">nqcommon: raiseDbError(msg: string)</a></li>
-          </ul></dd>
-<dt><a name="raiseIoError" href="#raiseIoError"><span>raiseIoError:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="snapshot: raiseIoError(msg: string)" href="db_nimternalsql/snapshot.html#raiseIoError%2Cstring">snapshot: raiseIoError(msg: string)</a></li>
+          data-doc-search-tag="nqcommon: raiseDbError(msg: string; sqlstate: string)" href="db_nimternalsql/nqcommon.html#raiseDbError%2Cstring%2Cstring">nqcommon: raiseDbError(msg: string; sqlstate: string)</a></li>
           </ul></dd>
 <dt><a name="Reader" href="#Reader"><span>Reader:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -674,6 +708,10 @@ window.addEventListener('DOMContentLoaded', main);
           data-doc-search-tag="db_nimternalsql: restore(conn: DbConn; filename: string)" href="db_nimternalsql.html#restore%2CDbConn%2Cstring">db_nimternalsql: restore(conn: DbConn; filename: string)</a></li>
           <li><a class="reference external"
           data-doc-search-tag="snapshot: restore(db: Database; filename: string)" href="db_nimternalsql/snapshot.html#restore%2CDatabase%2Cstring">snapshot: restore(db: Database; filename: string)</a></li>
+          </ul></dd>
+<dt><a name="restoreNotSupported" href="#restoreNotSupported"><span>restoreNotSupported:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="nqcommon: restoreNotSupported" href="db_nimternalsql/nqcommon.html#restoreNotSupported">nqcommon: restoreNotSupported</a></li>
           </ul></dd>
 <dt><a name="rollback" href="#rollback"><span>rollback:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -741,6 +779,10 @@ window.addEventListener('DOMContentLoaded', main);
 <li><a class="reference external"
           data-doc-search-tag="sqlparser: SqlDropTable" href="db_nimternalsql/sqlparser.html#SqlDropTable">sqlparser: SqlDropTable</a></li>
           </ul></dd>
+<dt><a name="SqlError" href="#SqlError"><span>SqlError:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="nqcommon: SqlError" href="db_nimternalsql/nqcommon.html#SqlError">nqcommon: SqlError</a></li>
+          </ul></dd>
 <dt><a name="SqlInsert" href="#SqlInsert"><span>SqlInsert:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="sqlparser: SqlInsert" href="db_nimternalsql/sqlparser.html#SqlInsert">sqlparser: SqlInsert</a></li>
@@ -752,6 +794,10 @@ window.addEventListener('DOMContentLoaded', main);
 <dt><a name="SqlSelect" href="#SqlSelect"><span>SqlSelect:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="sqlparser: SqlSelect" href="db_nimternalsql/sqlparser.html#SqlSelect">sqlparser: SqlSelect</a></li>
+          </ul></dd>
+<dt><a name="sqlState" href="#sqlState"><span>sqlState:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="db_nimternalsql: sqlState(err: ref DbError): string" href="db_nimternalsql.html#sqlState%2Cref.DbError">db_nimternalsql: sqlState(err: ref DbError): string</a></li>
           </ul></dd>
 <dt><a name="SqlStatement" href="#SqlStatement"><span>SqlStatement:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -776,6 +822,18 @@ window.addEventListener('DOMContentLoaded', main);
 <dt><a name="StringReader" href="#StringReader"><span>StringReader:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="sqlscanner: StringReader" href="db_nimternalsql/sqlscanner.html#StringReader">sqlscanner: StringReader</a></li>
+          </ul></dd>
+<dt><a name="stringTooLong" href="#stringTooLong"><span>stringTooLong:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="nqcommon: stringTooLong" href="db_nimternalsql/nqcommon.html#stringTooLong">nqcommon: stringTooLong</a></li>
+          </ul></dd>
+<dt><a name="syntaxError" href="#syntaxError"><span>syntaxError:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="nqcommon: syntaxError" href="db_nimternalsql/nqcommon.html#syntaxError">nqcommon: syntaxError</a></li>
+          </ul></dd>
+<dt><a name="tableExists" href="#tableExists"><span>tableExists:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="nqcommon: tableExists" href="db_nimternalsql/nqcommon.html#tableExists">nqcommon: tableExists</a></li>
           </ul></dd>
 <dt><a name="TableExp" href="#TableExp"><span>TableExp:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -1177,6 +1235,10 @@ window.addEventListener('DOMContentLoaded', main);
 <li><a class="reference external"
           data-doc-search-tag="nqtables: toNumeric(v: NqValue): NqValue" href="db_nimternalsql/nqtables.html#toNumeric%2CNqValue">nqtables: toNumeric(v: NqValue): NqValue</a></li>
           </ul></dd>
+<dt><a name="tooManyRowsReturnedBySubquery" href="#tooManyRowsReturnedBySubquery"><span>tooManyRowsReturnedBySubquery:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="nqcommon: tooManyRowsReturnedBySubquery" href="db_nimternalsql/nqcommon.html#tooManyRowsReturnedBySubquery">nqcommon: tooManyRowsReturnedBySubquery</a></li>
+          </ul></dd>
 <dt><a name="TrimExp" href="#TrimExp"><span>TrimExp:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="nqcommon: TrimExp" href="db_nimternalsql/nqcommon.html#TrimExp">nqcommon: TrimExp</a></li>
@@ -1207,6 +1269,26 @@ window.addEventListener('DOMContentLoaded', main);
 <li><a class="reference external"
           data-doc-search-tag="nqcommon: TypeDef" href="db_nimternalsql/nqcommon.html#TypeDef">nqcommon: TypeDef</a></li>
           </ul></dd>
+<dt><a name="typeMismatch" href="#typeMismatch"><span>typeMismatch:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="nqcommon: typeMismatch" href="db_nimternalsql/nqcommon.html#typeMismatch">nqcommon: typeMismatch</a></li>
+          </ul></dd>
+<dt><a name="undefinedColumnName" href="#undefinedColumnName"><span>undefinedColumnName:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="nqcommon: undefinedColumnName" href="db_nimternalsql/nqcommon.html#undefinedColumnName">nqcommon: undefinedColumnName</a></li>
+          </ul></dd>
+<dt><a name="undefinedFunction" href="#undefinedFunction"><span>undefinedFunction:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="nqcommon: undefinedFunction" href="db_nimternalsql/nqcommon.html#undefinedFunction">nqcommon: undefinedFunction</a></li>
+          </ul></dd>
+<dt><a name="undefinedObjectName" href="#undefinedObjectName"><span>undefinedObjectName:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="nqcommon: undefinedObjectName" href="db_nimternalsql/nqcommon.html#undefinedObjectName">nqcommon: undefinedObjectName</a></li>
+          </ul></dd>
+<dt><a name="uniqueConstraintViolation" href="#uniqueConstraintViolation"><span>uniqueConstraintViolation:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="nqcommon: uniqueConstraintViolation" href="db_nimternalsql/nqcommon.html#uniqueConstraintViolation">nqcommon: uniqueConstraintViolation</a></li>
+          </ul></dd>
 <dt><a name="update" href="#update"><span>update:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="tx: update(tx: Tx; table: BaseTable; assignments: seq[ColumnAssignment];
@@ -1216,6 +1298,10 @@ window.addEventListener('DOMContentLoaded', main);
 <dt><a name="UpdateAssignment" href="#UpdateAssignment"><span>UpdateAssignment:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="sqlparser: UpdateAssignment" href="db_nimternalsql/sqlparser.html#UpdateAssignment">sqlparser: UpdateAssignment</a></li>
+          </ul></dd>
+<dt><a name="valueOutOfRange" href="#valueOutOfRange"><span>valueOutOfRange:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="nqcommon: valueOutOfRange" href="db_nimternalsql/nqcommon.html#valueOutOfRange">nqcommon: valueOutOfRange</a></li>
           </ul></dd>
 <dt><a name="VarResolver" href="#VarResolver"><span>VarResolver:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -1258,7 +1344,7 @@ window.addEventListener('DOMContentLoaded', main);
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-02-20 10:26:03 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-02-20 21:36:54 UTC</small>
       </div>
     </div>
   </div>

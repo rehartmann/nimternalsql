@@ -149,6 +149,9 @@ window.addEventListener('DOMContentLoaded', main);
     title="SelectElement {.acyclic.} = object
   colName*: string
   exp*: Expression">SelectElement</a></li>
+  <li><a class="reference" href="#SqlError"
+    title="SqlError = object of DbError
+  sqlState*: string">SqlError</a></li>
   <li><a class="reference" href="#StringLit"
     title="StringLit {.final.} = ref object of ScalarLit">StringLit</a></li>
   <li><a class="reference" href="#TimeLit"
@@ -173,8 +176,48 @@ window.addEventListener('DOMContentLoaded', main);
 <li>
   <a class="reference reference-toplevel" href="#10" id="60">Consts</a>
   <ul class="simple simple-toc-section">
-      <li><a class="reference" href="#defaultDumpName"
+      <li><a class="reference" href="#columnNotNullable"
+    title="columnNotNullable = &quot;23502&quot;">columnNotNullable</a></li>
+  <li><a class="reference" href="#columnRefAmbiguous"
+    title="columnRefAmbiguous = &quot;42702&quot;">columnRefAmbiguous</a></li>
+  <li><a class="reference" href="#defaultDumpName"
     title="defaultDumpName = &quot;dump.ndb&quot;">defaultDumpName</a></li>
+  <li><a class="reference" href="#fileIoError"
+    title="fileIoError = &quot;N0001&quot;">fileIoError</a></li>
+  <li><a class="reference" href="#fileNotValid"
+    title="fileNotValid = &quot;N0002&quot;">fileNotValid</a></li>
+  <li><a class="reference" href="#generalError"
+    title="generalError = &quot;HY000&quot;">generalError</a></li>
+  <li><a class="reference" href="#internalError"
+    title="internalError = &quot;N0000&quot;">internalError</a></li>
+  <li><a class="reference" href="#invalidDatetimeValue"
+    title="invalidDatetimeValue = &quot;22007&quot;">invalidDatetimeValue</a></li>
+  <li><a class="reference" href="#invalidParameterValue"
+    title="invalidParameterValue = &quot;22023&quot;">invalidParameterValue</a></li>
+  <li><a class="reference" href="#notADirectory"
+    title="notADirectory = &quot;N0003&quot;">notADirectory</a></li>
+  <li><a class="reference" href="#restoreNotSupported"
+    title="restoreNotSupported = &quot;NS004&quot;">restoreNotSupported</a></li>
+  <li><a class="reference" href="#stringTooLong"
+    title="stringTooLong = &quot;22001&quot;">stringTooLong</a></li>
+  <li><a class="reference" href="#syntaxError"
+    title="syntaxError = &quot;42601&quot;">syntaxError</a></li>
+  <li><a class="reference" href="#tableExists"
+    title="tableExists = &quot;42N01&quot;">tableExists</a></li>
+  <li><a class="reference" href="#tooManyRowsReturnedBySubquery"
+    title="tooManyRowsReturnedBySubquery = &quot;21000&quot;">tooManyRowsReturnedBySubquery</a></li>
+  <li><a class="reference" href="#typeMismatch"
+    title="typeMismatch = &quot;42804&quot;">typeMismatch</a></li>
+  <li><a class="reference" href="#undefinedColumnName"
+    title="undefinedColumnName = &quot;42703&quot;">undefinedColumnName</a></li>
+  <li><a class="reference" href="#undefinedFunction"
+    title="undefinedFunction = &quot;42883&quot;">undefinedFunction</a></li>
+  <li><a class="reference" href="#undefinedObjectName"
+    title="undefinedObjectName = &quot;42704&quot;">undefinedObjectName</a></li>
+  <li><a class="reference" href="#uniqueConstraintViolation"
+    title="uniqueConstraintViolation = &quot;23505&quot;">uniqueConstraintViolation</a></li>
+  <li><a class="reference" href="#valueOutOfRange"
+    title="valueOutOfRange = &quot;22003&quot;">valueOutOfRange</a></li>
 
   </ul>
 </li>
@@ -253,8 +296,8 @@ window.addEventListener('DOMContentLoaded', main);
 
   </ul>
   <ul class="simple nested-toc-section">raiseDbError
-      <li><a class="reference" href="#raiseDbError%2Cstring"
-    title="raiseDbError(msg: string)">raiseDbError(msg: string)</a></li>
+      <li><a class="reference" href="#raiseDbError%2Cstring%2Cstring"
+    title="raiseDbError(msg: string; sqlstate: string)">raiseDbError(msg: string; sqlstate: string)</a></li>
 
   </ul>
 
@@ -417,6 +460,16 @@ window.addEventListener('DOMContentLoaded', main);
 
 </dd>
 </div>
+<div id="SqlError">
+<dt><pre><a href="nqcommon.html#SqlError"><span class="Identifier">SqlError</span></a> <span class="Other">=</span> <span class="Keyword">object</span> <span class="Keyword">of</span> <span class="Identifier">DbError</span>
+  <span class="Identifier">sqlState</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>
+</pre></dt>
+<dd>
+
+
+
+</dd>
+</div>
 <div id="StringLit">
 <dt><pre><a href="nqcommon.html#StringLit"><span class="Identifier">StringLit</span></a> {.<span class="Identifier">final</span>.} <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span> <span class="Keyword">of</span> <a href="nqcommon.html#ScalarLit"><span class="Identifier">ScalarLit</span></a></pre></dt>
 <dd>
@@ -472,8 +525,168 @@ window.addEventListener('DOMContentLoaded', main);
 <div class="section" id="10">
 <h1><a class="toc-backref" href="#10">Consts</a></h1>
 <dl class="item">
+<div id="columnNotNullable">
+<dt><pre><a href="nqcommon.html#columnNotNullable"><span class="Identifier">columnNotNullable</span></a> <span class="Other">=</span> <span class="StringLit">&quot;23502&quot;</span></pre></dt>
+<dd>
+
+
+
+</dd>
+</div>
+<div id="columnRefAmbiguous">
+<dt><pre><a href="nqcommon.html#columnRefAmbiguous"><span class="Identifier">columnRefAmbiguous</span></a> <span class="Other">=</span> <span class="StringLit">&quot;42702&quot;</span></pre></dt>
+<dd>
+
+
+
+</dd>
+</div>
 <div id="defaultDumpName">
 <dt><pre><a href="nqcommon.html#defaultDumpName"><span class="Identifier">defaultDumpName</span></a> <span class="Other">=</span> <span class="StringLit">&quot;dump.ndb&quot;</span></pre></dt>
+<dd>
+
+
+
+</dd>
+</div>
+<div id="fileIoError">
+<dt><pre><a href="nqcommon.html#fileIoError"><span class="Identifier">fileIoError</span></a> <span class="Other">=</span> <span class="StringLit">&quot;N0001&quot;</span></pre></dt>
+<dd>
+
+
+
+</dd>
+</div>
+<div id="fileNotValid">
+<dt><pre><a href="nqcommon.html#fileNotValid"><span class="Identifier">fileNotValid</span></a> <span class="Other">=</span> <span class="StringLit">&quot;N0002&quot;</span></pre></dt>
+<dd>
+
+
+
+</dd>
+</div>
+<div id="generalError">
+<dt><pre><a href="nqcommon.html#generalError"><span class="Identifier">generalError</span></a> <span class="Other">=</span> <span class="StringLit">&quot;HY000&quot;</span></pre></dt>
+<dd>
+
+
+
+</dd>
+</div>
+<div id="internalError">
+<dt><pre><a href="nqcommon.html#internalError"><span class="Identifier">internalError</span></a> <span class="Other">=</span> <span class="StringLit">&quot;N0000&quot;</span></pre></dt>
+<dd>
+
+
+
+</dd>
+</div>
+<div id="invalidDatetimeValue">
+<dt><pre><a href="nqcommon.html#invalidDatetimeValue"><span class="Identifier">invalidDatetimeValue</span></a> <span class="Other">=</span> <span class="StringLit">&quot;22007&quot;</span></pre></dt>
+<dd>
+
+
+
+</dd>
+</div>
+<div id="invalidParameterValue">
+<dt><pre><a href="nqcommon.html#invalidParameterValue"><span class="Identifier">invalidParameterValue</span></a> <span class="Other">=</span> <span class="StringLit">&quot;22023&quot;</span></pre></dt>
+<dd>
+
+
+
+</dd>
+</div>
+<div id="notADirectory">
+<dt><pre><a href="nqcommon.html#notADirectory"><span class="Identifier">notADirectory</span></a> <span class="Other">=</span> <span class="StringLit">&quot;N0003&quot;</span></pre></dt>
+<dd>
+
+
+
+</dd>
+</div>
+<div id="restoreNotSupported">
+<dt><pre><a href="nqcommon.html#restoreNotSupported"><span class="Identifier">restoreNotSupported</span></a> <span class="Other">=</span> <span class="StringLit">&quot;NS004&quot;</span></pre></dt>
+<dd>
+
+
+
+</dd>
+</div>
+<div id="stringTooLong">
+<dt><pre><a href="nqcommon.html#stringTooLong"><span class="Identifier">stringTooLong</span></a> <span class="Other">=</span> <span class="StringLit">&quot;22001&quot;</span></pre></dt>
+<dd>
+
+
+
+</dd>
+</div>
+<div id="syntaxError">
+<dt><pre><a href="nqcommon.html#syntaxError"><span class="Identifier">syntaxError</span></a> <span class="Other">=</span> <span class="StringLit">&quot;42601&quot;</span></pre></dt>
+<dd>
+
+
+
+</dd>
+</div>
+<div id="tableExists">
+<dt><pre><a href="nqcommon.html#tableExists"><span class="Identifier">tableExists</span></a> <span class="Other">=</span> <span class="StringLit">&quot;42N01&quot;</span></pre></dt>
+<dd>
+
+
+
+</dd>
+</div>
+<div id="tooManyRowsReturnedBySubquery">
+<dt><pre><a href="nqcommon.html#tooManyRowsReturnedBySubquery"><span class="Identifier">tooManyRowsReturnedBySubquery</span></a> <span class="Other">=</span> <span class="StringLit">&quot;21000&quot;</span></pre></dt>
+<dd>
+
+
+
+</dd>
+</div>
+<div id="typeMismatch">
+<dt><pre><a href="nqcommon.html#typeMismatch"><span class="Identifier">typeMismatch</span></a> <span class="Other">=</span> <span class="StringLit">&quot;42804&quot;</span></pre></dt>
+<dd>
+
+
+
+</dd>
+</div>
+<div id="undefinedColumnName">
+<dt><pre><a href="nqcommon.html#undefinedColumnName"><span class="Identifier">undefinedColumnName</span></a> <span class="Other">=</span> <span class="StringLit">&quot;42703&quot;</span></pre></dt>
+<dd>
+
+
+
+</dd>
+</div>
+<div id="undefinedFunction">
+<dt><pre><a href="nqcommon.html#undefinedFunction"><span class="Identifier">undefinedFunction</span></a> <span class="Other">=</span> <span class="StringLit">&quot;42883&quot;</span></pre></dt>
+<dd>
+
+
+
+</dd>
+</div>
+<div id="undefinedObjectName">
+<dt><pre><a href="nqcommon.html#undefinedObjectName"><span class="Identifier">undefinedObjectName</span></a> <span class="Other">=</span> <span class="StringLit">&quot;42704&quot;</span></pre></dt>
+<dd>
+
+
+
+</dd>
+</div>
+<div id="uniqueConstraintViolation">
+<dt><pre><a href="nqcommon.html#uniqueConstraintViolation"><span class="Identifier">uniqueConstraintViolation</span></a> <span class="Other">=</span> <span class="StringLit">&quot;23505&quot;</span></pre></dt>
+<dd>
+
+
+
+</dd>
+</div>
+<div id="valueOutOfRange">
+<dt><pre><a href="nqcommon.html#valueOutOfRange"><span class="Identifier">valueOutOfRange</span></a> <span class="Other">=</span> <span class="StringLit">&quot;22003&quot;</span></pre></dt>
 <dd>
 
 
@@ -595,8 +808,9 @@ window.addEventListener('DOMContentLoaded', main);
 
 </dd>
 </div>
-<div id="raiseDbError,string">
-<dt><pre><span class="Keyword">proc</span> <a href="#raiseDbError%2Cstring"><span class="Identifier">raiseDbError</span></a><span class="Other">(</span><span class="Identifier">msg</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span> {.<span class="Identifier">noreturn</span><span class="Other">,</span> <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">DbError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+<div id="raiseDbError,string,string">
+<dt><pre><span class="Keyword">proc</span> <a href="#raiseDbError%2Cstring%2Cstring"><span class="Identifier">raiseDbError</span></a><span class="Other">(</span><span class="Identifier">msg</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">sqlstate</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span> {.<span class="Identifier">noreturn</span><span class="Other">,</span> <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">SqlError</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
 
@@ -626,7 +840,7 @@ window.addEventListener('DOMContentLoaded', main);
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-02-20 10:26:02 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-02-20 21:36:54 UTC</small>
       </div>
     </div>
   </div>

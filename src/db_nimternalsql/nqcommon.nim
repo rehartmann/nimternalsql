@@ -8,6 +8,27 @@ import db_common
 const
   defaultDumpName* = "dump.ndb"
 
+  tooManyRowsReturnedBySubquery* = "21000"
+  stringTooLong* = "22001"
+  valueOutOfRange* = "22003"
+  invalidDatetimeValue* = "22007"
+  invalidParameterValue* = "22023"
+  columnNotNullable* = "23502"
+  uniqueConstraintViolation* = "23505"
+  syntaxError* = "42601"
+  columnRefAmbiguous* = "42702"
+  undefinedColumnName* = "42703"
+  undefinedObjectName* = "42704"
+  typeMismatch* = "42804"
+  undefinedFunction* = "42883"
+  tableExists* = "42N01"
+  generalError* = "HY000"
+  internalError* = "N0000"
+  fileIoError* = "N0001"
+  fileNotValid* = "N0002"
+  notADirectory* = "N0003"
+  restoreNotSupported* = "NS004"
+
 type
   ColumnDef* = object of RootObj
     name*: string
@@ -59,11 +80,15 @@ type
     colName*: string
     exp*: Expression
 
-proc raiseDbError*(msg: string) {.noreturn.} =
+  SqlError* = object of DbError
+    sqlState*: string
+
+proc raiseDbError*(msg: string, sqlstate: string) {.noreturn.} =
   var
-    e: ref DbError
+    e: ref SqlError
   new(e)
   e.msg = msg
+  e.sqlState = sqlstate
   raise e
 
 func newStringLit*(v: string): Expression =

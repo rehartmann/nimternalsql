@@ -12,7 +12,7 @@ type
 
 func newUnionTable*(lchild: VTable, rchild: VTable): VTable =
   if columnCount(lchild) != columnCount(rchild):
-    raiseDbError("UNION tables differ in number of columns")
+    raiseDbError("UNION tables differ in number of columns", syntaxError)
   # check types
   result = UnionTable(leftChild: lchild, rightChild: rchild)
 

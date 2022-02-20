@@ -40,7 +40,7 @@ proc cmp*(v1: NqValue, v2:NqValue): int =
   elif v1.kind == nqkBigint and v2.kind == nqkBigint:
     return cmp(v1.bigintVal, v2.bigintVal)
   else:
-    raiseDbError("comparing incompatible types")
+    raiseDbError("comparing incompatible types", typeMismatch)
 
 method newCursor(table: SortedTable, args: openArray[string]): Cursor =
   let childCursor = newCursor(table.child, args)

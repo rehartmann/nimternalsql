@@ -93,10 +93,18 @@ proc setAutocommit*(db: DbConn, ac: bool) =
 
 proc dbError*(db: DbConn) {.noreturn.} =
   ## Raises a DbError exception.
-  var e: ref DbError
+  var e: ref SqlError
   new(e)
   e.msg = db.errorMsg
+  e.sqlState = generalError
   raise e
+
+proc sqlState*(err: ref DbError): string =
+  ## Extracts an SQLSTATE value from a DbError instance.
+  if err of ref SqlError:
+    result = (ref SqlError)(err).sqlState
+  else:
+    result = ""
 
 proc getKey(stmt: SqlCreateTable): seq[string] =
   var keyFound = false
@@ -104,16 +112,16 @@ proc getKey(stmt: SqlCreateTable): seq[string] =
   for col in stmt.columns:
     if col.primaryKey:
       if keyFound:
-        raiseDbError("multiple primary keys are not allowed")
+        raiseDbError("multiple primary keys are not allowed", syntaxError)
       else:
         keyFound = true
         pkey = col.name
   if not keyFound:
     if stmt.primaryKey.len == 0:
-      raiseDbError("primary key required (for now)")
+      raiseDbError("primary key required (for now)", syntaxError)
     return stmt.primaryKey
   if stmt.primaryKey.len > 0:
-    raiseDbError("multiple primary keys are not allowed")
+    raiseDbError("multiple primary keys are not allowed", syntaxError)
   return @[pkey]
 
 method execute(stmt: SqlStatement, db: Database, tx: Tx, args: varargs[
@@ -135,7 +143,7 @@ method execute(stmt: SqlDropTable, db: Database, tx: Tx, args: varargs[string]):
 method execute(stmt: SqlInsert, db: Database, tx: Tx, args: varargs[string]): int64 =
   if stmt.columns.len > 0:
     if stmt.columns.len != stmt.values.len:
-      raiseDbError("number of expressions differs from number of target columns")
+      raiseDbError("number of expressions differs from number of target columns", syntaxError)
   var vals: seq[NqValue]
   var argv: seq[string] = @args
   for val in stmt.values:
@@ -156,7 +164,7 @@ method execute(stmt: SqlInsert, db: Database, tx: Tx, args: varargs[string]): in
     for colName in stmt.columns:
       let col = columnNo(table, colName)
       if col == -1:
-        raiseDbError("column \"" & colName & "\" does not exist")
+        raiseDbError("column \"" & colName & "\" does not exist", undefinedColumnName)
       insvals[col] = vals[i]
       valSet[col] = true
       i += 1
@@ -168,14 +176,14 @@ method execute(stmt: SqlInsert, db: Database, tx: Tx, args: varargs[string]): in
           if table.def[i].typ == "INTEGER" or table.def[i].typ == "INT":
             if table.def[i].currentAutoincVal >= high(int32):
               raiseDbError("AUTOINCREMENT reached highest possible value on column " &
-                          table.def[i].name)
+                          table.def[i].name, valueOutOfRange)
             table.def[i].currentAutoincVal += 1
             insvals[i] = NqValue(kind: nqkInt,
                                 intVal: int32(table.def[i].currentAutoincVal))
           else:
             if table.def[i].currentAutoincVal == high(int64):
               raiseDbError("AUTOINCREMENT reached highest possible value on column " &
-                          table.def[i].name)
+                          table.def[i].name, valueOutOfRange)
             table.def[i].currentAutoincVal += 1
             insvals[i] = NqValue(kind: nqkBigint,
                                 bigintVal: table.def[i].currentAutoincVal)
@@ -329,7 +337,7 @@ proc toVTable(tableExp: TableExp, db: Database): VTable =
 
 proc toVTable(stmt: SqlStatement, db: Database): VTable =
   if not (stmt of QueryExp):
-    raiseDbError("statement has no result")
+    raiseDbError("statement has no result", syntaxError)
   let queryExp = QueryExp(stmt)
   result = toVTable(queryExp.tableExp, db)
   if queryExp.orderBy.len > 0:
@@ -340,7 +348,7 @@ proc toVTable(stmt: SqlStatement, db: Database): VTable =
         raiseDbError("column " &
             (if orderElement.tableName != "": orderElement.tableName &
                 "." else: "") &
-            orderElement.name & " does not exist")
+            orderElement.name & " does not exist", undefinedColumnName)
       order.add((col: Natural(col), asc: orderElement.asc))
     result = newSortedTable(result, order)
 
@@ -454,5 +462,6 @@ proc save*(conn: DbConn) =
 proc restore*(conn: DbConn, filename: string) =
   ## Restores a previously saved database snapshot from a file named `filename`.
   if conn.tx.logIsActive:
-    raiseDbError("restoring shnapshots is not supported in transaction log mode")
+    raiseDbError("explicitly restoring snapshots is not supported in transaction log mode",
+                 restoreNotSupported)
   restore(conn.db, filename)

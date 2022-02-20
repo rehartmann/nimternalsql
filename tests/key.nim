@@ -5,8 +5,8 @@ let db = open("", "", "", "")
 try:
   exec(db, sql"CREATE TABLE tst (a int primary key, a text, c text)")
   raiseAssert("CREATE TABLE succeeded with two columns having the same name")
-except DbError:
-  discard
+except DbError as e:
+  doAssert e.sqlState() == "42601"
 
 exec(db, sql"CREATE TABLE tst (a int primary key, b text, c text)")
 
@@ -21,14 +21,14 @@ doAssert rows[0][2] == "y"
 try:
   exec(db, sql"CREATE TABLE tst (a int, b text, c text, primary key(a, b))")
   raiseAssert("CREATE TABLE recreating existing table succeeded")
-except DbError:
-  discard
+except DbError as e:
+  doAssert e.sqlState() == "42N01"
 
 try:
   exec(db, sql"INSERT INTO tst VALUES (1, 'x', 'z ')")
   raiseAssert("INSERT succeeded with same key")
-except DbError:
-  discard
+except DbError as e:
+  doAssert e.sqlState() == "23505"
 
 exec(db, sql"CREATE TABLE tst2 (a int, b text, c text, primary key(a, b))")
 
@@ -58,5 +58,5 @@ doAssert rows[0][1] == "x"
 try:
   exec(db, sql"INSERT INTO tst2 VALUES (1, 'x', 'y')")
   raiseAssert("INSERT succeeded with same key")
-except DbError:
-  discard
+except DbError as e:
+  doAssert e.sqlState() == "23505"

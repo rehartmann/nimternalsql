@@ -55,7 +55,7 @@ newDatabase	db_nimternalsql/nqtables.html#newDatabase	nqtables: newDatabase(): D
 keyIndex	db_nimternalsql/nqtables.html#keyIndex,BaseTable,int	nqtables: keyIndex(table: BaseTable; col: int): int	
 isKey	db_nimternalsql/nqtables.html#isKey,BaseTable,int	nqtables: isKey(table: BaseTable; col: int): bool	
 getTable	db_nimternalsql/nqtables.html#getTable,Database,string	nqtables: getTable(db: Database; tableName: string): BaseTable	
-eval	db_nimternalsql/nqtables.html#eval.e,Expression,VarResolver,AggrResolver	nqtables: eval(exp: Expression; varResolver: VarResolver; aggrResolver: AggrResolver = proc (\n    exp: ScalarOpExp): NqValue = raiseDbError(exp.opName &amp; &quot; not supported&quot;)): NqValue	
+eval	db_nimternalsql/nqtables.html#eval.e,Expression,VarResolver,AggrResolver	nqtables: eval(exp: Expression; varResolver: VarResolver; aggrResolver: AggrResolver = proc (\n    exp: ScalarOpExp): NqValue = raiseDbError(exp.opName &amp; &quot; not supported&quot;,\n    undefinedFunction)): NqValue	
 eval	db_nimternalsql/nqtables.html#eval.e,StringLit,VarResolver,AggrResolver	nqtables: eval(exp: StringLit; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
 eval	db_nimternalsql/nqtables.html#eval.e,NumericLit,VarResolver,AggrResolver	nqtables: eval(exp: NumericLit; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
 eval	db_nimternalsql/nqtables.html#eval.e,TimeLit,VarResolver,AggrResolver	nqtables: eval(exp: TimeLit; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	

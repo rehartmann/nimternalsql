@@ -46,28 +46,29 @@ proc createBaseTable*(tx: Tx, db: Database, name: string,
                       columns: openArray[ColumnDef],
                       key: seq[string]): BaseTable =
   if columns.len < 1:
-    raiseDbError("table must have at least one column")
+    raiseDbError("table must have at least one column", syntaxError)
   result = newHashBaseTable(name, columns, key)
   for i in 0..<result.def.len:
     checkType(result.def[i])
     if result.def[i].autoincrement:
       if result.def[i].typ != "BIGINT" and result.def[i].typ != "INTEGER" and
           result.def[i].typ != "INT":
-        raiseDbError("AUTOINCREMENT is only supported on INTEGER and BIGINT columns")
+        raiseDbError("AUTOINCREMENT is only supported on INTEGER and BIGINT columns", syntaxError)
       if result.def[i].defaultValue != nil:
-        raiseDbError("AUTOINCREMENT conflicts with default values")
+        raiseDbError("AUTOINCREMENT conflicts with default values", syntaxError)
 
     if i < result.def.len - 1:
       for j in i + 1..<result.def.len:
         if result.def[i].name == result.def[j].name:
-          raiseDbError("error: column \"" & result.def[i].name & "\" specified more than once")
+          raiseDbError("error: column \"" & result.def[i].name & "\" specified more than once",
+                       syntaxError)
     if result.def[i].typ == "TIMESTAMP":
       let tsMaxPrecision = 6
       if result.def[i].precision > tsMaxPrecision:
-        raiseDbError("max precision of TIMESTAMP is " & $tsMaxPrecision)
+        raiseDbError("max precision of TIMESTAMP is " & $tsMaxPrecision, invalidParameterValue)
     else:
       if result.def[i].precision > maxPrecision:
-        raiseDbError("max precision is " & $maxPrecision)
+        raiseDbError("max precision is " & $maxPrecision, invalidParameterValue)
     if result.def[i].typ == "DECIMAL":
       result.def[i].precision = maxPrecision
     # Check default value
@@ -76,19 +77,19 @@ proc createBaseTable*(tx: Tx, db: Database, name: string,
   for i in result.primaryKey:
     result.def[i].notNull = true
   if db.tables.hasKeyOrPut(name, result):
-    raiseDbError("table \"" & name & "\" already exists")
+    raiseDbError("table \"" & name & "\" already exists", tableExists)
   tx.log.add(TxLogEntry(kind: tleCreate, table: result))
 
 proc dropBaseTable*(tx: Tx, db: Database, name: string) =
   if not db.tables.hasKey(name):
-    raiseDbError("table \"" & name & "\" does not exist")
+    raiseDbError("table \"" & name & "\" does not exist", undefinedObjectName)
   let rtable = db.tables[name]
   db.tables.del(name)
   tx.log.add(TxLogEntry(kind: tleDrop, table: rtable))
 
 proc insert*(tx: Tx, table: BaseTable, values: seq[NqValue]) =
   if values.len != table.def.len:
-    raiseDbError("invalid # of values")
+    raiseDbError("invalid # of values", syntaxError)
 
   let htable = HashBaseTable(table)
   var keyRec: Record[MatValue]
@@ -99,7 +100,7 @@ proc insert*(tx: Tx, table: BaseTable, values: seq[NqValue]) =
     else:
       valRec.add(toMatValue(values[i], table.def[i]))
   if htable.rows.hasKey(keyRec):
-    raiseDbError("duplicate key")
+    raiseDbError("duplicate key", uniqueConstraintViolation)
   htable.rows[keyRec] = valRec
   tx.log.add(TxLogEntry(kind: tleInsert,
                         table: htable,
@@ -154,7 +155,7 @@ proc update*(tx: Tx, table: BaseTable, assignments: seq[ColumnAssignment],
                              strVal: evargs[parseInt(name[1..name.high]) - 1])
             let col = columnNo(table, name)
             if col == -1:
-              raiseDbError("column \"" & name & "\" does not exist")
+              raiseDbError("column \"" & name & "\" does not exist", undefinedColumnName)
             return columnValueAt(row, col))
           txas.add(TxLogAssignment(col: assignment.col,
               oldVal: toMatValue(columnValueAt(row, assignment.col),
@@ -172,7 +173,7 @@ proc update*(tx: Tx, table: BaseTable, assignments: seq[ColumnAssignment],
                               strVal: evargs[parseInt(name[1..name.high]) - 1])
             let col = columnNo(table, name)
             if col == -1:
-              raiseDbError("column \"" & name & "\" does not exist")
+              raiseDbError("column \"" & name & "\" does not exist", undefinedColumnName)
             return columnValueAt(row, col))
           txas.add(TxLogAssignment(col: assignment.col,
               oldVal: toMatValue(columnValueAt(row, assignment.col),
@@ -198,7 +199,7 @@ proc update*(tx: Tx, table: BaseTable, assignments: seq[ColumnAssignment],
                               strVal: evargs[parseInt(name[1..name.high]) - 1])
           let col = columnNo(table, name)
           if col == -1:
-            raiseDbError("column \"" & name & "\" does not exist")
+            raiseDbError("column \"" & name & "\" does not exist", undefinedColumnName)
           return columnValueAt(row, col))
         txas.add(TxLogAssignment(col: assignment.col,
             oldVal: toMatValue(columnValueAt(row, assignment.col),
@@ -228,11 +229,11 @@ proc writeRedo(f: File, logEntry: TxLogEntry) =
       writeRecord(f, logEntry.keyRec)
       var intBuf = int32(logEntry.assignments.len)
       if writeBuffer(f, addr(intBuf), sizeof(int32)) < sizeof(int32):
-        raiseIoError(writeError)
+        raiseDbError(writeError, fileIoError)
       for a in logEntry.assignments:
         intBuf = int32(a.col)
         if writeBuffer(f, addr(intBuf), sizeof(int32)) < sizeof(int32):
-          raiseIoError(writeError)
+          raiseDbError(writeError, fileIoError)
         writeValue(f, a.newVal)
     of tleCreate, tleDrop:
       write(f, if logEntry.kind == tleCreate: 'C' else: 'R')
@@ -244,7 +245,7 @@ proc commit*(tx: Tx) =
       writeRedo(tx.logFile, e)
     tx.logFile.flushFile
     if fsync(tx.logFile.getOsFileHandle) != 0:
-      raiseDbError("fsync() failed")
+      raiseDbError("fsync() failed", fileIoError)
   tx.log = @[]
 
 func isKeyUpdate(table: BaseTable,
@@ -312,11 +313,11 @@ proc replayLog(f: File, db: Database) =
         let keyRec = readRecord(f)
         var lenBuf: int32
         if readBuffer(f, addr(lenBuf), sizeof(int32)) < sizeof(int32):
-          raiseDbError(readErrorMissingData)
+          raiseDbError(readErrorMissingData, fileIoError)
         for i in 0..<lenBuf:
           var colBuf: int32
           if readBuffer(f, addr(colBuf), sizeof(int32)) < sizeof(int32):
-            raiseDbError(readErrorMissingData)
+            raiseDbError(readErrorMissingData, fileIoError)
           let v = readValue(f)
           HashBaseTable(getTable(db, tableName)).rows[keyRec][colBuf] = v
       of 'C':
@@ -332,12 +333,12 @@ proc replayLog(f: File, db: Database) =
         readTableDef(f, table)
         db.tables.del(table.name)
       else:
-        raiseDbError("invalid log entry")
+        raiseDbError("invalid log entry", fileIoError)
 
 proc openLog*(logdir: string, db: Database): File =
   if not dirExists(logDir):
     if fileExists(logDir):
-      raiseDbError(logDir & " is not a directory")
+      raiseDbError(logDir & " is not a directory", notADirectory)
     createDir(logDir)
   if fileExists(logdir & DirSep & defaultDumpName):
     restore(db, logdir & DirSep & defaultDumpName)
@@ -347,7 +348,7 @@ proc openLog*(logdir: string, db: Database): File =
     replayLog(logFile, db)
     close(logFile)    
   if not open(result, logdir & DirSep & $logNo & ".txlog", fmAppend):
-    raiseIoError("cannot open transaction log")
+    raiseDbError("cannot open transaction log", fileNotValid)
 
 proc closeLog*(tx: Tx) =
   if tx.logFile != nil:

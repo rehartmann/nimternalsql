@@ -1,6 +1,5 @@
 writeError	db_nimternalsql/snapshot.html#writeError	snapshot: writeError	
 readErrorMissingData	db_nimternalsql/snapshot.html#readErrorMissingData	snapshot: readErrorMissingData	
-raiseIoError	db_nimternalsql/snapshot.html#raiseIoError,string	snapshot: raiseIoError(msg: string)	
 writeValue	db_nimternalsql/snapshot.html#writeValue,File,MatValue	snapshot: writeValue(f: File; val: MatValue)	
 writeRecord	db_nimternalsql/snapshot.html#writeRecord,File,Record	snapshot: writeRecord(f: File; rec: Record)	
 writeName	db_nimternalsql/snapshot.html#writeName,File,string	snapshot: writeName(f: File; name: string)	

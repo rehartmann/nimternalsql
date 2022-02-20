@@ -10,8 +10,8 @@ exec(db, sql"""CREATE TABLE tst (
 try:
   exec(db, sql"INSERT INTO tst (a) VALUES('yay', 'Yo')")
   raiseAssert("INSERT succeeded although # of values differed from # of columns")
-except DbError:
-  discard
+except DbError as e:
+  doAssert e.sqlState() == "42601"
 
 exec(db, sql"INSERT INTO tst (a, c) VALUES('yay', 'Yo')")
 exec(db, sql"INSERT INTO tst DEFAULT VALUES")
