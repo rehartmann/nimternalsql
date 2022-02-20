@@ -1,4 +1,4 @@
-import nqcore
+import nqtables
 import sets
 
 type

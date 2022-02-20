@@ -1,0 +1,101 @@
+tokAll	db_nimternalsql/sqlscanner.html#tokAll	TokenKind.tokAll	
+tokAnd	db_nimternalsql/sqlscanner.html#tokAnd	TokenKind.tokAnd	
+tokAny	db_nimternalsql/sqlscanner.html#tokAny	TokenKind.tokAny	
+tokAs	db_nimternalsql/sqlscanner.html#tokAs	TokenKind.tokAs	
+tokAsc	db_nimternalsql/sqlscanner.html#tokAsc	TokenKind.tokAsc	
+tokAutoincrement	db_nimternalsql/sqlscanner.html#tokAutoincrement	TokenKind.tokAutoincrement	
+tokBy	db_nimternalsql/sqlscanner.html#tokBy	TokenKind.tokBy	
+tokChar	db_nimternalsql/sqlscanner.html#tokChar	TokenKind.tokChar	
+tokDefault	db_nimternalsql/sqlscanner.html#tokDefault	TokenKind.tokDefault	
+tokDrop	db_nimternalsql/sqlscanner.html#tokDrop	TokenKind.tokDrop	
+tokVarchar	db_nimternalsql/sqlscanner.html#tokVarchar	TokenKind.tokVarchar	
+tokNumeric	db_nimternalsql/sqlscanner.html#tokNumeric	TokenKind.tokNumeric	
+tokCase	db_nimternalsql/sqlscanner.html#tokCase	TokenKind.tokCase	
+tokCast	db_nimternalsql/sqlscanner.html#tokCast	TokenKind.tokCast	
+tokWhen	db_nimternalsql/sqlscanner.html#tokWhen	TokenKind.tokWhen	
+tokThen	db_nimternalsql/sqlscanner.html#tokThen	TokenKind.tokThen	
+tokElse	db_nimternalsql/sqlscanner.html#tokElse	TokenKind.tokElse	
+tokEnd	db_nimternalsql/sqlscanner.html#tokEnd	TokenKind.tokEnd	
+tokCommit	db_nimternalsql/sqlscanner.html#tokCommit	TokenKind.tokCommit	
+tokRollback	db_nimternalsql/sqlscanner.html#tokRollback	TokenKind.tokRollback	
+tokCreate	db_nimternalsql/sqlscanner.html#tokCreate	TokenKind.tokCreate	
+tokCross	db_nimternalsql/sqlscanner.html#tokCross	TokenKind.tokCross	
+tokCount	db_nimternalsql/sqlscanner.html#tokCount	TokenKind.tokCount	
+tokDecimal	db_nimternalsql/sqlscanner.html#tokDecimal	TokenKind.tokDecimal	
+tokDelete	db_nimternalsql/sqlscanner.html#tokDelete	TokenKind.tokDelete	
+tokDesc	db_nimternalsql/sqlscanner.html#tokDesc	TokenKind.tokDesc	
+tokDistinct	db_nimternalsql/sqlscanner.html#tokDistinct	TokenKind.tokDistinct	
+tokDouble	db_nimternalsql/sqlscanner.html#tokDouble	TokenKind.tokDouble	
+tokTime	db_nimternalsql/sqlscanner.html#tokTime	TokenKind.tokTime	
+tokTimestamp	db_nimternalsql/sqlscanner.html#tokTimestamp	TokenKind.tokTimestamp	
+tokTrim	db_nimternalsql/sqlscanner.html#tokTrim	TokenKind.tokTrim	
+tokLeading	db_nimternalsql/sqlscanner.html#tokLeading	TokenKind.tokLeading	
+tokTrailing	db_nimternalsql/sqlscanner.html#tokTrailing	TokenKind.tokTrailing	
+tokBoth	db_nimternalsql/sqlscanner.html#tokBoth	TokenKind.tokBoth	
+tokPrecision	db_nimternalsql/sqlscanner.html#tokPrecision	TokenKind.tokPrecision	
+tokExists	db_nimternalsql/sqlscanner.html#tokExists	TokenKind.tokExists	
+tokFrom	db_nimternalsql/sqlscanner.html#tokFrom	TokenKind.tokFrom	
+tokGroup	db_nimternalsql/sqlscanner.html#tokGroup	TokenKind.tokGroup	
+tokIf	db_nimternalsql/sqlscanner.html#tokIf	TokenKind.tokIf	
+tokInsert	db_nimternalsql/sqlscanner.html#tokInsert	TokenKind.tokInsert	
+tokUpdate	db_nimternalsql/sqlscanner.html#tokUpdate	TokenKind.tokUpdate	
+tokSet	db_nimternalsql/sqlscanner.html#tokSet	TokenKind.tokSet	
+tokIn	db_nimternalsql/sqlscanner.html#tokIn	TokenKind.tokIn	
+tokIs	db_nimternalsql/sqlscanner.html#tokIs	TokenKind.tokIs	
+tokInto	db_nimternalsql/sqlscanner.html#tokInto	TokenKind.tokInto	
+tokJoin	db_nimternalsql/sqlscanner.html#tokJoin	TokenKind.tokJoin	
+tokKey	db_nimternalsql/sqlscanner.html#tokKey	TokenKind.tokKey	
+tokLike	db_nimternalsql/sqlscanner.html#tokLike	TokenKind.tokLike	
+tokNot	db_nimternalsql/sqlscanner.html#tokNot	TokenKind.tokNot	
+tokOn	db_nimternalsql/sqlscanner.html#tokOn	TokenKind.tokOn	
+tokOr	db_nimternalsql/sqlscanner.html#tokOr	TokenKind.tokOr	
+tokOrder	db_nimternalsql/sqlscanner.html#tokOrder	TokenKind.tokOrder	
+tokPrimary	db_nimternalsql/sqlscanner.html#tokPrimary	TokenKind.tokPrimary	
+tokSelect	db_nimternalsql/sqlscanner.html#tokSelect	TokenKind.tokSelect	
+tokTable	db_nimternalsql/sqlscanner.html#tokTable	TokenKind.tokTable	
+tokUnion	db_nimternalsql/sqlscanner.html#tokUnion	TokenKind.tokUnion	
+tokValues	db_nimternalsql/sqlscanner.html#tokValues	TokenKind.tokValues	
+tokWhere	db_nimternalsql/sqlscanner.html#tokWhere	TokenKind.tokWhere	
+tokLeft	db_nimternalsql/sqlscanner.html#tokLeft	TokenKind.tokLeft	
+tokInner	db_nimternalsql/sqlscanner.html#tokInner	TokenKind.tokInner	
+tokOuter	db_nimternalsql/sqlscanner.html#tokOuter	TokenKind.tokOuter	
+tokPosition	db_nimternalsql/sqlscanner.html#tokPosition	TokenKind.tokPosition	
+tokAsterisk	db_nimternalsql/sqlscanner.html#tokAsterisk	TokenKind.tokAsterisk	
+tokDiv	db_nimternalsql/sqlscanner.html#tokDiv	TokenKind.tokDiv	
+tokPlus	db_nimternalsql/sqlscanner.html#tokPlus	TokenKind.tokPlus	
+tokNull	db_nimternalsql/sqlscanner.html#tokNull	TokenKind.tokNull	
+tokMinus	db_nimternalsql/sqlscanner.html#tokMinus	TokenKind.tokMinus	
+tokRightParen	db_nimternalsql/sqlscanner.html#tokRightParen	TokenKind.tokRightParen	
+tokLeftParen	db_nimternalsql/sqlscanner.html#tokLeftParen	TokenKind.tokLeftParen	
+tokComma	db_nimternalsql/sqlscanner.html#tokComma	TokenKind.tokComma	
+tokDot	db_nimternalsql/sqlscanner.html#tokDot	TokenKind.tokDot	
+tokEq	db_nimternalsql/sqlscanner.html#tokEq	TokenKind.tokEq	
+tokNeq	db_nimternalsql/sqlscanner.html#tokNeq	TokenKind.tokNeq	
+tokLt	db_nimternalsql/sqlscanner.html#tokLt	TokenKind.tokLt	
+tokLe	db_nimternalsql/sqlscanner.html#tokLe	TokenKind.tokLe	
+tokGt	db_nimternalsql/sqlscanner.html#tokGt	TokenKind.tokGt	
+tokGe	db_nimternalsql/sqlscanner.html#tokGe	TokenKind.tokGe	
+tokConcat	db_nimternalsql/sqlscanner.html#tokConcat	TokenKind.tokConcat	
+tokIdentifier	db_nimternalsql/sqlscanner.html#tokIdentifier	TokenKind.tokIdentifier	
+tokString	db_nimternalsql/sqlscanner.html#tokString	TokenKind.tokString	
+tokInt	db_nimternalsql/sqlscanner.html#tokInt	TokenKind.tokInt	
+tokRat	db_nimternalsql/sqlscanner.html#tokRat	TokenKind.tokRat	
+tokTrue	db_nimternalsql/sqlscanner.html#tokTrue	TokenKind.tokTrue	
+tokFalse	db_nimternalsql/sqlscanner.html#tokFalse	TokenKind.tokFalse	
+tokPlaceholder	db_nimternalsql/sqlscanner.html#tokPlaceholder	TokenKind.tokPlaceholder	
+tokNumPlaceholder	db_nimternalsql/sqlscanner.html#tokNumPlaceholder	TokenKind.tokNumPlaceholder	
+tokEndOfInput	db_nimternalsql/sqlscanner.html#tokEndOfInput	TokenKind.tokEndOfInput	
+TokenKind	db_nimternalsql/sqlscanner.html#TokenKind	sqlscanner: TokenKind	
+Token	db_nimternalsql/sqlscanner.html#Token	sqlscanner: Token	
+Reader	db_nimternalsql/sqlscanner.html#Reader	sqlscanner: Reader	
+FileReader	db_nimternalsql/sqlscanner.html#FileReader	sqlscanner: FileReader	
+StringReader	db_nimternalsql/sqlscanner.html#StringReader	sqlscanner: StringReader	
+Scanner	db_nimternalsql/sqlscanner.html#Scanner	sqlscanner: Scanner	
+newStringReader	db_nimternalsql/sqlscanner.html#newStringReader,string	sqlscanner: newStringReader(s: string): StringReader	
+newFileReader	db_nimternalsql/sqlscanner.html#newFileReader,File	sqlscanner: newFileReader(f: File): FileReader	
+newScanner	db_nimternalsql/sqlscanner.html#newScanner,Reader	sqlscanner: newScanner(r: Reader): Scanner	
+currentToken	db_nimternalsql/sqlscanner.html#currentToken,Scanner	sqlscanner: currentToken(s: Scanner): Token	
+nextToken	db_nimternalsql/sqlscanner.html#nextToken,Scanner	sqlscanner: nextToken(s: Scanner): Token	
+isValidTime	db_nimternalsql/sqlscanner.html#isValidTime,string	sqlscanner: isValidTime(str: string): bool	
+isValidTimestamp	db_nimternalsql/sqlscanner.html#isValidTimestamp,string	sqlscanner: isValidTimestamp(str: string): bool	
+isValidDate	db_nimternalsql/sqlscanner.html#isValidDate,string	sqlscanner: isValidDate(str: string): bool	

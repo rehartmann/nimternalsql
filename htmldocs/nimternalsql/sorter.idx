@@ -1,2 +1,0 @@
-newSortedTable	nimternalsql/sorter.html#newSortedTable,VTable,seq[tuple[Natural,bool]]	sorter: newSortedTable(child: VTable; order: seq[tuple[col: Natural, asc: bool]]): VTable	
-cmp	nimternalsql/sorter.html#cmp,NqValue,NqValue	sorter: cmp(v1: NqValue; v2: NqValue): int	

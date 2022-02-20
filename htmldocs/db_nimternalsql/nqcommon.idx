@@ -1,0 +1,34 @@
+defaultDumpName	db_nimternalsql/nqcommon.html#defaultDumpName	nqcommon: defaultDumpName	
+ColumnDef	db_nimternalsql/nqcommon.html#ColumnDef	nqcommon: ColumnDef	
+TypeDef	db_nimternalsql/nqcommon.html#TypeDef	nqcommon: TypeDef	
+Expression	db_nimternalsql/nqcommon.html#Expression	nqcommon: Expression	
+ScalarLit	db_nimternalsql/nqcommon.html#ScalarLit	nqcommon: ScalarLit	
+StringLit	db_nimternalsql/nqcommon.html#StringLit	nqcommon: StringLit	
+NumericLit	db_nimternalsql/nqcommon.html#NumericLit	nqcommon: NumericLit	
+BoolLit	db_nimternalsql/nqcommon.html#BoolLit	nqcommon: BoolLit	
+TimeLit	db_nimternalsql/nqcommon.html#TimeLit	nqcommon: TimeLit	
+TimestampLit	db_nimternalsql/nqcommon.html#TimestampLit	nqcommon: TimestampLit	
+DateLit	db_nimternalsql/nqcommon.html#DateLit	nqcommon: DateLit	
+NullLit	db_nimternalsql/nqcommon.html#NullLit	nqcommon: NullLit	
+ScalarOpExp	db_nimternalsql/nqcommon.html#ScalarOpExp	nqcommon: ScalarOpExp	
+QVarExp	db_nimternalsql/nqcommon.html#QVarExp	nqcommon: QVarExp	
+ListExp	db_nimternalsql/nqcommon.html#ListExp	nqcommon: ListExp	
+CaseExp	db_nimternalsql/nqcommon.html#CaseExp	nqcommon: CaseExp	
+CastExp	db_nimternalsql/nqcommon.html#CastExp	nqcommon: CastExp	
+TrimExp	db_nimternalsql/nqcommon.html#TrimExp	nqcommon: TrimExp	
+SelectElement	db_nimternalsql/nqcommon.html#SelectElement	nqcommon: SelectElement	
+raiseDbError	db_nimternalsql/nqcommon.html#raiseDbError,string	nqcommon: raiseDbError(msg: string)	
+newStringLit	db_nimternalsql/nqcommon.html#newStringLit,string	nqcommon: newStringLit(v: string): Expression	
+newNumericLit	db_nimternalsql/nqcommon.html#newNumericLit,string	nqcommon: newNumericLit(v: string): Expression	
+newTimeLit	db_nimternalsql/nqcommon.html#newTimeLit,string	nqcommon: newTimeLit(v: string): Expression	
+newTimestampLit	db_nimternalsql/nqcommon.html#newTimestampLit,string	nqcommon: newTimestampLit(v: string): Expression	
+newDateLit	db_nimternalsql/nqcommon.html#newDateLit,string	nqcommon: newDateLit(v: string): Expression	
+newBoolLit	db_nimternalsql/nqcommon.html#newBoolLit,bool	nqcommon: newBoolLit(v: bool): Expression	
+newNullLit	db_nimternalsql/nqcommon.html#newNullLit	nqcommon: newNullLit(): Expression	
+newListExp	db_nimternalsql/nqcommon.html#newListExp,seq[Expression]	nqcommon: newListExp(v: seq[Expression]): Expression	
+newScalarOpExp	db_nimternalsql/nqcommon.html#newScalarOpExp,string,varargs[Expression]	nqcommon: newScalarOpExp(name: string; args: varargs[Expression]): Expression	
+newQVarExp	db_nimternalsql/nqcommon.html#newQVarExp,string,string	nqcommon: newQVarExp(name: string; tableName: string = &quot;&quot;): QVarExp	
+newCaseExp	db_nimternalsql/nqcommon.html#newCaseExp,Expression,seq[tuple[Expression,Expression]],Expression	nqcommon: newCaseExp(exp: Expression;\n           whens: seq[tuple[cond: Expression, exp: Expression]];\n           elseExp: Expression): Expression	
+newCastExp	db_nimternalsql/nqcommon.html#newCastExp,Expression,TypeDef	nqcommon: newCastExp(exp: Expression; typ: TypeDef): Expression	
+newTrimExp	db_nimternalsql/nqcommon.html#newTrimExp,Expression,bool,bool,Expression	nqcommon: newTrimExp(src: Expression; leading: bool; trailing: bool;\n           char: Expression = nil): Expression	
+`$`	db_nimternalsql/nqcommon.html#$.e,Expression	nqcommon: `$`(exp: Expression): string	

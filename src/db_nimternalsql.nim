@@ -38,7 +38,7 @@
 ##             "Nicolas")
 import db_common
 import db_nimternalsql/nqcommon
-import db_nimternalsql/nqcore
+import db_nimternalsql/nqtables
 import db_nimternalsql/sqlscanner
 import db_nimternalsql/sqlparser
 import db_nimternalsql/join
@@ -52,7 +52,7 @@ import os
 
 export db_common.sql
 export db_common.DbError
-export nqcore.InstantRow
+export nqtables.InstantRow
 
 type
   DbConn* = ref object

@@ -1,5 +1,5 @@
 import nqcommon
-import nqcore
+import nqtables
 import strutils
 import tables
 import sequtils

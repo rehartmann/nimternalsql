@@ -1,0 +1,88 @@
+maxPrecision	db_nimternalsql/nqtables.html#maxPrecision	nqtables: maxPrecision	
+XColumnDef	db_nimternalsql/nqtables.html#XColumnDef	nqtables: XColumnDef	
+BaseTable	db_nimternalsql/nqtables.html#BaseTable	nqtables: BaseTable	
+Database	db_nimternalsql/nqtables.html#Database	nqtables: Database	
+Record	db_nimternalsql/nqtables.html#Record	nqtables: Record	
+kInt	db_nimternalsql/nqtables.html#kInt	MatValueKind.kInt	
+kNumeric	db_nimternalsql/nqtables.html#kNumeric	MatValueKind.kNumeric	
+kFloat	db_nimternalsql/nqtables.html#kFloat	MatValueKind.kFloat	
+kString	db_nimternalsql/nqtables.html#kString	MatValueKind.kString	
+kBool	db_nimternalsql/nqtables.html#kBool	MatValueKind.kBool	
+kNull	db_nimternalsql/nqtables.html#kNull	MatValueKind.kNull	
+kBigint	db_nimternalsql/nqtables.html#kBigint	MatValueKind.kBigint	
+kTime	db_nimternalsql/nqtables.html#kTime	MatValueKind.kTime	
+kDate	db_nimternalsql/nqtables.html#kDate	MatValueKind.kDate	
+MatValueKind	db_nimternalsql/nqtables.html#MatValueKind	nqtables: MatValueKind	
+MatValue	db_nimternalsql/nqtables.html#MatValue	nqtables: MatValue	
+HashBaseTable	db_nimternalsql/nqtables.html#HashBaseTable	nqtables: HashBaseTable	
+nqkNull	db_nimternalsql/nqtables.html#nqkNull	NqValueKind.nqkNull	
+nqkInt	db_nimternalsql/nqtables.html#nqkInt	NqValueKind.nqkInt	
+nqkNumeric	db_nimternalsql/nqtables.html#nqkNumeric	NqValueKind.nqkNumeric	
+nqkFloat	db_nimternalsql/nqtables.html#nqkFloat	NqValueKind.nqkFloat	
+nqkString	db_nimternalsql/nqtables.html#nqkString	NqValueKind.nqkString	
+nqkBool	db_nimternalsql/nqtables.html#nqkBool	NqValueKind.nqkBool	
+nqkList	db_nimternalsql/nqtables.html#nqkList	NqValueKind.nqkList	
+nqkBigint	db_nimternalsql/nqtables.html#nqkBigint	NqValueKind.nqkBigint	
+nqkTime	db_nimternalsql/nqtables.html#nqkTime	NqValueKind.nqkTime	
+nqkDate	db_nimternalsql/nqtables.html#nqkDate	NqValueKind.nqkDate	
+nqkTimestamp	db_nimternalsql/nqtables.html#nqkTimestamp	NqValueKind.nqkTimestamp	
+NqValueKind	db_nimternalsql/nqtables.html#NqValueKind	nqtables: NqValueKind	
+NqValue	db_nimternalsql/nqtables.html#NqValue	nqtables: NqValue	
+VarResolver	db_nimternalsql/nqtables.html#VarResolver	nqtables: VarResolver	
+VTable	db_nimternalsql/nqtables.html#VTable	nqtables: VTable	
+BaseTableRef	db_nimternalsql/nqtables.html#BaseTableRef	nqtables: BaseTableRef	
+WhereTable	db_nimternalsql/nqtables.html#WhereTable	nqtables: WhereTable	
+ColumnAssignment	db_nimternalsql/nqtables.html#ColumnAssignment	nqtables: ColumnAssignment	
+InstantRow	db_nimternalsql/nqtables.html#InstantRow	nqtables: InstantRow	
+Cursor	db_nimternalsql/nqtables.html#Cursor	nqtables: Cursor	
+newInstantRow	db_nimternalsql/nqtables.html#newInstantRow,VTable,seq[NqValue]	nqtables: newInstantRow(table: VTable; vals: seq[NqValue]): InstantRow	
+newMatInstantRow	db_nimternalsql/nqtables.html#newMatInstantRow,VTable,Record[MatValue]	nqtables: newMatInstantRow(table: VTable; key: Record[MatValue]): InstantRow	
+newWhereTable	db_nimternalsql/nqtables.html#newWhereTable,VTable,Expression	nqtables: newWhereTable(child: VTable; whereExp: Expression): VTable	
+newProjectTable	db_nimternalsql/nqtables.html#newProjectTable,VTable,seq[SelectElement]	nqtables: newProjectTable(child: VTable; columns: seq[SelectElement]): VTable	
+columnNo	db_nimternalsql/nqtables.html#columnNo.e,VTable,string,string	nqtables: columnNo(rtable: VTable; name: string; tableName: string): int	
+isQVarExp	db_nimternalsql/nqtables.html#isQVarExp,Expression	nqtables: isQVarExp(exp: Expression): bool	
+hash	db_nimternalsql/nqtables.html#hash,NqValue	nqtables: hash(v: NqValue): Hash	
+toNum	db_nimternalsql/nqtables.html#toNum,NqValue	nqtables: toNum(v: NqValue): NqValue	
+toNumeric	db_nimternalsql/nqtables.html#toNumeric,NqValue	nqtables: toNumeric(v: NqValue): NqValue	
+toFloat	db_nimternalsql/nqtables.html#toFloat,NqValue	nqtables: toFloat(v: NqValue): float	
+adjustScale	db_nimternalsql/nqtables.html#adjustScale,NqValue,NqValue	nqtables: adjustScale(a: var NqValue; b: var NqValue)	
+toNqValue	db_nimternalsql/nqtables.html#toNqValue,MatValue,ColumnDef	nqtables: toNqValue(v: MatValue; colDef: ColumnDef): NqValue	
+checkType	db_nimternalsql/nqtables.html#checkType,ColumnDef	nqtables: checkType(def: ColumnDef)	
+toMatValue	db_nimternalsql/nqtables.html#toMatValue,NqValue,ColumnDef	nqtables: toMatValue(v: NqValue; colDef: ColumnDef): MatValue	
+`==`	db_nimternalsql/nqtables.html#==,seq,seq	nqtables: `==`(r1: seq; r2: seq): bool	
+newHashBaseTable	db_nimternalsql/nqtables.html#newHashBaseTable,string,openArray[ColumnDef],seq[string]	nqtables: newHashBaseTable(name: string; columns: openArray[ColumnDef]; key: seq[string]): HashBaseTable	
+newDatabase	db_nimternalsql/nqtables.html#newDatabase	nqtables: newDatabase(): Database	
+keyIndex	db_nimternalsql/nqtables.html#keyIndex,BaseTable,int	nqtables: keyIndex(table: BaseTable; col: int): int	
+isKey	db_nimternalsql/nqtables.html#isKey,BaseTable,int	nqtables: isKey(table: BaseTable; col: int): bool	
+getTable	db_nimternalsql/nqtables.html#getTable,Database,string	nqtables: getTable(db: Database; tableName: string): BaseTable	
+eval	db_nimternalsql/nqtables.html#eval.e,Expression,VarResolver,AggrResolver	nqtables: eval(exp: Expression; varResolver: VarResolver; aggrResolver: AggrResolver = proc (\n    exp: ScalarOpExp): NqValue = raiseDbError(exp.opName &amp; &quot; not supported&quot;)): NqValue	
+eval	db_nimternalsql/nqtables.html#eval.e,StringLit,VarResolver,AggrResolver	nqtables: eval(exp: StringLit; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
+eval	db_nimternalsql/nqtables.html#eval.e,NumericLit,VarResolver,AggrResolver	nqtables: eval(exp: NumericLit; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
+eval	db_nimternalsql/nqtables.html#eval.e,TimeLit,VarResolver,AggrResolver	nqtables: eval(exp: TimeLit; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
+eval	db_nimternalsql/nqtables.html#eval.e,TimestampLit,VarResolver,AggrResolver	nqtables: eval(exp: TimestampLit; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
+eval	db_nimternalsql/nqtables.html#eval.e,DateLit,VarResolver,AggrResolver	nqtables: eval(exp: DateLit; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
+eval	db_nimternalsql/nqtables.html#eval.e,BoolLit,VarResolver,AggrResolver	nqtables: eval(exp: BoolLit; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
+eval	db_nimternalsql/nqtables.html#eval.e,NullLit,VarResolver,AggrResolver	nqtables: eval(exp: NullLit; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
+newCursor	db_nimternalsql/nqtables.html#newCursor.e,VTable,openArray[string]	nqtables: newCursor(table: VTable; args: openArray[string]): Cursor	
+next	db_nimternalsql/nqtables.html#next.e,Cursor,InstantRow,VarResolver	nqtables: next(cursor: Cursor; row: var InstantRow; varResolver: VarResolver = nil): bool	
+instantRows	db_nimternalsql/nqtables.html#instantRows.i,VTable,varargs[string]	nqtables: instantRows(rtable: VTable; args: varargs[string]): InstantRow	
+columnCount	db_nimternalsql/nqtables.html#columnCount.e,VTable	nqtables: columnCount(table: VTable): Natural	
+columnCount	db_nimternalsql/nqtables.html#columnCount,InstantRow	nqtables: columnCount(row: InstantRow): int	
+eval	db_nimternalsql/nqtables.html#eval.e,ScalarOpExp,VarResolver,AggrResolver	nqtables: eval(exp: ScalarOpExp; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
+getAggrs	db_nimternalsql/nqtables.html#getAggrs,seq[SelectElement]	nqtables: getAggrs(sels: seq[SelectElement]): seq[Expression]	
+eval	db_nimternalsql/nqtables.html#eval.e,QVarExp,VarResolver,AggrResolver	nqtables: eval(exp: QVarExp; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
+eval	db_nimternalsql/nqtables.html#eval.e,ListExp,VarResolver,AggrResolver	nqtables: eval(exp: ListExp; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
+eval	db_nimternalsql/nqtables.html#eval.e,VTable,VarResolver,AggrResolver	nqtables: eval(exp: VTable; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
+eval	db_nimternalsql/nqtables.html#eval.e,CaseExp,VarResolver,AggrResolver	nqtables: eval(exp: CaseExp; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
+eval	db_nimternalsql/nqtables.html#eval.e,TrimExp,VarResolver,AggrResolver	nqtables: eval(exp: TrimExp; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
+`$`	db_nimternalsql/nqtables.html#$,NqValue	nqtables: `$`(val: NqValue): string	
+eval	db_nimternalsql/nqtables.html#eval.e,CastExp,VarResolver,AggrResolver	nqtables: eval(exp: CastExp; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
+columnNo	db_nimternalsql/nqtables.html#columnNo.e,BaseTable,string	nqtables: columnNo(rtable: BaseTable; name: string): int	
+columnValueAt	db_nimternalsql/nqtables.html#columnValueAt,InstantRow,Natural	nqtables: columnValueAt(row: InstantRow; col: Natural): NqValue	
+newGroupTable	db_nimternalsql/nqtables.html#newGroupTable,VTable,seq[Expression],seq[QVarExp]	nqtables: newGroupTable(table: VTable; aggrs: seq[Expression]; groupBy: seq[QVarExp]): VTable	
+setColumnValueAt	db_nimternalsql/nqtables.html#setColumnValueAt,HashBaseTable,Record[MatValue],Natural,MatValue	nqtables: setColumnValueAt(table: HashBaseTable; keyRecord: var Record[MatValue];\n                 col: Natural; val: MatValue)	
+setColumnValueAt	db_nimternalsql/nqtables.html#setColumnValueAt,InstantRow,Natural,NqValue	nqtables: setColumnValueAt(row: var InstantRow; col: Natural; val: NqValue)	
+instantRows	db_nimternalsql/nqtables.html#instantRows.i,BaseTableRef	nqtables: instantRows(tableRef: BaseTableRef): InstantRow	
+isConst	db_nimternalsql/nqtables.html#isConst,Expression	nqtables: isConst(exp: Expression): bool	
+expKeyCols	db_nimternalsql/nqtables.html#expKeyCols,Expression,BaseTableRef,proc(Expression),openArray[string]	nqtables: expKeyCols(exp: Expression; tableRef: BaseTableRef;\n           isConstProc: proc (exp: Expression): bool; args: openArray[string]): seq[\n    tuple[colNo: Natural, exp: Expression]]	
+isKeyUpdate	db_nimternalsql/nqtables.html#isKeyUpdate,BaseTable,seq[ColumnAssignment]	nqtables: isKeyUpdate(table: BaseTable; assignments: seq[ColumnAssignment]): bool	

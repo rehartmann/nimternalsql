@@ -1,5 +1,5 @@
 import nqcommon
-import nqcore
+import nqtables
 
 type
   UnionTable = ref object of VTable

@@ -1,0 +1,13 @@
+writeError	db_nimternalsql/snapshot.html#writeError	snapshot: writeError	
+readErrorMissingData	db_nimternalsql/snapshot.html#readErrorMissingData	snapshot: readErrorMissingData	
+raiseIoError	db_nimternalsql/snapshot.html#raiseIoError,string	snapshot: raiseIoError(msg: string)	
+writeValue	db_nimternalsql/snapshot.html#writeValue,File,MatValue	snapshot: writeValue(f: File; val: MatValue)	
+writeRecord	db_nimternalsql/snapshot.html#writeRecord,File,Record	snapshot: writeRecord(f: File; rec: Record)	
+writeName	db_nimternalsql/snapshot.html#writeName,File,string	snapshot: writeName(f: File; name: string)	
+writeTableDef	db_nimternalsql/snapshot.html#writeTableDef,File,BaseTable	snapshot: writeTableDef(f: File; table: BaseTable)	
+save	db_nimternalsql/snapshot.html#save,Database,string	snapshot: save(db: Database; filename: string)	
+readValue	db_nimternalsql/snapshot.html#readValue,File	snapshot: readValue(f: File): MatValue	
+readRecord	db_nimternalsql/snapshot.html#readRecord,File	snapshot: readRecord(f: File): Record[MatValue]	
+readName	db_nimternalsql/snapshot.html#readName,File	snapshot: readName(f: File): string	
+readTableDef	db_nimternalsql/snapshot.html#readTableDef,File,BaseTable	snapshot: readTableDef(f: File; table: BaseTable)	
+restore	db_nimternalsql/snapshot.html#restore,Database,string	snapshot: restore(db: Database; filename: string)	

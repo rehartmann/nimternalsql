@@ -5,7 +5,7 @@
 #
 import strutils
 import nqcommon
-import nqcore
+import nqtables
 import snapshot
 import tables
 import os

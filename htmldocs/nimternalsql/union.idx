@@ -1,2 +1,0 @@
-newUnionTable	nimternalsql/union.html#newUnionTable,VTable,VTable	union: newUnionTable(lchild: VTable; rchild: VTable): VTable	
-columnNo	nimternalsql/union.html#columnNo.e,UnionTable,string,string	union: columnNo(table: UnionTable; name: string; tableName: string): int	
