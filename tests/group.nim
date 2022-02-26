@@ -195,3 +195,23 @@ try:
   raiseAssert("invalid grouping succeeded")
 except DbError as e:
   doAssert sqlState(e) == "42803"
+
+exec(db, sql"CREATE TABLE tst2 (a int primary key, b int, rank text)")
+
+exec(db, sql"INSERT INTO tst2 VALUES (1, 1, 'Jack')")
+exec(db, sql"INSERT INTO tst2 VALUES (2, 1, 'Ace')")
+exec(db, sql"INSERT INTO tst2 VALUES (3, 1, 'King')")
+exec(db, sql"INSERT INTO tst2 VALUES (4, 2, 'Queen')")
+exec(db, sql"INSERT INTO tst2 VALUES (5, 2, 'Jack')")
+
+rows = getAllRows(db, sql"""SELECT b, MIN(rank), MAX(rank)
+                              FROM tst2
+                              GROUP BY b
+                              ORDER BY b""")
+doAssert rows.len == 2
+doAssert rows[0][0] == "1"
+doAssert rows[0][1] == "Ace"
+doAssert rows[0][2] == "King"
+doAssert rows[1][0] == "2"
+doAssert rows[1][1] == "Jack"
+doAssert rows[1][2] == "Queen"

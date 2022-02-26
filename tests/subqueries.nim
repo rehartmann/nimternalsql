@@ -44,3 +44,15 @@ res = getAllRows(db, sql"""SELECT DISTINCT s.sname FROM s
                                SELECT sp.sno FROM sp
                                  WHERE sp.pno = 3) AND FALSE""")
 doAssert res.len == 0
+
+res = getAllRows(db, sql"""SELECT * FROM s
+                           WHERE sname = (SELECT MIN(sname) FROM s)""")
+doAssert res.len == 1
+doAssert res[0][0] == "4"
+doAssert res[0][1] == "four"
+
+res = getAllRows(db, sql"""SELECT * FROM s
+                           WHERE sname = (SELECT MAX(sname) FROM s)""")
+doAssert res.len == 1
+doAssert res[0][0] == "2"
+doAssert res[0][1] == "two"

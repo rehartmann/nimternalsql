@@ -1659,18 +1659,22 @@ proc aggrMax(table: VTable, groupBy: seq[QVarExp],
     if groupByVals == groupVals(groupBy, columns, row):
       let val = columnValueAt(row, col)
       if val.kind != nqkNull:
-        if val.kind != nqkNumeric and val.kind != nqkFloat and val.kind != nqkInt:
-          raiseDbError("column is not numeric", undefinedFunction)
+        if val.kind != nqkNumeric and val.kind != nqkFloat and val.kind != nqkInt and
+            val.kind != nqkString:
+          raiseDbError("column type is not supported by MAX", undefinedFunction)
         if result.kind == nqkNull:
           result = val
         elif result.kind == nqkInt:
           result = NqValue(kind: nqkInt,
-                              intVal: max(result.intVal, val.intVal))
+                           intVal: max(result.intVal, val.intVal))
         elif result.kind == nqkNumeric:
           let scale = max(result.scale, val.scale)
           result = NqValue(kind: nqkNumeric,
-                              numericVal: max(result.setScale(scale).numericVal,
-                                          val.setScale(scale).numericVal))
+                           numericVal: max(result.setScale(scale).numericVal,
+                                       val.setScale(scale).numericVal))
+        elif result.kind == nqkString:
+          result = NqValue(kind: nqkString,
+                              strVal: max(result.strVal, val.strVal))
         else:
           result = NqValue(kind: nqkFloat, floatVal: max(result.floatVal, val.floatVal))
 
@@ -1688,8 +1692,9 @@ proc aggrMin(table: VTable, groupBy: seq[QVarExp],
     if groupByVals == groupVals(groupBy, columns, row):
       let val = columnValueAt(row, col)
       if val.kind != nqkNull:
-        if val.kind != nqkNumeric and val.kind != nqkFloat and val.kind != nqkInt:
-          raiseDbError("column is not numeric", undefinedFunction)
+        if val.kind != nqkNumeric and val.kind != nqkFloat and val.kind != nqkInt and
+            val.kind != nqkString:
+          raiseDbError("column type is not supported by MIN", undefinedFunction)
         if result.kind == nqkNull:
           result = val
         elif result.kind == nqkInt:
@@ -1701,6 +1706,9 @@ proc aggrMin(table: VTable, groupBy: seq[QVarExp],
           result = NqValue(kind: nqkNumeric,
                               numericVal: min(result.setScale(scale).numericVal,
                                           val.setScale(scale).numericVal))
+        elif result.kind == nqkString:
+          result = NqValue(kind: nqkString,
+                              strVal: min(result.strVal, val.strVal))
         else:
           result = NqValue(kind: nqkFloat, floatVal: max(result.floatVal, val.floatVal))
 
