@@ -1,4 +1,5 @@
 import db_nimternalsql
+import db_common
 import algorithm
 import strutils
     
@@ -29,7 +30,23 @@ doAssert rows[2][0] == "Adam"
 doAssert rows[2][1] == "Eve"
 doAssert rows[2][2] == "3"
 
-rows = getAllRows(db, sql"SELECT * FROM babababa WHERE c IN (1,-9) ORDER BY c")
+rows = @[]
+var cols: DbColumns
+for r in instantRows(db, cols, sql"SELECT * FROM babababa WHERE c IN (1,-9) ORDER BY c"):
+  rows.add(@[r[0], r[1], r[2]])
+
+doAssert cols.len == 4
+doAssert cols[0].name == "A"
+doAssert cols[0].typ.kind == dbVarchar
+doAssert cols[1].name == "B"
+doAssert cols[1].typ.kind == dbVarchar
+doAssert cols[2].name == "C"
+doAssert cols[2].typ.kind == dbInt
+doAssert cols[2].typ.size == 4
+doAssert cols[3].name == "D"
+doAssert cols[3].typ.kind == dbInt
+doAssert cols[3].typ.size == 8
+
 doAssert rows.len == 2
 doAssert rows[0][0] == "Electrica"
 doAssert rows[0][1] == "Salsa"

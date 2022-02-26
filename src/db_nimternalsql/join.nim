@@ -1,5 +1,6 @@
 import nqcommon
 import nqtables
+import db_common
 import strutils
 import tables
 import sequtils
@@ -174,3 +175,11 @@ method `$`(vtable: JoinTable): string =
   result = '(' & $vtable.children[0] & ')' & " JOIN " & '(' & $vtable.children[1] & ')'
   if vtable.exp != nil:
     result = result & " ON " & $vtable.exp
+
+method getColumns*(table: JoinTable): DbColumns =
+  for i in 0..1:
+    var cols = table.children[i].getColumns()
+    for j in 0..<cols.len:
+      cols[j].primaryKey = false
+      result.add(cols[j])
+

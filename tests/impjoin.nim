@@ -1,4 +1,5 @@
 import db_nimternalsql
+import db_common
 
 let db = open("", "", "", "")
 exec(db, sql"CREATE TABLE test1 (a text not null, b text, c int primary key)")
@@ -9,10 +10,27 @@ exec(db, sql"INSERT INTO test1 VALUES('Pitsh', 'Px', 2)")
 exec(db, sql"INSERT INTO test2 VALUES('Sulphur', 1)")
 exec(db, sql"INSERT INTO test2 VALUES('Sulfur', 2)")
 
-var rows = getAllRows(db,
-                      sql"""SELECT * FROM test1, test2 t2
-                              WHERE test1.c = t2.e
-                              ORDER BY a""")
+var rows: seq[seq[string]]
+
+var cols: DbColumns
+for r in instantRows(db, cols, 
+                     sql"""SELECT * FROM test1, test2 t2
+                           WHERE test1.c = t2.e
+                           ORDER BY a"""):
+  rows.add(@[r[0], r[1], r[2], r[3]])
+
+doAssert cols.len == 5
+doAssert cols[0].name == "A"
+doAssert cols[0].typ.kind == dbVarchar
+doAssert cols[1].name == "B"
+doAssert cols[1].typ.kind == dbVarchar
+doAssert cols[2].name == "C"
+doAssert cols[2].typ.kind == dbInt
+doAssert cols[3].name == "D"
+doAssert cols[3].typ.kind == dbVarchar
+doAssert cols[4].name == "E"
+doAssert cols[4].typ.kind == dbInt
+
 doAssert rows.len == 2
 
 rows = getAllRows(db,

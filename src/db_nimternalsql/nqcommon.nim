@@ -19,6 +19,7 @@ const
   columnRefAmbiguous* = "42702"
   undefinedColumnName* = "42703"
   undefinedObjectName* = "42704"
+  invalidGrouping* = "42803"
   typeMismatch* = "42804"
   undefinedFunction* = "42883"
   tableExists* = "42N01"

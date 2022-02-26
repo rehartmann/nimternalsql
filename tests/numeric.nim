@@ -1,4 +1,5 @@
 import db_nimternalsql
+import db_common
 import strutils
 
 let db = open("", "", "", "")
@@ -75,15 +76,31 @@ exec(db, sql"CREATE TABLE tst2 (a decimal primary key, b decimal(10), c dec(18, 
 
 doAssert execAffectedRows(db, sql"INSERT INTO tst2 VALUES (1, 12345678901, 1111111111.11111111)") == 1
 
-var r = getRow(db, sql"SELECT a, b, c, c + 1000000000.00000001 FROM tst2")
-doAssert r[0] == "1"
-doAssert r[1] == "12345678901"
-doAssert r[2] == "1111111111.11111111"
-doAssert r[3] == "2111111111.11111112"
+res = @[]
+var cols: DbColumns
+for r in instantRows(db, cols, sql"SELECT a, b, c, c + 1000000000.00000001, a + 1 a1 FROM tst2"):
+  res.add(@[r[0], r[1], r[2], r[3]])
+
+doAssert cols.len == 5
+doAssert cols[0].name == "A"
+doAssert cols[0].typ.kind == dbDecimal
+doAssert cols[1].name == "B"
+doAssert cols[1].typ.kind == dbDecimal
+doAssert cols[2].name == "C"
+doAssert cols[2].typ.kind == dbDecimal
+doAssert cols[3].name == ""
+doAssert cols[3].typ.kind == dbUnknown
+doAssert cols[4].name == "A1"
+doAssert cols[4].typ.kind == dbUnknown
+
+doAssert res[0][0] == "1"
+doAssert res[0][1] == "12345678901"
+doAssert res[0][2] == "1111111111.11111111"
+doAssert res[0][3] == "2111111111.11111112"
 
 exec(db, sql"UPDATE tst SET d = 12345.123455, f = 12345.5")
 
-r = getRow(db, sql"SELECT d, f FROM tst")
+var r = getRow(db, sql"SELECT d, f FROM tst")
 doAssert r[0] == "12345.12346"
 doAssert r[1] == "12346"
 

@@ -1,4 +1,5 @@
 import db_nimternalsql
+import db_common
 
 let db = open("", "", "", "")
 exec(db, sql"CREATE TABLE tst (a int primary key, b text)")
@@ -9,11 +10,21 @@ exec(db, sql"INSERT INTO tst2 VALUES (2, 'king')")
 exec(db, sql"INSERT INTO tst2 VALUES (3, 'queen')")
 exec(db, sql"INSERT INTO tst2 VALUES (4, 'jack')")
 
-var rows = getAllRows(db, 
-                      sql"""SELECT * FROM tst
+var rows: seq[seq[string]]
+var cols: DbColumns
+for r in instantRows(db, cols,
+                     sql"""SELECT * FROM tst
                             UNION
                             SELECT * FROM tst2
-                            ORDER BY a""")
+                            ORDER BY a"""):
+  rows.add(@[r[0], r[1]])
+
+doAssert cols.len == 2
+doAssert cols[0].name == "A"
+doAssert cols[0].typ.kind == dbInt
+doAssert cols[1].name == "B"
+doAssert cols[1].typ.kind == dbVarchar
+
 doAssert rows.len == 4
 doAssert rows[0][0] == "1"
 doAssert rows[0][1] == "ace"
@@ -40,3 +51,10 @@ doAssert rows[3][0] == "3"
 doAssert rows[3][1] == "queen"
 doAssert rows[4][0] == "4"
 doAssert rows[4][1] == "jack"
+
+# exec(db, sql"CREATE TABLE tst3 (a int primary key, n int)")
+# exec(db, sql"INSERT INTO tst3 VALUES (1, 11)")
+# rows = getAllRows(db,
+#                  sql"""SELECT * FROM tst
+#                        UNION
+#                        SELECT * FROM tst3""")

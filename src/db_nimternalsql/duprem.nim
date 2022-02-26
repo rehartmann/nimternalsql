@@ -1,4 +1,5 @@
 import nqtables
+import db_common
 import sets
 
 type
@@ -38,3 +39,6 @@ method newCursor(table: DupRemTable, args: openArray[string]): Cursor =
 method next(cursor: DupRemTableCursor, row: var InstantRow, varResolver: VarResolver = nil): bool =
   row = cursor.iter(cursor)
   result = not finished(cursor.iter)
+
+method getColumns*(table: DupRemTable): DbColumns =
+  result = table.child.getColumns()

@@ -3,6 +3,7 @@
 #
 # See the file LICENSE for details about the copyright.
 # 
+import db_common
 import tables
 import strutils
 import hashes
@@ -1266,6 +1267,140 @@ func columnValueAt*(row: InstantRow; col: Natural): NqValue =
 func columnNo(table: VTable, colRef: QVarExp): int =
   result = columnNo(table, colRef.name, colRef.tableName)
 
+method getColumns*(table: VTable): DbColumns {.base.} =
+  raiseDbError("not implemented", internalError)
+
+proc toDbType(coldef: ColumnDef): DbType =
+  case toUpperAscii(coldef.typ)
+    of "INTEGER", "INT":
+      result = DbType(kind: dbInt, notNull: coldef.notNull, name: coldef.typ,
+                  size: sizeof(int32), maxReprLen: 10, precision: 9,
+                  scale: 0, min: int32.low, max: int32.high, validValues: @[])
+    of "NUMERIC", "DECIMAL":
+      result = DbType(kind: dbDecimal, notNull: coldef.notNull, name: coldef.typ,
+                  size: sizeof(int64), maxReprLen: 19, precision: coldef.precision,
+                  scale: coldef.scale, min: -maxNumeric, max: maxNumeric, validValues: @[])
+    of "BIGINT":
+      result = DbType(kind: dbInt, notNull: coldef.notNull, name: coldef.typ,
+                  size: sizeof(int64), maxReprLen: 19, precision: 18,
+                  scale: 0, min: int64.low, max: int64.high, validValues: @[])
+    of "REAL":
+      result = DbType(kind: dbFloat, notNull: coldef.notNull, name: coldef.typ,
+                  size: sizeof(float64), maxReprLen: 19, precision: 0,
+                  scale: 0, min: int64.low, max: int64.high, validValues: @[])
+    of "CHAR":
+      result = DbType(kind: dbFixedChar, notNull: coldef.notNull, name: coldef.typ,
+                  size: coldef.size, maxReprLen: coldef.size, precision: 0,
+                  scale: 0, min: 0, max: 0, validValues: @[])
+    of "TEXT", "VARCHAR":
+      result = DbType(kind: dbVarchar, notNull: coldef.notNull, name: coldef.typ,
+                  size: 0, maxReprLen: 0, precision: 0,
+                  scale: 0, min: 0, max: 0, validValues: @[])
+    of "BINARY", "VARBINARY", "LONGVARBINARY", "RAW", "BYTEA":
+      result = DbType(kind: dbBlob, notNull: coldef.notNull, name: coldef.typ,
+                  size: 0, maxReprLen: 0, precision: 0,
+                  scale: 0, min: 0, max: 0, validValues: @[])
+    of "BOOLEAN":
+      result = DbType(kind: dbBool, notNull: coldef.notNull, name: coldef.typ,
+                  size: 1, maxReprLen: 5, precision: 0,
+                  scale: 0, min: 0, max: 0, validValues: @[])
+    of "TIME":
+      result = DbType(kind: dbTime, notNull: coldef.notNull, name: coldef.typ,
+                  size: 12, maxReprLen: 15, precision: 0,
+                  scale: 0, min: 0, max: 0, validValues: @[])
+    of "TIMESTAMP":
+      result = DbType(kind: dbTimestamp, notNull: coldef.notNull, name: coldef.typ,
+                  size: 12, maxReprLen: 26, precision: 0,
+                  scale: 0, min: 0, max: 0, validValues: @[])
+    of "DATE":
+      result = DbType(kind: dbTimestamp, notNull: coldef.notNull, name: coldef.typ,
+                  size: 8, maxReprLen: 10, precision: 0,
+                  scale: 0, min: 0, max: 0, validValues: @[])
+    else:
+      echo coldef.typ & " unknown"
+      result = DbType(kind: dbUnknown, notNull: coldef.notNull, name: coldef.typ,
+                  size: 0, maxReprLen: 0, precision: 0,
+                  scale: 0, min: 0, max: 0, validValues: @[])
+
+method getColumns*(table: BaseTableRef): DbColumns =
+  for i in 0..<table.table.def.len:
+    let col = table.table.def[i]
+    result.add(DbColumn(name: col.name, tableName: table.table.name,
+               typ: toDbType(col), primaryKey: isKey(table.table, i), foreignKey: false))
+
+method getColumns*(table: WhereTable): DbColumns =
+  result = table.child.getColumns()
+
+func columnIndex(cols: DbColumns, name: string): int =
+  for i in 0..<cols.len:
+    if cols[i].name == name:
+      return i
+  result = -1
+
+method getColumns*(table: ProjectTable): DbColumns =
+  let childcols = table.child.getColumns()
+  for sel in table.columns:
+    let i = columnIndex(childcols, sel.colName)
+    if i >= 0:
+      result.add(childcols[i])
+    else:
+      result.add(DbColumn(
+          name: sel.colName, tableName: "",
+          typ: DbType(kind: dbUnknown, notNull: false, name: "",
+                      size: 0, maxReprLen: 0, precision: 0,
+                      scale: 0, min: 0, max: 0, validValues: @[]),
+               primaryKey: false, foreignKey: false))
+
+method getColumns*(table: GroupTable): DbColumns =
+  let childcols = table.child.getColumns()
+  for sel in table.columns:
+    var i = columnIndex(childcols, sel.colName)
+    if i >= 0:
+      result.add(childcols[i])
+    else:
+      var coltyp: DbType
+      coltyp.kind = dbUnknown
+      if sel.exp of ScalarOpExp:
+        case ScalarOpExp(sel.exp).opName
+          of "COUNT":
+            coltyp = DbType(kind: dbInt, notNull: false, name: "INTEGER",
+                  size: sizeof(int32), maxReprLen: 10, precision: 9,
+                  scale: 0, min: int32.low, max: int32.high, validValues: @[])
+            result.add(DbColumn(
+                name: sel.colName, tableName: "", typ: coltyp,
+                primaryKey: false, foreignKey: false))
+          of "AVG":
+            coltyp = DbType(kind: dbFloat, notNull: false, name: "REAL",
+                  size: sizeof(float64), maxReprLen: 19, precision: 0,
+                  scale: 0, min: int64.low, max: int64.high, validValues: @[])
+            result.add(DbColumn(
+                name: sel.colName, tableName: "", typ: coltyp,
+                primaryKey: false, foreignKey: false))
+          of "MIN", "MAX", "SUM":
+            if ScalarOpExp(sel.exp).args.len == 1 and
+               ScalarOpExp(sel.exp).args[0] of QVarExp:
+              i = columnIndex(childcols, QVarExp(ScalarOpExp(sel.exp).args[0]).name)
+              if i >= 0:
+                coltyp = childcols[i].typ
+                result.add(DbColumn(name: sel.colName, tableName: "", typ: coltyp))
+      if coltyp.kind == dbUnknown:
+        result.add(DbColumn(
+            name: sel.colName, tableName: "",
+            typ: DbType(kind: dbUnknown, notNull: false, name: "",
+                        size: 0, maxReprLen: 0, precision: 0,
+                        scale: 0, min: 0, max: 0, validValues: @[]),
+                primaryKey: false, foreignKey: false))
+
+func isAggregate(exp: Expression): bool =
+  if exp of ScalarOpExp:
+    case ScalarOpExp(exp).opName
+      of "COUNT", "AVG", "MAX", "MIN", "SUM":
+        result = true
+      else:
+        result = false
+  else:
+    result = false
+
 func newGroupTable*(table: VTable, aggrs: seq[Expression], groupBy: seq[
     QVarExp]): VTable =
   for colRef in groupBy:
@@ -1273,10 +1408,31 @@ func newGroupTable*(table: VTable, aggrs: seq[Expression], groupBy: seq[
       raiseDbError("column " & (if colRef.tableName != "": colRef.tableName &
           "." else: "") & colRef.name & " does not exist", undefinedColumnName)
   if table of ProjectTable:
+    # Each column must either be in GROUP BY or an aggregation
+    for col in ProjectTable(table).columns:
+      if not isAggregate(col.exp):
+        var found = false
+        for g in groupBy:
+          if g.name == col.colName:
+            found = true
+            break
+        if not found:
+          raiseDbError(col.colName & " is not a grouping column", invalidGrouping)    
     result = GroupTable(child: ProjectTable(table).child,
                        groupBy: groupBy, columns: ProjectTable(table).columns)
   else:
-    result = GroupTable(child: table, groupBy: groupBy, columns: @[])
+    # Each column must be in GROUP BY
+    var cols: seq[SelectElement]
+    for dbcol in table.getColumns:
+      var found = false
+      for g in groupBy:
+        if g.name == dbcol.name:
+          found = true
+          break
+      if not found:
+        raiseDbError(dbcol.name & " is not a grouping column", invalidGrouping)
+      cols.add(SelectElement(colName: dbcol.name, exp: newQVarExp(dbcol.name)))
+    result = GroupTable(child: table, groupBy: groupBy, columns: cols)
 
 proc setColumnValueAt*(table: HashBaseTable; keyRecord: var Record[MatValue],
     col: Natural, val: MatValue) =

@@ -1,6 +1,7 @@
 import nqcommon
 import nqtables
 import algorithm
+import db_common
 
 type
   SortedTable = ref object of VTable
@@ -66,3 +67,6 @@ method next(cursor: SortedTableCursor, row: var InstantRow, varResolver: VarReso
   row = newInstantRow(cursor.table, cursor.rows[cursor.nextRow])
   cursor.nextRow += 1
   result = true
+
+method getColumns*(table: SortedTable): DbColumns =
+  result = table.child.getColumns()

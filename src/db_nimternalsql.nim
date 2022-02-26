@@ -52,6 +52,7 @@ import os
 
 export db_common.sql
 export db_common.DbError
+export db_common.DbColumns
 export nqtables.InstantRow
 
 type
@@ -359,6 +360,14 @@ iterator instantRows*(conn: DbConn; sql: SqlQuery; args: varargs[string,
   ## outside the iterator body.
   let stmt = parseStatement(newStringReader(string(sql)))
   for r in instantRows(toVTable(stmt, conn.db), args):
+    yield r
+
+iterator instantRows*(conn: DbConn; columns: var DbColumns; sql: SqlQuery;
+                     args: varargs[string, `$`]): InstantRow =
+  let stmt = parseStatement(newStringReader(string(sql)))
+  let table = toVTable(stmt, conn.db)
+  columns = table.getColumns()
+  for r in instantRows(table, args):
     yield r
 
 proc prepare*(conn: DbConn; sql: SqlQuery): SqlPrepared =
