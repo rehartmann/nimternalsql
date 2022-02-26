@@ -182,4 +182,3 @@ method getColumns*(table: JoinTable): DbColumns =
     for j in 0..<cols.len:
       cols[j].primaryKey = false
       result.add(cols[j])
-

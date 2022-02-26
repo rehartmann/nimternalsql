@@ -317,8 +317,8 @@ proc toVTable(tableExp: TableExp, db: Database): VTable =
           ((JoinTable)result).exp = joinExp
         else:
           result = newWhereTable(result, transform(tableExp.select.whereExp, db))
-      if tableExp.select.columns.len != 1 or tableExp.select.columns[
-          0].colName != "*":
+      if tableExp.select.columns.len != 1 or
+          tableExp.select.columns[0].colName != "*":
         for i in 0..<tableExp.select.columns.len:
           if tableExp.select.columns[i].colName == "" and
               tableExp.select.columns[i].exp of QVarExp:

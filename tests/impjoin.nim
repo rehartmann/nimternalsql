@@ -21,14 +21,19 @@ for r in instantRows(db, cols,
 
 doAssert cols.len == 5
 doAssert cols[0].name == "A"
+doAssert cols[0].tableName == "TEST1"
 doAssert cols[0].typ.kind == dbVarchar
 doAssert cols[1].name == "B"
+doAssert cols[1].tableName == "TEST1"
 doAssert cols[1].typ.kind == dbVarchar
 doAssert cols[2].name == "C"
+doAssert cols[2].tableName == "TEST1"
 doAssert cols[2].typ.kind == dbInt
 doAssert cols[3].name == "D"
+doAssert cols[3].tableName == "TEST2"
 doAssert cols[3].typ.kind == dbVarchar
 doAssert cols[4].name == "E"
+doAssert cols[4].tableName == "TEST2"
 doAssert cols[4].typ.kind == dbInt
 
 doAssert rows.len == 2

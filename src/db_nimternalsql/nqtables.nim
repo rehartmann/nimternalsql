@@ -1317,7 +1317,6 @@ proc toDbType(coldef: ColumnDef): DbType =
                   size: 8, maxReprLen: 10, precision: 0,
                   scale: 0, min: 0, max: 0, validValues: @[])
     else:
-      echo coldef.typ & " unknown"
       result = DbType(kind: dbUnknown, notNull: coldef.notNull, name: coldef.typ,
                   size: 0, maxReprLen: 0, precision: 0,
                   scale: 0, min: 0, max: 0, validValues: @[])
@@ -1331,17 +1330,11 @@ method getColumns*(table: BaseTableRef): DbColumns =
 method getColumns*(table: WhereTable): DbColumns =
   result = table.child.getColumns()
 
-func columnIndex(cols: DbColumns, name: string): int =
-  for i in 0..<cols.len:
-    if cols[i].name == name:
-      return i
-  result = -1
-
 method getColumns*(table: ProjectTable): DbColumns =
   let childcols = table.child.getColumns()
   for sel in table.columns:
-    let i = columnIndex(childcols, sel.colName)
-    if i >= 0:
+    if sel.exp of QVarExp:
+      let i = columnNo(table.child, QVarExp(sel.exp))
       result.add(childcols[i])
     else:
       result.add(DbColumn(
@@ -1354,8 +1347,8 @@ method getColumns*(table: ProjectTable): DbColumns =
 method getColumns*(table: GroupTable): DbColumns =
   let childcols = table.child.getColumns()
   for sel in table.columns:
-    var i = columnIndex(childcols, sel.colName)
-    if i >= 0:
+    if sel.exp of QVarExp:
+      let i = columnNo(table.child, QVarExp(sel.exp))
       result.add(childcols[i])
     else:
       var coltyp: DbType
@@ -1379,7 +1372,8 @@ method getColumns*(table: GroupTable): DbColumns =
           of "MIN", "MAX", "SUM":
             if ScalarOpExp(sel.exp).args.len == 1 and
                ScalarOpExp(sel.exp).args[0] of QVarExp:
-              i = columnIndex(childcols, QVarExp(ScalarOpExp(sel.exp).args[0]).name)
+              # i = columnIndex(childcols, QVarExp(ScalarOpExp(sel.exp).args[0]).name)
+              let i = columnNo(table.child, QVarExp(ScalarOpExp(sel.exp).args[0]))
               if i >= 0:
                 coltyp = childcols[i].typ
                 result.add(DbColumn(name: sel.colName, tableName: "", typ: coltyp))
