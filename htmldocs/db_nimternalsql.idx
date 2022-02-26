@@ -12,6 +12,7 @@ tryExec	db_nimternalsql.html#tryExec,DbConn,SqlPrepared,varargs[string,]	db_nimt
 execAffectedRows	db_nimternalsql.html#execAffectedRows,DbConn,SqlQuery,varargs[string,]	db_nimternalsql: execAffectedRows(conn: DbConn; sql: SqlQuery; args: varargs[string, `$`]): int64	
 execAffectedRows	db_nimternalsql.html#execAffectedRows,DbConn,SqlPrepared,varargs[string,]	db_nimternalsql: execAffectedRows(conn: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]): int64	
 instantRows	db_nimternalsql.html#instantRows.i,DbConn,SqlQuery,varargs[string,]	db_nimternalsql: instantRows(conn: DbConn; sql: SqlQuery; args: varargs[string, `$`]): InstantRow	
+instantRows	db_nimternalsql.html#instantRows.i,DbConn,DbColumns,SqlQuery,varargs[string,]	db_nimternalsql: instantRows(conn: DbConn; columns: var DbColumns; sql: SqlQuery;\n            args: varargs[string, `$`]): InstantRow	
 prepare	db_nimternalsql.html#prepare,DbConn,SqlQuery	db_nimternalsql: prepare(conn: DbConn; sql: SqlQuery): SqlPrepared	
 instantRows	db_nimternalsql.html#instantRows.i,DbConn,SqlPrepared,varargs[string,]	db_nimternalsql: instantRows(conn: DbConn; sql: SqlPrepared; args: varargs[string, `$`]): InstantRow	
 `[]`	db_nimternalsql.html#[],InstantRow,int	db_nimternalsql: `[]`(row: InstantRow; col: int): string	

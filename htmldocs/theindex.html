@@ -291,6 +291,26 @@ window.addEventListener('DOMContentLoaded', main);
           <li><a class="reference external"
           data-doc-search-tag="db_nimternalsql: getAllRows(db: DbConn; query: SqlQuery; args: varargs[string, `$`]): seq[Row]" href="db_nimternalsql.html#getAllRows%2CDbConn%2CSqlQuery%2Cvarargs%5Bstring%2C%5D">db_nimternalsql: getAllRows(db: DbConn; query: SqlQuery; args: varargs[string, `$`]): seq[Row]</a></li>
           </ul></dd>
+<dt><a name="getColumns" href="#getColumns"><span>getColumns:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="duprem: getColumns(table: DupRemTable): DbColumns" href="db_nimternalsql/duprem.html#getColumns.e%2CDupRemTable">duprem: getColumns(table: DupRemTable): DbColumns</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="join: getColumns(table: JoinTable): DbColumns" href="db_nimternalsql/join.html#getColumns.e%2CJoinTable">join: getColumns(table: JoinTable): DbColumns</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="nqtables: getColumns(table: BaseTableRef): DbColumns" href="db_nimternalsql/nqtables.html#getColumns.e%2CBaseTableRef">nqtables: getColumns(table: BaseTableRef): DbColumns</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="nqtables: getColumns(table: GroupTable): DbColumns" href="db_nimternalsql/nqtables.html#getColumns.e%2CGroupTable">nqtables: getColumns(table: GroupTable): DbColumns</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="nqtables: getColumns(table: ProjectTable): DbColumns" href="db_nimternalsql/nqtables.html#getColumns.e%2CProjectTable">nqtables: getColumns(table: ProjectTable): DbColumns</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="nqtables: getColumns(table: VTable): DbColumns" href="db_nimternalsql/nqtables.html#getColumns.e%2CVTable">nqtables: getColumns(table: VTable): DbColumns</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="nqtables: getColumns(table: WhereTable): DbColumns" href="db_nimternalsql/nqtables.html#getColumns.e%2CWhereTable">nqtables: getColumns(table: WhereTable): DbColumns</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="sorter: getColumns(table: SortedTable): DbColumns" href="db_nimternalsql/sorter.html#getColumns.e%2CSortedTable">sorter: getColumns(table: SortedTable): DbColumns</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="union: getColumns(table: UnionTable): DbColumns" href="db_nimternalsql/union.html#getColumns.e%2CUnionTable">union: getColumns(table: UnionTable): DbColumns</a></li>
+          </ul></dd>
 <dt><a name="getRow" href="#getRow"><span>getRow:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="db_nimternalsql: getRow(conn: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]): Row" href="db_nimternalsql.html#getRow%2CDbConn%2CSqlPrepared%2Cvarargs%5Bstring%2C%5D">db_nimternalsql: getRow(conn: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]): Row</a></li>
@@ -325,6 +345,10 @@ window.addEventListener('DOMContentLoaded', main);
           </ul></dd>
 <dt><a name="instantRows" href="#instantRows"><span>instantRows:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
+          data-doc-search-tag="db_nimternalsql: instantRows(conn: DbConn; columns: var DbColumns; sql: SqlQuery;
+            args: varargs[string, `$`]): InstantRow" href="db_nimternalsql.html#instantRows.i%2CDbConn%2CDbColumns%2CSqlQuery%2Cvarargs%5Bstring%2C%5D">db_nimternalsql: instantRows(conn: DbConn; columns: var DbColumns; sql: SqlQuery;
+            args: varargs[string, `$`]): InstantRow</a></li>
+          <li><a class="reference external"
           data-doc-search-tag="db_nimternalsql: instantRows(conn: DbConn; sql: SqlPrepared; args: varargs[string, `$`]): InstantRow" href="db_nimternalsql.html#instantRows.i%2CDbConn%2CSqlPrepared%2Cvarargs%5Bstring%2C%5D">db_nimternalsql: instantRows(conn: DbConn; sql: SqlPrepared; args: varargs[string, `$`]): InstantRow</a></li>
           <li><a class="reference external"
           data-doc-search-tag="db_nimternalsql: instantRows(conn: DbConn; sql: SqlQuery; args: varargs[string, `$`]): InstantRow" href="db_nimternalsql.html#instantRows.i%2CDbConn%2CSqlQuery%2Cvarargs%5Bstring%2C%5D">db_nimternalsql: instantRows(conn: DbConn; sql: SqlQuery; args: varargs[string, `$`]): InstantRow</a></li>
@@ -340,6 +364,10 @@ window.addEventListener('DOMContentLoaded', main);
 <dt><a name="invalidDatetimeValue" href="#invalidDatetimeValue"><span>invalidDatetimeValue:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="nqcommon: invalidDatetimeValue" href="db_nimternalsql/nqcommon.html#invalidDatetimeValue">nqcommon: invalidDatetimeValue</a></li>
+          </ul></dd>
+<dt><a name="invalidGrouping" href="#invalidGrouping"><span>invalidGrouping:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="nqcommon: invalidGrouping" href="db_nimternalsql/nqcommon.html#invalidGrouping">nqcommon: invalidGrouping</a></li>
           </ul></dd>
 <dt><a name="invalidParameterValue" href="#invalidParameterValue"><span>invalidParameterValue:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -1344,7 +1372,7 @@ window.addEventListener('DOMContentLoaded', main);
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-02-20 21:36:54 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-02-26 14:04:43 UTC</small>
       </div>
     </div>
   </div>

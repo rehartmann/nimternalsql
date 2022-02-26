@@ -10,6 +10,7 @@ syntaxError	db_nimternalsql/nqcommon.html#syntaxError	nqcommon: syntaxError
 columnRefAmbiguous	db_nimternalsql/nqcommon.html#columnRefAmbiguous	nqcommon: columnRefAmbiguous	
 undefinedColumnName	db_nimternalsql/nqcommon.html#undefinedColumnName	nqcommon: undefinedColumnName	
 undefinedObjectName	db_nimternalsql/nqcommon.html#undefinedObjectName	nqcommon: undefinedObjectName	
+invalidGrouping	db_nimternalsql/nqcommon.html#invalidGrouping	nqcommon: invalidGrouping	
 typeMismatch	db_nimternalsql/nqcommon.html#typeMismatch	nqcommon: typeMismatch	
 undefinedFunction	db_nimternalsql/nqcommon.html#undefinedFunction	nqcommon: undefinedFunction	
 tableExists	db_nimternalsql/nqcommon.html#tableExists	nqcommon: tableExists	

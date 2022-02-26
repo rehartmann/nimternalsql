@@ -79,6 +79,11 @@ eval	db_nimternalsql/nqtables.html#eval.e,TrimExp,VarResolver,AggrResolver	nqtab
 eval	db_nimternalsql/nqtables.html#eval.e,CastExp,VarResolver,AggrResolver	nqtables: eval(exp: CastExp; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
 columnNo	db_nimternalsql/nqtables.html#columnNo.e,BaseTable,string	nqtables: columnNo(rtable: BaseTable; name: string): int	
 columnValueAt	db_nimternalsql/nqtables.html#columnValueAt,InstantRow,Natural	nqtables: columnValueAt(row: InstantRow; col: Natural): NqValue	
+getColumns	db_nimternalsql/nqtables.html#getColumns.e,VTable	nqtables: getColumns(table: VTable): DbColumns	
+getColumns	db_nimternalsql/nqtables.html#getColumns.e,BaseTableRef	nqtables: getColumns(table: BaseTableRef): DbColumns	
+getColumns	db_nimternalsql/nqtables.html#getColumns.e,WhereTable	nqtables: getColumns(table: WhereTable): DbColumns	
+getColumns	db_nimternalsql/nqtables.html#getColumns.e,ProjectTable	nqtables: getColumns(table: ProjectTable): DbColumns	
+getColumns	db_nimternalsql/nqtables.html#getColumns.e,GroupTable	nqtables: getColumns(table: GroupTable): DbColumns	
 newGroupTable	db_nimternalsql/nqtables.html#newGroupTable,VTable,seq[Expression],seq[QVarExp]	nqtables: newGroupTable(table: VTable; aggrs: seq[Expression]; groupBy: seq[QVarExp]): VTable	
 setColumnValueAt	db_nimternalsql/nqtables.html#setColumnValueAt,HashBaseTable,Record[MatValue],Natural,MatValue	nqtables: setColumnValueAt(table: HashBaseTable; keyRecord: var Record[MatValue];\n                 col: Natural; val: MatValue)	
 setColumnValueAt	db_nimternalsql/nqtables.html#setColumnValueAt,InstantRow,Natural,NqValue	nqtables: setColumnValueAt(row: var InstantRow; col: Natural; val: NqValue)	

@@ -1,2 +1,3 @@
 JoinTable	db_nimternalsql/join.html#JoinTable	join: JoinTable	
 newJoinTable	db_nimternalsql/join.html#newJoinTable,VTable,VTable,bool,Expression	join: newJoinTable(lchild: VTable; rchild: VTable; leftOuter: bool = false;\n             exp: Expression = nil): VTable	
+getColumns	db_nimternalsql/join.html#getColumns.e,JoinTable	join: getColumns(table: JoinTable): DbColumns	

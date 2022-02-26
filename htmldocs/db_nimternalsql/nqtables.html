@@ -439,6 +439,19 @@ window.addEventListener('DOMContentLoaded', main);
     title="eval(exp: VTable; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue">eval(exp: VTable; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue</a></li>
 
   </ul>
+  <ul class="simple nested-toc-section">getColumns
+      <li><a class="reference" href="#getColumns.e%2CBaseTableRef"
+    title="getColumns(table: BaseTableRef): DbColumns">getColumns(table: BaseTableRef): DbColumns</a></li>
+  <li><a class="reference" href="#getColumns.e%2CGroupTable"
+    title="getColumns(table: GroupTable): DbColumns">getColumns(table: GroupTable): DbColumns</a></li>
+  <li><a class="reference" href="#getColumns.e%2CProjectTable"
+    title="getColumns(table: ProjectTable): DbColumns">getColumns(table: ProjectTable): DbColumns</a></li>
+  <li><a class="reference" href="#getColumns.e%2CVTable"
+    title="getColumns(table: VTable): DbColumns">getColumns(table: VTable): DbColumns</a></li>
+  <li><a class="reference" href="#getColumns.e%2CWhereTable"
+    title="getColumns(table: WhereTable): DbColumns">getColumns(table: WhereTable): DbColumns</a></li>
+
+  </ul>
   <ul class="simple nested-toc-section">newCursor
       <li><a class="reference" href="#newCursor.e%2CVTable%2CopenArray%5Bstring%5D"
     title="newCursor(table: VTable; args: openArray[string]): Cursor">newCursor(table: VTable; args: openArray[string]): Cursor</a></li>
@@ -1145,6 +1158,46 @@ Evaluates an expression using varResolver to resolve variable references. varRes
 
 </dd>
 </div>
+<div id="getColumns.e,BaseTableRef">
+<dt><pre><span class="Keyword">method</span> <a href="#getColumns.e%2CBaseTableRef"><span class="Identifier">getColumns</span></a><span class="Other">(</span><span class="Identifier">table</span><span class="Other">:</span> <a href="nqtables.html#BaseTableRef"><span class="Identifier">BaseTableRef</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">DbColumns</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+<dd>
+
+
+
+</dd>
+</div>
+<div id="getColumns.e,GroupTable">
+<dt><pre><span class="Keyword">method</span> <a href="#getColumns.e%2CGroupTable"><span class="Identifier">getColumns</span></a><span class="Other">(</span><span class="Identifier">table</span><span class="Other">:</span> <span class="Identifier">GroupTable</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">DbColumns</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">SqlError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+<dd>
+
+
+
+</dd>
+</div>
+<div id="getColumns.e,ProjectTable">
+<dt><pre><span class="Keyword">method</span> <a href="#getColumns.e%2CProjectTable"><span class="Identifier">getColumns</span></a><span class="Other">(</span><span class="Identifier">table</span><span class="Other">:</span> <span class="Identifier">ProjectTable</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">DbColumns</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">SqlError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+<dd>
+
+
+
+</dd>
+</div>
+<div id="getColumns.e,VTable">
+<dt><pre><span class="Keyword">method</span> <a href="#getColumns.e%2CVTable"><span class="Identifier">getColumns</span></a><span class="Other">(</span><span class="Identifier">table</span><span class="Other">:</span> <a href="nqtables.html#VTable"><span class="Identifier">VTable</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">DbColumns</span> {.<span class="Identifier">base</span><span class="Other">,</span> <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">SqlError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+<dd>
+
+
+
+</dd>
+</div>
+<div id="getColumns.e,WhereTable">
+<dt><pre><span class="Keyword">method</span> <a href="#getColumns.e%2CWhereTable"><span class="Identifier">getColumns</span></a><span class="Other">(</span><span class="Identifier">table</span><span class="Other">:</span> <a href="nqtables.html#WhereTable"><span class="Identifier">WhereTable</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">DbColumns</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">SqlError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+<dd>
+
+
+
+</dd>
+</div>
 <div id="newCursor.e,VTable,openArray[string]">
 <dt><pre><span class="Keyword">method</span> <a href="#newCursor.e%2CVTable%2CopenArray%5Bstring%5D"><span class="Identifier">newCursor</span></a><span class="Other">(</span><span class="Identifier">table</span><span class="Other">:</span> <a href="nqtables.html#VTable"><span class="Identifier">VTable</span></a><span class="Other">;</span> <span class="Identifier">args</span><span class="Other">:</span> <span class="Identifier">openArray</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <a href="nqtables.html#Cursor"><span class="Identifier">Cursor</span></a> {.<span class="Identifier">base</span><span class="Other">,</span>
     <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">SqlError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
@@ -1196,7 +1249,7 @@ Reads the next row from the cursor. If a row could be read, true is returned and
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-02-20 21:36:54 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-02-26 14:04:43 UTC</small>
       </div>
     </div>
   </div>
