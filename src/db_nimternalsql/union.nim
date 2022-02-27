@@ -11,9 +11,20 @@ type
     cursorIsLeft: bool
     table: UnionTable
 
+func isNum(kind: DbTypeKind): bool =
+  result = (kind == dbInt) or (kind == dbDecimal) or (kind == dbFloat)
+
 func newUnionTable*(lchild: VTable, rchild: VTable): VTable =
   if columnCount(lchild) != columnCount(rchild):
     raiseDbError("UNION tables differ in number of columns", syntaxError)
+  # Type check is currently disabled because it requires full type inference
+  # which is not available yet
+  when defined(unionColumnTypeCheck):
+    let lcols = lchild.getColumns()
+    let rcols = rchild.getColumns()
+    for i in 0..<lcols.len:
+      if isNum(lcols[i].typ.kind) != isNum(rcols[i].typ.kind):
+        raiseDbError("Incompatible UNION types", typeMismatch)
   result = UnionTable(leftChild: lchild, rightChild: rchild)
 
 method columnCount(table: UnionTable): Natural =

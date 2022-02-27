@@ -1,4 +1,5 @@
 import db_nimternalsql
+import db_common
 
 let db = open("", "", "", "")
 exec(db, sql"""CREATE TABLE tst
@@ -12,7 +13,14 @@ doAssert getValue(db, sql"""SELECT k + CAST ('2' AS BIGINT) FROM tst""") == "3"
 doAssert getValue(db, sql"""SELECT CAST (n AS NUMERIC(4,2)) FROM tst""") == "5.5"
 doAssert getValue(db, sql"""SELECT ':' || CAST (n as TEXT) FROM tst""") == ":5.5"
 doAssert getValue(db, sql"""SELECT CAST (s || 'RUE' AS BOOLEAN) FROM tst""") == "TRUE"
-doAssert getValue(db, sql"""SELECT CAST(s || 'TX' AS CHAR(3)) FROM tst""") == "TTX"
+
+var cols: DbColumns
+var val: string
+for r in instantRows(db, cols, sql"""SELECT CAST(s || 'TX' AS CHAR(3)) FROM tst"""):
+  val = r[0]
+
+doAssert val == "TTX"
+doAssert cols[0].typ.kind == dbFixedChar
 
 try:
   echo getValue(db, sql"""SELECT CAST(500 + n AS NUMERIC(1, 1)) FROM tst""")

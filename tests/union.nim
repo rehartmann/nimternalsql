@@ -52,9 +52,25 @@ doAssert rows[3][1] == "queen"
 doAssert rows[4][0] == "4"
 doAssert rows[4][1] == "jack"
 
-# exec(db, sql"CREATE TABLE tst3 (a int primary key, n int)")
-# exec(db, sql"INSERT INTO tst3 VALUES (1, 11)")
-# rows = getAllRows(db,
-#                  sql"""SELECT * FROM tst
-#                        UNION
-#                        SELECT * FROM tst3""")
+exec(db, sql"CREATE TABLE tst3 (a int primary key, n int)")
+exec(db, sql"INSERT INTO tst3 VALUES (3, 11)")
+
+rows = @[]
+for r in instantRows(db, cols,
+                     sql"""SELECT a, b FROM tst
+                           UNION
+                           SELECT a, CAST(n AS text) FROM tst3
+                           ORDER BY a"""):
+  rows.add(@[r[0], r[1]])
+doAssert cols.len == 2
+doAssert cols[0].name == "A"
+doAssert cols[0].typ.kind == dbInt
+doAssert cols[1].typ.kind == dbVarchar
+
+doAssert rows.len == 3
+doAssert rows[0][0] == "1"
+doAssert rows[0][1] == "ace"
+doAssert rows[1][0] == "2"
+doAssert rows[1][1] == "king"
+doAssert rows[2][0] == "3"
+doAssert rows[2][1] == "11"

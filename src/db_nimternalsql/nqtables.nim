@@ -1270,56 +1270,61 @@ func columnNo(table: VTable, colRef: QVarExp): int =
 method getColumns*(table: VTable): DbColumns {.base.} =
   raiseDbError("not implemented", internalError)
 
-proc toDbType(coldef: ColumnDef): DbType =
-  case toUpperAscii(coldef.typ)
+func toDbType(typ: string, size: Natural, precision: Natural,
+              scale: Natural, notNull: bool): DbType =
+  case toUpperAscii(typ)
     of "INTEGER", "INT":
-      result = DbType(kind: dbInt, notNull: coldef.notNull, name: coldef.typ,
+      result = DbType(kind: dbInt, notNull: notNull, name: typ,
                   size: sizeof(int32), maxReprLen: 10, precision: 9,
                   scale: 0, min: int32.low, max: int32.high, validValues: @[])
     of "NUMERIC", "DECIMAL":
-      result = DbType(kind: dbDecimal, notNull: coldef.notNull, name: coldef.typ,
-                  size: sizeof(int64), maxReprLen: 19, precision: coldef.precision,
-                  scale: coldef.scale, min: -maxNumeric, max: maxNumeric, validValues: @[])
+      result = DbType(kind: dbDecimal, notNull: notNull, name: typ,
+                  size: sizeof(int64), maxReprLen: 19, precision: precision,
+                  scale: scale, min: -maxNumeric, max: maxNumeric, validValues: @[])
     of "BIGINT":
-      result = DbType(kind: dbInt, notNull: coldef.notNull, name: coldef.typ,
+      result = DbType(kind: dbInt, notNull: notNull, name: typ,
                   size: sizeof(int64), maxReprLen: 19, precision: 18,
                   scale: 0, min: int64.low, max: int64.high, validValues: @[])
     of "REAL":
-      result = DbType(kind: dbFloat, notNull: coldef.notNull, name: coldef.typ,
+      result = DbType(kind: dbFloat, notNull: notNull, name: typ,
                   size: sizeof(float64), maxReprLen: 19, precision: 0,
                   scale: 0, min: int64.low, max: int64.high, validValues: @[])
     of "CHAR":
-      result = DbType(kind: dbFixedChar, notNull: coldef.notNull, name: coldef.typ,
-                  size: coldef.size, maxReprLen: coldef.size, precision: 0,
+      result = DbType(kind: dbFixedChar, notNull: notNull, name: typ,
+                  size: size, maxReprLen: size, precision: 0,
                   scale: 0, min: 0, max: 0, validValues: @[])
     of "TEXT", "VARCHAR":
-      result = DbType(kind: dbVarchar, notNull: coldef.notNull, name: coldef.typ,
+      result = DbType(kind: dbVarchar, notNull: notNull, name: typ,
                   size: 0, maxReprLen: 0, precision: 0,
                   scale: 0, min: 0, max: 0, validValues: @[])
     of "BINARY", "VARBINARY", "LONGVARBINARY", "RAW", "BYTEA":
-      result = DbType(kind: dbBlob, notNull: coldef.notNull, name: coldef.typ,
+      result = DbType(kind: dbBlob, notNull: notNull, name: typ,
                   size: 0, maxReprLen: 0, precision: 0,
                   scale: 0, min: 0, max: 0, validValues: @[])
     of "BOOLEAN":
-      result = DbType(kind: dbBool, notNull: coldef.notNull, name: coldef.typ,
+      result = DbType(kind: dbBool, notNull: notNull, name: typ,
                   size: 1, maxReprLen: 5, precision: 0,
                   scale: 0, min: 0, max: 0, validValues: @[])
     of "TIME":
-      result = DbType(kind: dbTime, notNull: coldef.notNull, name: coldef.typ,
+      result = DbType(kind: dbTime, notNull: notNull, name: typ,
                   size: 12, maxReprLen: 15, precision: 0,
                   scale: 0, min: 0, max: 0, validValues: @[])
     of "TIMESTAMP":
-      result = DbType(kind: dbTimestamp, notNull: coldef.notNull, name: coldef.typ,
+      result = DbType(kind: dbTimestamp, notNull: notNull, name: typ,
                   size: 12, maxReprLen: 26, precision: 0,
                   scale: 0, min: 0, max: 0, validValues: @[])
     of "DATE":
-      result = DbType(kind: dbTimestamp, notNull: coldef.notNull, name: coldef.typ,
+      result = DbType(kind: dbTimestamp, notNull: notNull, name: typ,
                   size: 8, maxReprLen: 10, precision: 0,
                   scale: 0, min: 0, max: 0, validValues: @[])
     else:
-      result = DbType(kind: dbUnknown, notNull: coldef.notNull, name: coldef.typ,
+      result = DbType(kind: dbUnknown, notNull: notNull, name: typ,
                   size: 0, maxReprLen: 0, precision: 0,
                   scale: 0, min: 0, max: 0, validValues: @[])
+
+proc toDbType(coldef: ColumnDef): DbType =
+  result = toDbType(coldef.typ, coldef.size, coldef.precision, coldef.scale,
+                    coldef.notNull)
 
 method getColumns*(table: BaseTableRef): DbColumns =
   for i in 0..<table.table.def.len:
@@ -1336,13 +1341,19 @@ method getColumns*(table: ProjectTable): DbColumns =
     if sel.exp of QVarExp:
       let i = columnNo(table.child, QVarExp(sel.exp))
       result.add(childcols[i])
+    elif sel.exp of CastExp:
+      let typeDef = CastExp(sel.exp).typeDef
+      result.add(DbColumn(
+          name: sel.colName, tableName: "",
+          typ: toDbType(typeDef.typ, typeDef.size, typeDef.precision, typeDef.scale, false),
+          primaryKey: false, foreignKey: false))
     else:
       result.add(DbColumn(
           name: sel.colName, tableName: "",
           typ: DbType(kind: dbUnknown, notNull: false, name: "",
                       size: 0, maxReprLen: 0, precision: 0,
                       scale: 0, min: 0, max: 0, validValues: @[]),
-               primaryKey: false, foreignKey: false))
+          primaryKey: false, foreignKey: false))
 
 method getColumns*(table: GroupTable): DbColumns =
   let childcols = table.child.getColumns()
