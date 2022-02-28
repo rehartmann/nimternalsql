@@ -32,6 +32,7 @@ VarResolver	db_nimternalsql/nqtables.html#VarResolver	nqtables: VarResolver
 VTable	db_nimternalsql/nqtables.html#VTable	nqtables: VTable	
 BaseTableRef	db_nimternalsql/nqtables.html#BaseTableRef	nqtables: BaseTableRef	
 WhereTable	db_nimternalsql/nqtables.html#WhereTable	nqtables: WhereTable	
+ProjectTable	db_nimternalsql/nqtables.html#ProjectTable	nqtables: ProjectTable	
 ColumnAssignment	db_nimternalsql/nqtables.html#ColumnAssignment	nqtables: ColumnAssignment	
 InstantRow	db_nimternalsql/nqtables.html#InstantRow	nqtables: InstantRow	
 Cursor	db_nimternalsql/nqtables.html#Cursor	nqtables: Cursor	
@@ -48,6 +49,7 @@ toFloat	db_nimternalsql/nqtables.html#toFloat,NqValue	nqtables: toFloat(v: NqVal
 adjustScale	db_nimternalsql/nqtables.html#adjustScale,NqValue,NqValue	nqtables: adjustScale(a: var NqValue; b: var NqValue)	
 toNqValue	db_nimternalsql/nqtables.html#toNqValue,MatValue,ColumnDef	nqtables: toNqValue(v: MatValue; colDef: ColumnDef): NqValue	
 checkType	db_nimternalsql/nqtables.html#checkType,ColumnDef	nqtables: checkType(def: ColumnDef)	
+setScale	db_nimternalsql/nqtables.html#setScale,NqValue,Natural	nqtables: setScale(v: NqValue; scale: Natural): NqValue	
 toMatValue	db_nimternalsql/nqtables.html#toMatValue,NqValue,ColumnDef	nqtables: toMatValue(v: NqValue; colDef: ColumnDef): MatValue	
 `==`	db_nimternalsql/nqtables.html#==,seq,seq	nqtables: `==`(r1: seq; r2: seq): bool	
 newHashBaseTable	db_nimternalsql/nqtables.html#newHashBaseTable,string,openArray[ColumnDef],seq[string]	nqtables: newHashBaseTable(name: string; columns: openArray[ColumnDef]; key: seq[string]): HashBaseTable	
@@ -63,6 +65,7 @@ eval	db_nimternalsql/nqtables.html#eval.e,TimestampLit,VarResolver,AggrResolver	
 eval	db_nimternalsql/nqtables.html#eval.e,DateLit,VarResolver,AggrResolver	nqtables: eval(exp: DateLit; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
 eval	db_nimternalsql/nqtables.html#eval.e,BoolLit,VarResolver,AggrResolver	nqtables: eval(exp: BoolLit; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
 eval	db_nimternalsql/nqtables.html#eval.e,NullLit,VarResolver,AggrResolver	nqtables: eval(exp: NullLit; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
+`+`	db_nimternalsql/nqtables.html#+,NqValue,NqValue	nqtables: `+`(a: NqValue; b: NqValue): NqValue	
 newCursor	db_nimternalsql/nqtables.html#newCursor.e,VTable,openArray[string]	nqtables: newCursor(table: VTable; args: openArray[string]): Cursor	
 next	db_nimternalsql/nqtables.html#next.e,Cursor,InstantRow,VarResolver	nqtables: next(cursor: Cursor; row: var InstantRow; varResolver: VarResolver = nil): bool	
 instantRows	db_nimternalsql/nqtables.html#instantRows.i,VTable,varargs[string]	nqtables: instantRows(rtable: VTable; args: varargs[string]): InstantRow	
@@ -82,9 +85,8 @@ columnValueAt	db_nimternalsql/nqtables.html#columnValueAt,InstantRow,Natural	nqt
 getColumns	db_nimternalsql/nqtables.html#getColumns.e,VTable	nqtables: getColumns(table: VTable): DbColumns	
 getColumns	db_nimternalsql/nqtables.html#getColumns.e,BaseTableRef	nqtables: getColumns(table: BaseTableRef): DbColumns	
 getColumns	db_nimternalsql/nqtables.html#getColumns.e,WhereTable	nqtables: getColumns(table: WhereTable): DbColumns	
+columnNo	db_nimternalsql/nqtables.html#columnNo,VTable,QVarExp	nqtables: columnNo(table: VTable; colRef: QVarExp): int	
 getColumns	db_nimternalsql/nqtables.html#getColumns.e,ProjectTable	nqtables: getColumns(table: ProjectTable): DbColumns	
-getColumns	db_nimternalsql/nqtables.html#getColumns.e,GroupTable	nqtables: getColumns(table: GroupTable): DbColumns	
-newGroupTable	db_nimternalsql/nqtables.html#newGroupTable,VTable,seq[Expression],seq[QVarExp]	nqtables: newGroupTable(table: VTable; aggrs: seq[Expression]; groupBy: seq[QVarExp]): VTable	
 setColumnValueAt	db_nimternalsql/nqtables.html#setColumnValueAt,HashBaseTable,Record[MatValue],Natural,MatValue	nqtables: setColumnValueAt(table: HashBaseTable; keyRecord: var Record[MatValue];\n                 col: Natural; val: MatValue)	
 setColumnValueAt	db_nimternalsql/nqtables.html#setColumnValueAt,InstantRow,Natural,NqValue	nqtables: setColumnValueAt(row: var InstantRow; col: Natural; val: NqValue)	
 instantRows	db_nimternalsql/nqtables.html#instantRows.i,BaseTableRef	nqtables: instantRows(tableRef: BaseTableRef): InstantRow	

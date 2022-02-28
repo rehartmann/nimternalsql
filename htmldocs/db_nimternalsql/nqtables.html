@@ -137,7 +137,7 @@ window.addEventListener('DOMContentLoaded', main);
       keyRecord*: Record[MatValue]
 
   of false:
-      vals: seq[NqValue]">InstantRow</a></li>
+      vals*: seq[NqValue]">InstantRow</a></li>
   <li><a class="reference" href="#MatValue"
     title="MatValue = object
   case kind*: MatValueKind
@@ -209,6 +209,10 @@ window.addEventListener('DOMContentLoaded', main);
     title="NqValueKind = enum
   nqkNull, nqkInt, nqkNumeric, nqkFloat, nqkString, nqkBool, nqkList, nqkBigint,
   nqkTime, nqkDate, nqkTimestamp">NqValueKind</a></li>
+  <li><a class="reference" href="#ProjectTable"
+    title="ProjectTable = ref object of VTable
+  child*: VTable
+  columns*: seq[SelectElement]">ProjectTable</a></li>
   <li><a class="reference" href="#Record"
     title="Record[T] = seq[T]">Record</a></li>
   <li><a class="reference" href="#VarResolver"
@@ -241,6 +245,11 @@ window.addEventListener('DOMContentLoaded', main);
     title="`$`(val: NqValue): string">`$`(val: NqValue): string</a></li>
 
   </ul>
+  <ul class="simple nested-toc-section">+
+      <li><a class="reference" href="#%2B%2CNqValue%2CNqValue"
+    title="`+`(a: NqValue; b: NqValue): NqValue">`+`(a: NqValue; b: NqValue): NqValue</a></li>
+
+  </ul>
   <ul class="simple nested-toc-section">==
       <li><a class="reference" href="#%3D%3D%2Cseq%2Cseq"
     title="`==`(r1: seq; r2: seq): bool">`==`(r1: seq; r2: seq): bool</a></li>
@@ -259,6 +268,11 @@ window.addEventListener('DOMContentLoaded', main);
   <ul class="simple nested-toc-section">columnCount
       <li><a class="reference" href="#columnCount%2CInstantRow"
     title="columnCount(row: InstantRow): int">columnCount(row: InstantRow): int</a></li>
+
+  </ul>
+  <ul class="simple nested-toc-section">columnNo
+      <li><a class="reference" href="#columnNo%2CVTable%2CQVarExp"
+    title="columnNo(table: VTable; colRef: QVarExp): int">columnNo(table: VTable; colRef: QVarExp): int</a></li>
 
   </ul>
   <ul class="simple nested-toc-section">columnValueAt
@@ -320,11 +334,6 @@ window.addEventListener('DOMContentLoaded', main);
     title="newDatabase(): Database">newDatabase(): Database</a></li>
 
   </ul>
-  <ul class="simple nested-toc-section">newGroupTable
-      <li><a class="reference" href="#newGroupTable%2CVTable%2Cseq%5BExpression%5D%2Cseq%5BQVarExp%5D"
-    title="newGroupTable(table: VTable; aggrs: seq[Expression]; groupBy: seq[QVarExp]): VTable">newGroupTable(table: VTable; aggrs: seq[Expression]; groupBy: seq[QVarExp]): VTable</a></li>
-
-  </ul>
   <ul class="simple nested-toc-section">newHashBaseTable
       <li><a class="reference" href="#newHashBaseTable%2Cstring%2CopenArray%5BColumnDef%5D%2Cseq%5Bstring%5D"
     title="newHashBaseTable(name: string; columns: openArray[ColumnDef]; key: seq[string]): HashBaseTable">newHashBaseTable(name: string; columns: openArray[ColumnDef]; key: seq[string]): HashBaseTable</a></li>
@@ -357,6 +366,11 @@ window.addEventListener('DOMContentLoaded', main);
     title="setColumnValueAt(table: HashBaseTable; keyRecord: var Record[MatValue];
                  col: Natural; val: MatValue)">setColumnValueAt(table: HashBaseTable; keyRecord: var Record[MatValue];
                  col: Natural; val: MatValue)</a></li>
+
+  </ul>
+  <ul class="simple nested-toc-section">setScale
+      <li><a class="reference" href="#setScale%2CNqValue%2CNatural"
+    title="setScale(v: NqValue; scale: Natural): NqValue">setScale(v: NqValue; scale: Natural): NqValue</a></li>
 
   </ul>
   <ul class="simple nested-toc-section">toFloat
@@ -442,8 +456,6 @@ window.addEventListener('DOMContentLoaded', main);
   <ul class="simple nested-toc-section">getColumns
       <li><a class="reference" href="#getColumns.e%2CBaseTableRef"
     title="getColumns(table: BaseTableRef): DbColumns">getColumns(table: BaseTableRef): DbColumns</a></li>
-  <li><a class="reference" href="#getColumns.e%2CGroupTable"
-    title="getColumns(table: GroupTable): DbColumns">getColumns(table: GroupTable): DbColumns</a></li>
   <li><a class="reference" href="#getColumns.e%2CProjectTable"
     title="getColumns(table: ProjectTable): DbColumns">getColumns(table: ProjectTable): DbColumns</a></li>
   <li><a class="reference" href="#getColumns.e%2CVTable"
@@ -567,7 +579,7 @@ window.addEventListener('DOMContentLoaded', main);
       <span class="Identifier">keyRecord</span><span class="Operator">*</span><span class="Other">:</span> <a href="nqtables.html#Record"><span class="Identifier">Record</span></a><span class="Other">[</span><a href="nqtables.html#MatValue"><span class="Identifier">MatValue</span></a><span class="Other">]</span>
 
   <span class="Keyword">of</span> <span class="Identifier">false</span><span class="Other">:</span>
-      <span class="Identifier">vals</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><a href="nqtables.html#NqValue"><span class="Identifier">NqValue</span></a><span class="Other">]</span>
+      <span class="Identifier">vals</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><a href="nqtables.html#NqValue"><span class="Identifier">NqValue</span></a><span class="Other">]</span>
 
   </pre></dt>
 <dd>
@@ -675,6 +687,17 @@ Holds a row's column values.
 
 </dd>
 </div>
+<div id="ProjectTable">
+<dt><pre><a href="nqtables.html#ProjectTable"><span class="Identifier">ProjectTable</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span> <span class="Keyword">of</span> <a href="nqtables.html#VTable"><span class="Identifier">VTable</span></a>
+  <span class="Identifier">child</span><span class="Operator">*</span><span class="Other">:</span> <a href="nqtables.html#VTable"><span class="Identifier">VTable</span></a>
+  <span class="Identifier">columns</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><a href="nqcommon.html#SelectElement"><span class="Identifier">SelectElement</span></a><span class="Other">]</span>
+</pre></dt>
+<dd>
+
+
+
+</dd>
+</div>
 <div id="Record">
 <dt><pre><a href="nqtables.html#Record"><span class="Identifier">Record</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span> <span class="Other">=</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span></pre></dt>
 <dd>
@@ -746,6 +769,14 @@ Holds a row's column values.
 
 </dd>
 </div>
+<div id="+,NqValue,NqValue">
+<dt><pre><span class="Keyword">proc</span> <a href="#%2B%2CNqValue%2CNqValue"><span class="Identifier">`+`</span></a><span class="Other">(</span><span class="Identifier">a</span><span class="Other">:</span> <a href="nqtables.html#NqValue"><span class="Identifier">NqValue</span></a><span class="Other">;</span> <span class="Identifier">b</span><span class="Other">:</span> <a href="nqtables.html#NqValue"><span class="Identifier">NqValue</span></a><span class="Other">)</span><span class="Other">:</span> <a href="nqtables.html#NqValue"><span class="Identifier">NqValue</span></a> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">SqlError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+<dd>
+
+
+
+</dd>
+</div>
 <div id="==,seq,seq">
 <dt><pre><span class="Keyword">proc</span> <a href="#%3D%3D%2Cseq%2Cseq"><span class="Identifier">`==`</span></a><span class="Other">(</span><span class="Identifier">r1</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">;</span> <span class="Identifier">r2</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">bool</span></pre></dt>
 <dd>
@@ -772,6 +803,15 @@ Holds a row's column values.
 </div>
 <div id="columnCount,InstantRow">
 <dt><pre><span class="Keyword">func</span> <a href="#columnCount%2CInstantRow"><span class="Identifier">columnCount</span></a><span class="Other">(</span><span class="Identifier">row</span><span class="Other">:</span> <a href="nqtables.html#InstantRow"><span class="Identifier">InstantRow</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">int</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">SqlError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+<dd>
+
+
+
+</dd>
+</div>
+<div id="columnNo,VTable,QVarExp">
+<dt><pre><span class="Keyword">func</span> <a href="#columnNo%2CVTable%2CQVarExp"><span class="Identifier">columnNo</span></a><span class="Other">(</span><span class="Identifier">table</span><span class="Other">:</span> <a href="nqtables.html#VTable"><span class="Identifier">VTable</span></a><span class="Other">;</span> <span class="Identifier">colRef</span><span class="Other">:</span> <a href="nqcommon.html#QVarExp"><span class="Identifier">QVarExp</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">int</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">SqlError</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
 
@@ -872,15 +912,6 @@ Holds a row's column values.
 
 </dd>
 </div>
-<div id="newGroupTable,VTable,seq[Expression],seq[QVarExp]">
-<dt><pre><span class="Keyword">func</span> <a href="#newGroupTable%2CVTable%2Cseq%5BExpression%5D%2Cseq%5BQVarExp%5D"><span class="Identifier">newGroupTable</span></a><span class="Other">(</span><span class="Identifier">table</span><span class="Other">:</span> <a href="nqtables.html#VTable"><span class="Identifier">VTable</span></a><span class="Other">;</span> <span class="Identifier">aggrs</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><a href="nqcommon.html#Expression"><span class="Identifier">Expression</span></a><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">groupBy</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><a href="nqcommon.html#QVarExp"><span class="Identifier">QVarExp</span></a><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <a href="nqtables.html#VTable"><span class="Identifier">VTable</span></a> {.
-    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">SqlError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
-<dd>
-
-
-
-</dd>
-</div>
 <div id="newHashBaseTable,string,openArray[ColumnDef],seq[string]">
 <dt><pre><span class="Keyword">proc</span> <a href="#newHashBaseTable%2Cstring%2CopenArray%5BColumnDef%5D%2Cseq%5Bstring%5D"><span class="Identifier">newHashBaseTable</span></a><span class="Other">(</span><span class="Identifier">name</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">columns</span><span class="Other">:</span> <span class="Identifier">openArray</span><span class="Other">[</span><a href="nqcommon.html#ColumnDef"><span class="Identifier">ColumnDef</span></a><span class="Other">]</span><span class="Other">;</span>
                       <span class="Identifier">key</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <a href="nqtables.html#HashBaseTable"><span class="Identifier">HashBaseTable</span></a> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">SqlError</span><span class="Other">]</span><span class="Other">,</span>
@@ -940,6 +971,14 @@ Holds a row's column values.
 <dt><pre><span class="Keyword">proc</span> <a href="#setColumnValueAt%2CHashBaseTable%2CRecord%5BMatValue%5D%2CNatural%2CMatValue"><span class="Identifier">setColumnValueAt</span></a><span class="Other">(</span><span class="Identifier">table</span><span class="Other">:</span> <a href="nqtables.html#HashBaseTable"><span class="Identifier">HashBaseTable</span></a><span class="Other">;</span> <span class="Identifier">keyRecord</span><span class="Other">:</span> <span class="Keyword">var</span> <a href="nqtables.html#Record"><span class="Identifier">Record</span></a><span class="Other">[</span><a href="nqtables.html#MatValue"><span class="Identifier">MatValue</span></a><span class="Other">]</span><span class="Other">;</span>
                       <span class="Identifier">col</span><span class="Other">:</span> <span class="Identifier">Natural</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <a href="nqtables.html#MatValue"><span class="Identifier">MatValue</span></a><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">KeyError</span><span class="Other">]</span><span class="Other">,</span>
     <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+<dd>
+
+
+
+</dd>
+</div>
+<div id="setScale,NqValue,Natural">
+<dt><pre><span class="Keyword">func</span> <a href="#setScale%2CNqValue%2CNatural"><span class="Identifier">setScale</span></a><span class="Other">(</span><span class="Identifier">v</span><span class="Other">:</span> <a href="nqtables.html#NqValue"><span class="Identifier">NqValue</span></a><span class="Other">;</span> <span class="Identifier">scale</span><span class="Other">:</span> <span class="Identifier">Natural</span><span class="Other">)</span><span class="Other">:</span> <a href="nqtables.html#NqValue"><span class="Identifier">NqValue</span></a> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
 
@@ -1166,16 +1205,8 @@ Evaluates an expression using varResolver to resolve variable references. varRes
 
 </dd>
 </div>
-<div id="getColumns.e,GroupTable">
-<dt><pre><span class="Keyword">method</span> <a href="#getColumns.e%2CGroupTable"><span class="Identifier">getColumns</span></a><span class="Other">(</span><span class="Identifier">table</span><span class="Other">:</span> <span class="Identifier">GroupTable</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">DbColumns</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">SqlError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
-<dd>
-
-
-
-</dd>
-</div>
 <div id="getColumns.e,ProjectTable">
-<dt><pre><span class="Keyword">method</span> <a href="#getColumns.e%2CProjectTable"><span class="Identifier">getColumns</span></a><span class="Other">(</span><span class="Identifier">table</span><span class="Other">:</span> <span class="Identifier">ProjectTable</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">DbColumns</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">SqlError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+<dt><pre><span class="Keyword">method</span> <a href="#getColumns.e%2CProjectTable"><span class="Identifier">getColumns</span></a><span class="Other">(</span><span class="Identifier">table</span><span class="Other">:</span> <a href="nqtables.html#ProjectTable"><span class="Identifier">ProjectTable</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">DbColumns</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">SqlError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
 
@@ -1249,7 +1280,7 @@ Reads the next row from the cursor. If a row could be read, true is returned and
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-02-26 14:08:30 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-02-28 16:16:42 UTC</small>
       </div>
     </div>
   </div>

@@ -42,6 +42,7 @@ import db_nimternalsql/nqtables
 import db_nimternalsql/sqlscanner
 import db_nimternalsql/sqlparser
 import db_nimternalsql/join
+import db_nimternalsql/groupby
 import db_nimternalsql/duprem
 import db_nimternalsql/union
 import db_nimternalsql/sorter

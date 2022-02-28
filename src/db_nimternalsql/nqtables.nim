@@ -107,13 +107,9 @@ type
   WhereTable* = ref object of VTable
     child*: VTable
     whereExp*: Expression
-  ProjectTable = ref object of VTable
-    child: VTable
-    columns: seq[SelectElement]
-  GroupTable = ref object of VTable
-    child: VTable
-    groupBy: seq[QVarExp]
-    columns: seq[SelectElement]
+  ProjectTable* = ref object of VTable
+    child*: VTable
+    columns*: seq[SelectElement]
 
   ColumnAssignment* = object
     col*: Natural
@@ -126,7 +122,7 @@ type
       of true:
         keyRecord*: Record[MatValue]
       of false:
-        vals: seq[NqValue]
+        vals*: seq[NqValue]
 
   Cursor* = ref object of RootObj
     args*: seq[string]
@@ -141,12 +137,6 @@ type
   ProjectTableCursor = ref object of Cursor
     cursor: Cursor
     table: ProjectTable
-  GroupTableCursor = ref object of Cursor
-    iter: iterator(groupTable: Table[Record[NqValue], Record[
-        NqValue]]): Record[NqValue]
-    groupTable: Table[Record[NqValue], Record[NqValue]]
-    table: GroupTable
-    rowsRead: bool
 
 func newInstantRow*(table: VTable, vals: seq[NqValue]): InstantRow =
   result = InstantRow(table: table, material: false, vals: vals)
@@ -493,7 +483,7 @@ func typeKind(def: ColumnDef): MatValueKind =
 proc checkType*(def: ColumnDef) =
   discard typeKind(def)
 
-func setScale(v: NqValue, scale: Natural): NqValue =
+func setScale*(v: NqValue, scale: Natural): NqValue =
   result = v
   while result.scale < scale:
     result.numericVal *= 10
@@ -763,7 +753,7 @@ method eval*(exp: NullLit, varResolver: VarResolver,
     aggrResolver: AggrResolver): NqValue =
   result = NqValue(kind: nqkNull)
 
-proc `+`(a: NqValue, b: NqValue): NqValue =
+proc `+`*(a: NqValue, b: NqValue): NqValue =
   if a.kind == nqkInt and b.kind == nqkInt:
     result = NqValue(kind: nqkInt, intVal: a.intVal + b.intVal)
   if a.kind == nqkFloat or b.kind == nqkFloat:
@@ -1214,9 +1204,6 @@ method columnCount(table: WhereTable): Natural =
 method columnCount(table: ProjectTable): Natural =
   result = table.columns.len
 
-method columnCount(table: GroupTable): Natural =
-  result = table.columns.len
-
 method columnNo*(rtable: BaseTable, name: string): int {.base.} =
   raiseDbError("not implemented", internalError)
 
@@ -1240,12 +1227,6 @@ method columnNo(rtable: ProjectTable, name: string, tableName: string): int =
       return i
   result = -1
 
-method columnNo(table: GroupTable, name: string, tableName: string): int =
-  for i in 0..<table.columns.len:
-    if table.columns[i].colName == name:
-      return i
-  result = -1
-
 func columnValueAt(table: HashBaseTable, keyRecord: Record, col: Natural): NqValue =
   let ki = keyIndex(table, col)
   if ki != -1:
@@ -1263,9 +1244,6 @@ func columnValueAt*(row: InstantRow; col: Natural): NqValue =
     result = columnValueAt(HashBaseTable(BaseTableRef(row.table).table), row.keyRecord, col)
   else:
     result = row.vals[col]
-
-func columnNo(table: VTable, colRef: QVarExp): int =
-  result = columnNo(table, colRef.name, colRef.tableName)
 
 method getColumns*(table: VTable): DbColumns {.base.} =
   raiseDbError("not implemented", internalError)
@@ -1335,6 +1313,9 @@ method getColumns*(table: BaseTableRef): DbColumns =
 method getColumns*(table: WhereTable): DbColumns =
   result = table.child.getColumns()
 
+func columnNo*(table: VTable, colRef: QVarExp): int =
+  result = columnNo(table, colRef.name, colRef.tableName)
+
 method getColumns*(table: ProjectTable): DbColumns =
   let childcols = table.child.getColumns()
   for sel in table.columns:
@@ -1354,90 +1335,6 @@ method getColumns*(table: ProjectTable): DbColumns =
                       size: 0, maxReprLen: 0, precision: 0,
                       scale: 0, min: 0, max: 0, validValues: @[]),
           primaryKey: false, foreignKey: false))
-
-method getColumns*(table: GroupTable): DbColumns =
-  let childcols = table.child.getColumns()
-  for sel in table.columns:
-    if sel.exp of QVarExp:
-      let i = columnNo(table.child, QVarExp(sel.exp))
-      result.add(childcols[i])
-    else:
-      var coltyp: DbType
-      coltyp.kind = dbUnknown
-      if sel.exp of ScalarOpExp:
-        case ScalarOpExp(sel.exp).opName
-          of "COUNT":
-            coltyp = DbType(kind: dbInt, notNull: false, name: "INTEGER",
-                  size: sizeof(int32), maxReprLen: 10, precision: 9,
-                  scale: 0, min: int32.low, max: int32.high, validValues: @[])
-            result.add(DbColumn(
-                name: sel.colName, tableName: "", typ: coltyp,
-                primaryKey: false, foreignKey: false))
-          of "AVG":
-            coltyp = DbType(kind: dbFloat, notNull: false, name: "REAL",
-                  size: sizeof(float64), maxReprLen: 19, precision: 0,
-                  scale: 0, min: int64.low, max: int64.high, validValues: @[])
-            result.add(DbColumn(
-                name: sel.colName, tableName: "", typ: coltyp,
-                primaryKey: false, foreignKey: false))
-          of "MIN", "MAX", "SUM":
-            if ScalarOpExp(sel.exp).args.len == 1 and
-               ScalarOpExp(sel.exp).args[0] of QVarExp:
-              # i = columnIndex(childcols, QVarExp(ScalarOpExp(sel.exp).args[0]).name)
-              let i = columnNo(table.child, QVarExp(ScalarOpExp(sel.exp).args[0]))
-              if i >= 0:
-                coltyp = childcols[i].typ
-                result.add(DbColumn(name: sel.colName, tableName: "", typ: coltyp))
-      if coltyp.kind == dbUnknown:
-        result.add(DbColumn(
-            name: sel.colName, tableName: "",
-            typ: DbType(kind: dbUnknown, notNull: false, name: "",
-                        size: 0, maxReprLen: 0, precision: 0,
-                        scale: 0, min: 0, max: 0, validValues: @[]),
-                primaryKey: false, foreignKey: false))
-
-func isAggregate(exp: Expression): bool =
-  if exp of ScalarOpExp:
-    case ScalarOpExp(exp).opName
-      of "COUNT", "AVG", "MAX", "MIN", "SUM":
-        result = true
-      else:
-        result = false
-  else:
-    result = false
-
-func newGroupTable*(table: VTable, aggrs: seq[Expression], groupBy: seq[
-    QVarExp]): VTable =
-  for colRef in groupBy:
-    if columnNo(table, colRef) == -1:
-      raiseDbError("column " & (if colRef.tableName != "": colRef.tableName &
-          "." else: "") & colRef.name & " does not exist", undefinedColumnName)
-  if table of ProjectTable:
-    # Each column must either be in GROUP BY or an aggregation
-    for col in ProjectTable(table).columns:
-      if not isAggregate(col.exp):
-        var found = false
-        for g in groupBy:
-          if g.name == col.colName:
-            found = true
-            break
-        if not found:
-          raiseDbError(col.colName & " is not a grouping column", invalidGrouping)    
-    result = GroupTable(child: ProjectTable(table).child,
-                       groupBy: groupBy, columns: ProjectTable(table).columns)
-  else:
-    # Each column must be in GROUP BY
-    var cols: seq[SelectElement]
-    for dbcol in table.getColumns:
-      var found = false
-      for g in groupBy:
-        if g.name == dbcol.name:
-          found = true
-          break
-      if not found:
-        raiseDbError(dbcol.name & " is not a grouping column", invalidGrouping)
-      cols.add(SelectElement(colName: dbcol.name, exp: newQVarExp(dbcol.name)))
-    result = GroupTable(child: table, groupBy: groupBy, columns: cols)
 
 proc setColumnValueAt*(table: HashBaseTable; keyRecord: var Record[MatValue],
     col: Natural, val: MatValue) =
@@ -1630,221 +1527,6 @@ method next(cursor: ProjectTableCursor, row: var InstantRow,
         return columnValueAt(baseRow, col)))
     else:
       vals.add(NqValue(kind: nqkNull))
-  row = InstantRow(table: cursor.table, material: false, vals: vals)
-  result = true
-
-func mapColRef(colRef: QVarExp, columns: seq[SelectElement]): QVarExp =
-  for sel in columns:
-    if sel.exp of QVarExp and sel.colName == colRef.name and
-        (colRef.tableName == "" or colRef.tableName == QVarExp(
-            sel.exp).tableName):
-      return QVarExp(sel.exp)
-  result = colRef
-
-func groupVals(groupBy: seq[QVarExp], columns: seq[SelectElement],
-               row: InstantRow): Record[NqValue] =
-  for colRef in groupBy:
-    result.add(columnValueAt(row, columnNo(row.table, mapColRef(colRef, columns))))
-
-proc aggrCount(table: VTable, groupBy: seq[QVarExp],
-               columns: seq[SelectElement],
-               groupByVals: Record[NqValue],
-               args: openArray[string]): NqValue =
-  var cnt = 0
-  for row in instantRows(table, args):
-    if groupByVals == groupVals(groupBy, columns, row):
-      cnt += 1
-  result = NqValue(kind: nqkNumeric, numericVal: cnt)
-
-proc aggrMax(table: VTable, groupBy: seq[QVarExp],
-             columns: seq[SelectElement],
-             groupByVals: Record[NqValue],
-             colRef: QVarExp,
-             args: openArray[string]): NqValue =
-  let col = columnNo(table, colRef)
-  if col == -1:
-    raiseDbError("column " & (if colRef.tableName != "": colRef.tableName &
-        "." else: "") & colRef.name & " does not exist", undefinedColumnName)
-  result = NqValue(kind: nqkNull)
-  for row in instantRows(table, args):
-    if groupByVals == groupVals(groupBy, columns, row):
-      let val = columnValueAt(row, col)
-      if val.kind != nqkNull:
-        if val.kind != nqkNumeric and val.kind != nqkFloat and val.kind != nqkInt and
-            val.kind != nqkString:
-          raiseDbError("column type is not supported by MAX", undefinedFunction)
-        if result.kind == nqkNull:
-          result = val
-        elif result.kind == nqkInt:
-          result = NqValue(kind: nqkInt,
-                           intVal: max(result.intVal, val.intVal))
-        elif result.kind == nqkNumeric:
-          let scale = max(result.scale, val.scale)
-          result = NqValue(kind: nqkNumeric,
-                           numericVal: max(result.setScale(scale).numericVal,
-                                       val.setScale(scale).numericVal))
-        elif result.kind == nqkString:
-          result = NqValue(kind: nqkString,
-                              strVal: max(result.strVal, val.strVal))
-        else:
-          result = NqValue(kind: nqkFloat, floatVal: max(result.floatVal, val.floatVal))
-
-proc aggrMin(table: VTable, groupBy: seq[QVarExp],
-             columns: seq[SelectElement],
-             groupByVals: Record[NqValue],
-             colRef: QVarExp,
-             args: openArray[string]): NqValue =
-  let col = columnNo(table, colRef)
-  if col == -1:
-    raiseDbError("column " & (if colRef.tableName != "": colRef.tableName &
-        "." else: "") & colRef.name & " does not exist", undefinedColumnName)
-  result = NqValue(kind: nqkNull)
-  for row in instantRows(table, args):
-    if groupByVals == groupVals(groupBy, columns, row):
-      let val = columnValueAt(row, col)
-      if val.kind != nqkNull:
-        if val.kind != nqkNumeric and val.kind != nqkFloat and val.kind != nqkInt and
-            val.kind != nqkString:
-          raiseDbError("column type is not supported by MIN", undefinedFunction)
-        if result.kind == nqkNull:
-          result = val
-        elif result.kind == nqkInt:
-          result = NqValue(kind: nqkInt,
-                              intVal: max(result.intVal,
-                                          val.intVal))
-        elif result.kind == nqkNumeric:
-          let scale = max(result.scale, val.scale)
-          result = NqValue(kind: nqkNumeric,
-                              numericVal: min(result.setScale(scale).numericVal,
-                                          val.setScale(scale).numericVal))
-        elif result.kind == nqkString:
-          result = NqValue(kind: nqkString,
-                              strVal: min(result.strVal, val.strVal))
-        else:
-          result = NqValue(kind: nqkFloat, floatVal: max(result.floatVal, val.floatVal))
-
-proc aggrSum(table: VTable, groupBy: seq[QVarExp],
-             columns: seq[SelectElement],
-             groupByVals: Record[NqValue],
-             colRef: QVarExp,
-             args: openArray[string]): NqValue =
-  let col = columnNo(table, colRef)
-  if col == -1:
-    raiseDbError("column " & (if colRef.tableName != "": colRef.tableName &
-        "." else: "") & colRef.name & " does not exist", undefinedColumnName)
-  result = NqValue(kind: nqkNull)
-  for row in instantRows(table, args):
-    if groupByVals == groupVals(groupBy, columns, row):
-      let val = columnValueAt(row, col)
-      if val.kind != nqkNull:
-        if val.kind != nqkNumeric and val.kind != nqkFloat and val.kind != nqkInt:
-          raiseDbError("column is not numeric", undefinedFunction)
-        if result.kind == nqkNull:
-          result = val
-        else:
-          result = result + val
-
-proc aggrAvg(table: VTable, groupBy: seq[QVarExp],
-             columns: seq[SelectElement],
-             groupByVals: Record[NqValue],
-             colRef: QVarExp,
-             args: openArray[string]): NqValue =
-  let col = columnNo(table, colRef)
-  if col == -1:
-    raiseDbError("column " & (if colRef.tableName != "": colRef.tableName &
-        "." else: "") & colRef.name & " does not exist", undefinedColumnName)
-  var n: int64 = 0
-  var avg: float
-  for row in instantRows(table, args):
-    if groupByVals == groupVals(groupBy, columns, row):
-      let val = columnValueAt(row, col)
-      if val.kind != nqkNull:
-        if val.kind != nqkNumeric and val.kind != nqkFloat and val.kind != nqkInt:
-          raiseDbError("column is not numeric", undefinedFunction)
-        n += 1
-        avg += (toFloat(val) - avg) / float(n)
-  result = if n == 0: NqValue(kind: nqkNull)
-           else: NqValue(kind: nqkFloat, floatVal: avg)
-
-iterator groupKeys(groupTable: Table[Record[NqValue], Record[NqValue]]
-                   ): Record[NqValue] {.closure.} =
-  for k in groupTable.keys:
-    yield k
-
-method newCursor(rtable: GroupTable, args: openArray[string]): Cursor =
-  var groupTable: Table[Record[NqValue], Record[NqValue]] =
-    initTable[Record[NqValue], Record[NqValue]]()
-  let cursor = newCursor(rtable.child, args)
-  var row: InstantRow
-  while cursor.next(row):
-    var key: Record[NqValue]
-    for colRef in rtable.groupBy:
-      let col = columnNo(rtable.child, mapColRef(colRef, rtable.columns))
-      if col == -1:
-        raiseDbError("column " & (if colRef.tableName != "": colRef.tableName & "." else: "") &
-                     colRef.name & " does not exist", undefinedColumnName)
-      key.add(columnValueAt(row, col))
-    if not groupTable.hasKey(key):
-      groupTable[key] = Record[NqValue](@[])
-  result = GroupTableCursor(table: rtable, iter: groupKeys,
-                            groupTable: groupTable, args: @args)
-
-method next(cursor: GroupTableCursor, row: var InstantRow,
-    varResolver: VarResolver = nil): bool =
-  let k = cursor.iter(cursor.groupTable)
-  if finished(cursor.iter):
-    if cursor.rowsRead or cursor.table.groupBy.len > 0:
-      return false
-  cursor.rowsRead = true
-  var vals: seq[NqValue]
-  for i in 0..<cursor.table.columns.len:
-    var isAggrCol = true
-    for j in 0..<cursor.table.groupBy.len:
-      if cursor.table.columns[i].exp of QVarExp:
-        let colRef = QVarExp(cursor.table.columns[i].exp)
-        if cursor.table.columns[i].colName == cursor.table.groupBy[j].name and
-            (cursor.table.groupBy[j].tableName == "" or
-                cursor.table.groupBy[j].tableName == colRef.tableName):
-          vals.add(k[j])
-          isAggrCol = false
-          break
-    if isAggrCol:
-      vals.add(eval(cursor.table.columns[i].exp,
-          proc(name: string, rangeVar: string): NqValue =
-        raiseDbError(name & " does not exist", undefinedColumnName),
-          proc(exp: ScalarOpExp): NqValue =
-        case exp.opName
-          of "COUNT":
-            result = aggrCount(cursor.table.child, cursor.table.groupBy,
-                               cursor.table.columns, k, cursor.args)
-          of "AVG", "MAX", "MIN", "SUM":
-            if exp.args.len != 1:
-              raiseDbError("1 argument to " & exp.opName & " required", undefinedFunction)
-            if not (exp.args[0] of QVarExp):
-              raiseDbError("column reference required", syntaxError)
-            let colRef = QVarExp(exp.args[0])
-            case exp.opName
-              of "MAX":
-                result = aggrMax(cursor.table.child,
-                                 cursor.table.groupBy,
-                                 cursor.table.columns, k,
-                                 colRef, cursor.args)
-              of "MIN":
-                result = aggrMin(cursor.table.child,
-                                 cursor.table.groupBy,
-                                 cursor.table.columns, k,
-                                 colRef, cursor.args)
-              of "SUM":
-                result = aggrSum(cursor.table.child,
-                                 cursor.table.groupBy,
-                                 cursor.table.columns, k,
-                                 colRef, cursor.args)
-              of "AVG":
-                result = aggrAvg(cursor.table.child,
-                                 cursor.table.groupBy,
-                                 cursor.table.columns, k,
-                                 colRef, cursor.args)
-      ))
   row = InstantRow(table: cursor.table, material: false, vals: vals)
   result = true
 

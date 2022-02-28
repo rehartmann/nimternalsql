@@ -70,12 +70,16 @@ window.addEventListener('DOMContentLoaded', main);
 <div class="document" id="documentId">
   <div class="container">
     <h1 class="title">Index</h1>
-    Modules: <a href="db_nimternalsql.html">db_nimternalsql</a>, <a href="db_nimternalsql/duprem.html">db_nimternalsql/duprem</a>, <a href="db_nimternalsql/join.html">db_nimternalsql/join</a>, <a href="db_nimternalsql/like.html">db_nimternalsql/like</a>, <a href="db_nimternalsql/nqcommon.html">db_nimternalsql/nqcommon</a>, <a href="db_nimternalsql/nqtables.html">db_nimternalsql/nqtables</a>, <a href="db_nimternalsql/snapshot.html">db_nimternalsql/snapshot</a>, <a href="db_nimternalsql/sorter.html">db_nimternalsql/sorter</a>, <a href="db_nimternalsql/sqlparser.html">db_nimternalsql/sqlparser</a>, <a href="db_nimternalsql/sqlscanner.html">db_nimternalsql/sqlscanner</a>, <a href="db_nimternalsql/tx.html">db_nimternalsql/tx</a>, <a href="db_nimternalsql/union.html">db_nimternalsql/union</a>.<br/><p /><h2>API symbols</h2>
+    Modules: <a href="db_nimternalsql.html">db_nimternalsql</a>, <a href="db_nimternalsql/duprem.html">db_nimternalsql/duprem</a>, <a href="db_nimternalsql/groupby.html">db_nimternalsql/groupby</a>, <a href="db_nimternalsql/join.html">db_nimternalsql/join</a>, <a href="db_nimternalsql/like.html">db_nimternalsql/like</a>, <a href="db_nimternalsql/nqcommon.html">db_nimternalsql/nqcommon</a>, <a href="db_nimternalsql/nqtables.html">db_nimternalsql/nqtables</a>, <a href="db_nimternalsql/snapshot.html">db_nimternalsql/snapshot</a>, <a href="db_nimternalsql/sorter.html">db_nimternalsql/sorter</a>, <a href="db_nimternalsql/sqlparser.html">db_nimternalsql/sqlparser</a>, <a href="db_nimternalsql/sqlscanner.html">db_nimternalsql/sqlscanner</a>, <a href="db_nimternalsql/tx.html">db_nimternalsql/tx</a>, <a href="db_nimternalsql/union.html">db_nimternalsql/union</a>.<br/><p /><h2>API symbols</h2>
 <dl><dt><a name="%60%24%60" href="#%60%24%60"><span>`$`:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="nqcommon: `$`(exp: Expression): string" href="db_nimternalsql/nqcommon.html#%24.e%2CExpression">nqcommon: `$`(exp: Expression): string</a></li>
           <li><a class="reference external"
           data-doc-search-tag="nqtables: `$`(val: NqValue): string" href="db_nimternalsql/nqtables.html#%24%2CNqValue">nqtables: `$`(val: NqValue): string</a></li>
+          </ul></dd>
+<dt><a name="%60%2B%60" href="#%60%2B%60"><span>`+`:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="nqtables: `+`(a: NqValue; b: NqValue): NqValue" href="db_nimternalsql/nqtables.html#%2B%2CNqValue%2CNqValue">nqtables: `+`(a: NqValue; b: NqValue): NqValue</a></li>
           </ul></dd>
 <dt><a name="%60%3D%3D%60" href="#%60%3D%3D%60"><span>`==`:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -141,6 +145,8 @@ window.addEventListener('DOMContentLoaded', main);
           </ul></dd>
 <dt><a name="columnNo" href="#columnNo"><span>columnNo:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
+          data-doc-search-tag="nqtables: columnNo(table: VTable; colRef: QVarExp): int" href="db_nimternalsql/nqtables.html#columnNo%2CVTable%2CQVarExp">nqtables: columnNo(table: VTable; colRef: QVarExp): int</a></li>
+          <li><a class="reference external"
           data-doc-search-tag="nqtables: columnNo(rtable: BaseTable; name: string): int" href="db_nimternalsql/nqtables.html#columnNo.e%2CBaseTable%2Cstring">nqtables: columnNo(rtable: BaseTable; name: string): int</a></li>
           <li><a class="reference external"
           data-doc-search-tag="nqtables: columnNo(rtable: VTable; name: string; tableName: string): int" href="db_nimternalsql/nqtables.html#columnNo.e%2CVTable%2Cstring%2Cstring">nqtables: columnNo(rtable: VTable; name: string; tableName: string): int</a></li>
@@ -295,11 +301,11 @@ window.addEventListener('DOMContentLoaded', main);
 <li><a class="reference external"
           data-doc-search-tag="duprem: getColumns(table: DupRemTable): DbColumns" href="db_nimternalsql/duprem.html#getColumns.e%2CDupRemTable">duprem: getColumns(table: DupRemTable): DbColumns</a></li>
           <li><a class="reference external"
+          data-doc-search-tag="groupby: getColumns(table: GroupTable): DbColumns" href="db_nimternalsql/groupby.html#getColumns.e%2CGroupTable">groupby: getColumns(table: GroupTable): DbColumns</a></li>
+          <li><a class="reference external"
           data-doc-search-tag="join: getColumns(table: JoinTable): DbColumns" href="db_nimternalsql/join.html#getColumns.e%2CJoinTable">join: getColumns(table: JoinTable): DbColumns</a></li>
           <li><a class="reference external"
           data-doc-search-tag="nqtables: getColumns(table: BaseTableRef): DbColumns" href="db_nimternalsql/nqtables.html#getColumns.e%2CBaseTableRef">nqtables: getColumns(table: BaseTableRef): DbColumns</a></li>
-          <li><a class="reference external"
-          data-doc-search-tag="nqtables: getColumns(table: GroupTable): DbColumns" href="db_nimternalsql/nqtables.html#getColumns.e%2CGroupTable">nqtables: getColumns(table: GroupTable): DbColumns</a></li>
           <li><a class="reference external"
           data-doc-search-tag="nqtables: getColumns(table: ProjectTable): DbColumns" href="db_nimternalsql/nqtables.html#getColumns.e%2CProjectTable">nqtables: getColumns(table: ProjectTable): DbColumns</a></li>
           <li><a class="reference external"
@@ -513,7 +519,7 @@ window.addEventListener('DOMContentLoaded', main);
           </ul></dd>
 <dt><a name="newGroupTable" href="#newGroupTable"><span>newGroupTable:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="nqtables: newGroupTable(table: VTable; aggrs: seq[Expression]; groupBy: seq[QVarExp]): VTable" href="db_nimternalsql/nqtables.html#newGroupTable%2CVTable%2Cseq%5BExpression%5D%2Cseq%5BQVarExp%5D">nqtables: newGroupTable(table: VTable; aggrs: seq[Expression]; groupBy: seq[QVarExp]): VTable</a></li>
+          data-doc-search-tag="groupby: newGroupTable(table: VTable; aggrs: seq[Expression]; groupBy: seq[QVarExp]): VTable" href="db_nimternalsql/groupby.html#newGroupTable%2CVTable%2Cseq%5BExpression%5D%2Cseq%5BQVarExp%5D">groupby: newGroupTable(table: VTable; aggrs: seq[Expression]; groupBy: seq[QVarExp]): VTable</a></li>
           </ul></dd>
 <dt><a name="newHashBaseTable" href="#newHashBaseTable"><span>newHashBaseTable:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -691,6 +697,10 @@ window.addEventListener('DOMContentLoaded', main);
 <li><a class="reference external"
           data-doc-search-tag="db_nimternalsql: prepare(conn: DbConn; sql: SqlQuery): SqlPrepared" href="db_nimternalsql.html#prepare%2CDbConn%2CSqlQuery">db_nimternalsql: prepare(conn: DbConn; sql: SqlQuery): SqlPrepared</a></li>
           </ul></dd>
+<dt><a name="ProjectTable" href="#ProjectTable"><span>ProjectTable:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="nqtables: ProjectTable" href="db_nimternalsql/nqtables.html#ProjectTable">nqtables: ProjectTable</a></li>
+          </ul></dd>
 <dt><a name="QueryExp" href="#QueryExp"><span>QueryExp:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="sqlparser: QueryExp" href="db_nimternalsql/sqlparser.html#QueryExp">sqlparser: QueryExp</a></li>
@@ -790,6 +800,10 @@ window.addEventListener('DOMContentLoaded', main);
                  col: Natural; val: MatValue)</a></li>
           <li><a class="reference external"
           data-doc-search-tag="nqtables: setColumnValueAt(row: var InstantRow; col: Natural; val: NqValue)" href="db_nimternalsql/nqtables.html#setColumnValueAt%2CInstantRow%2CNatural%2CNqValue">nqtables: setColumnValueAt(row: var InstantRow; col: Natural; val: NqValue)</a></li>
+          </ul></dd>
+<dt><a name="setScale" href="#setScale"><span>setScale:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="nqtables: setScale(v: NqValue; scale: Natural): NqValue" href="db_nimternalsql/nqtables.html#setScale%2CNqValue%2CNatural">nqtables: setScale(v: NqValue; scale: Natural): NqValue</a></li>
           </ul></dd>
 <dt><a name="SqlCommit" href="#SqlCommit"><span>SqlCommit:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -1372,7 +1386,7 @@ window.addEventListener('DOMContentLoaded', main);
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-02-26 14:08:30 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-02-28 16:16:42 UTC</small>
       </div>
     </div>
   </div>
