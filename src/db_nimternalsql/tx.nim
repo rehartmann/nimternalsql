@@ -8,6 +8,7 @@ import nqcommon
 import nqtables
 import snapshot
 import tables
+import sequtils
 import os
 import posix
 
@@ -92,11 +93,12 @@ proc insert*(tx: Tx, table: BaseTable, values: seq[NqValue]) =
     raiseDbError("invalid # of values", syntaxError)
 
   let htable = HashBaseTable(table)
-  var keyRec: Record[MatValue]
+  var keyRec = newSeqWith(htable.primaryKey.len, MatValue(kind: kNull))
   var valRec: Record[MatValue]
   for i in 0..<values.len:
-    if isKey(htable, i):
-      keyRec.add(toMatValue(values[i], table.def[i]))
+    let ki = keyIndex(htable, i)
+    if ki >= 0:
+      keyRec[ki] = toMatValue(values[i], table.def[i])
     else:
       valRec.add(toMatValue(values[i], table.def[i]))
   if htable.rows.hasKey(keyRec):
