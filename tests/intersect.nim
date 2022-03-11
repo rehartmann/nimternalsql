@@ -21,6 +21,14 @@ for r in instantRows(db, cols,
                            ORDER BY c"""):
   rows.add(@[r[0], r[1], r[2]])
 
+doAssert cols.len == 3
+doAssert cols[0].name == "A"
+doAssert cols[0].typ.kind == dbInt
+doAssert cols[1].name == "B"
+doAssert cols[1].typ.kind == dbVarchar
+doAssert cols[2].name == "C"
+doAssert cols[2].typ.kind == dbInt
+
 doAssert rows.len == 1
 doAssert rows[0][0] == "2"
 doAssert rows[0][1] == "king"
