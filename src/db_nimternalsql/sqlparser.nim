@@ -53,12 +53,12 @@ type
     whereExp*: Expression
     groupBy*: seq[QVarExp]
     allowDuplicates*: bool
-  TableExpKind* = enum tekSelect, tekUnion, tekExcept
+  TableExpKind* = enum tekSelect, tekUnion, tekExcept, tekIntersect
   TableExp*  {.acyclic.} = ref object of Expression
     case kind*: TableExpKind
       of tekSelect:
         select*: SqlSelect
-      of tekUnion, tekExcept:
+      of tekUnion, tekExcept, tekIntersect:
         exp1*, exp2*: TableExp
         allowDuplicates*: bool
   QueryExp* = ref object of SqlStatement
@@ -820,23 +820,45 @@ proc parseSelect(scanner: Scanner, argCount: var int): SqlSelect =
   return SqlSelect(columns: selectElements, tables: tableRefs, whereExp: whereExp,
                    groupBy: groupBy, allowDuplicates: allowDuplicates)
 
+proc parseTableTerm(scanner: Scanner, argCount: var int): TableExp =
+  var argCount = 0
+  var allowDuplicates = true
+  while true:
+    let sel = parseSelect(scanner, argCount)
+    if result == nil:
+      result = TableExp(kind: tekSelect, select: sel)
+    else:
+      result = TableExp(kind: tekIntersect,
+                        exp1: result,
+                        exp2: TableExp(kind: tekSelect, select: sel),
+                        allowDuplicates: allowDuplicates)
+    if currentToken(scanner).kind != tokIntersect:
+      break
+    if nextToken(scanner).kind == tokAll:
+      allowDuplicates = true
+      discard nextToken(scanner)
+    else:
+      allowDuplicates = false
+    if currentToken(scanner).kind != tokSelect:
+      raiseDbError("SELECT expected", syntaxError)
+
 proc parseTableExp(scanner: Scanner, argCount: var int): TableExp =
   var argCount = 0
   var allowDuplicates = true
   var kind: TableExpKind
   while true:
-    let sel = parseSelect(scanner, argCount)
+    let sel = parseTableTerm(scanner, argCount)
     if result == nil:
-      result = TableExp(kind: tekSelect, select: sel)
+      result = sel
     elif kind == tekUnion:
       result = TableExp(kind: tekUnion,
                         exp1: result,
-                        exp2: TableExp(kind: tekSelect, select: sel),
+                        exp2: sel,
                         allowDuplicates: allowDuplicates)
     else:
       result = TableExp(kind: tekExcept,
                         exp1: result,
-                        exp2: TableExp(kind: tekSelect, select: sel),
+                        exp2: sel,
                         allowDuplicates: allowDuplicates)
     case currentToken(scanner).kind
       of tokUnion:

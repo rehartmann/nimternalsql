@@ -69,8 +69,6 @@ OUTER JOIN (JOIN .. ON, CROSS JOIN, and LEFT JOIN are supported)
 
 HAVING (GROUP BY is supported)
 
-INTERSECT, EXCEPT (UNION/UNION ALL is supported)
-
 ALTER TABLE
 
 Views

@@ -46,6 +46,7 @@ import db_nimternalsql/groupby
 import db_nimternalsql/duprem
 import db_nimternalsql/union
 import db_nimternalsql/nqexcept
+import db_nimternalsql/intersect
 import db_nimternalsql/sorter
 import db_nimternalsql/snapshot
 import db_nimternalsql/tx
@@ -343,6 +344,17 @@ proc toVTable(tableExp: TableExp, db: Database): VTable =
                               toVTable(tableExp.exp2, db))
       if (not tableExp.allowDuplicates) and not (leftChild of BaseTableRef):
         result = newDupRemTable(result)
+    of tekIntersect:
+      let leftChild = toVTable(tableExp.exp1, db)
+      let rightChild = toVTable(tableExp.exp2, db)
+      if (rightChild of BaseTableRef) or not (leftChild of BaseTableRef):
+        result = newIntersectTable(leftChild, rightChild)
+        if (not tableExp.allowDuplicates) and not (leftChild of BaseTableRef):
+          result = newDupRemTable(result)
+      else:
+        result = newIntersectTable(rightChild, leftChild)
+        if (not tableExp.allowDuplicates) and not (rightChild of BaseTableRef):
+          result = newDupRemTable(result)
 
 proc toVTable(stmt: SqlStatement, db: Database): VTable =
   if not (stmt of QueryExp):
