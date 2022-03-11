@@ -19,7 +19,8 @@ type
     tokPrecision, tokExists,
     tokFrom, tokGroup, tokIf, tokInsert, tokUpdate, tokSet, tokIn, tokIs,
     tokInto, tokJoin, tokKey, tokLike, tokNot, tokOn, tokOr, tokOrder,
-    tokPrimary, tokSelect, tokTable, tokUnion, tokValues, tokWhere,
+    tokPrimary, tokSelect, tokTable, tokUnion, tokIntersect, tokExcept,
+    tokValues, tokWhere,
     tokLeft, tokInner, tokOuter, tokPosition,
     tokAsterisk, tokDiv, tokPlus, tokNull, tokMinus, tokRightParen,
     tokLeftParen, tokComma, tokDot, tokEq, tokNeq, tokLt, tokLe, tokGt, tokGe,
@@ -139,6 +140,8 @@ proc toToken(s: string): Token =
       return Token(kind: tokElse)
     of "END":
       return Token(kind: tokEnd)
+    of "EXCEPT":
+      return Token(kind: tokExcept)
     of "EXISTS":
       return Token(kind: tokExists)
     of "FALSE":
@@ -163,6 +166,8 @@ proc toToken(s: string): Token =
       return Token(kind: tokInsert)
     of "IN":
       return Token(kind: tokIn)
+    of "INTERSECT":
+      return Token(kind: tokIntersect)
     of "INTO":
       return Token(kind: tokInto)
     of "IS":

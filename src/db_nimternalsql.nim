@@ -45,6 +45,7 @@ import db_nimternalsql/join
 import db_nimternalsql/groupby
 import db_nimternalsql/duprem
 import db_nimternalsql/union
+import db_nimternalsql/nqexcept
 import db_nimternalsql/sorter
 import db_nimternalsql/snapshot
 import db_nimternalsql/tx
@@ -335,6 +336,12 @@ proc toVTable(tableExp: TableExp, db: Database): VTable =
       result = newUnionTable(toVTable(tableExp.exp1, db),
                              toVTable(tableExp.exp2, db))
       if not tableExp.allowDuplicates:
+        result = newDupRemTable(result)
+    of tekExcept:
+      let leftChild = toVTable(tableExp.exp1, db)
+      result = newExceptTable(leftChild,
+                              toVTable(tableExp.exp2, db))
+      if (not tableExp.allowDuplicates) and not (leftChild of BaseTableRef):
         result = newDupRemTable(result)
 
 proc toVTable(stmt: SqlStatement, db: Database): VTable =

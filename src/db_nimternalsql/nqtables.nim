@@ -1236,7 +1236,7 @@ func columnValueAt(table: HashBaseTable, keyRecord: Record, col: Natural): NqVal
     if not isKey(table, i):
       if i == col:
         return toNqValue(table.rows[keyRecord][vi], table.def[col])
-      vi = vi + 1
+      vi += 1
   result = NqValue(kind: nqkNull)
 
 func columnValueAt*(row: InstantRow; col: Natural): NqValue =
@@ -1443,8 +1443,9 @@ proc whereTableKey(table: WhereTable, args: openArray[string]): Record[MatValue]
   let baseTable = BaseTableRef(table.child)
   var keyCols = expKeyColVals(table.whereExp, baseTable, isConst, args)
   if keyCols.len == baseTable.table.primaryKey.len:
-    for c in keyCols:
-      result.add(c.val)
+    result = newSeqWith(keyCols.len, MatValue(kind: kNull))
+    for i in 0..<keyCols.len:
+      result[keyIndex(baseTable.table, keyCols[i].colNo)] = keyCols[i].val
 
 method newCursor(rtable: WhereTable, args: openArray[string]): Cursor =
   let key = whereTableKey(rtable, args)
@@ -1536,6 +1537,39 @@ func isKeyUpdate*(table: BaseTable, assignments: seq[ColumnAssignment]): bool =
       if a.col == k:
         return true
   result = false
+  
+method contains*(table: VTable, row: InstantRow): bool {.base.} =
+  let cursor = newCursor(table, [])
+  var r: InstantRow
+  while next(cursor, r):
+    var isEqual = true
+    for i in 0..<row.columnCount:
+      if r.columnValueAt(i) != row.columnValueAt(i):
+        isEqual = false
+        break
+    if isEqual:
+      return true
+  result = false
+
+method contains*(table: BaseTableRef, row: InstantRow): bool =
+  let htable = HashBaseTable(table.table)
+  var keyRec = newSeqWith(htable.primaryKey.len, MatValue(kind: kNull))
+  for i in 0..<row.columnCount:
+    let idx = keyIndex(htable, i)
+    if idx >= 0:
+      keyRec[idx] = toMatValue(row.columnValueAt(i), htable.def[i])
+  if not htable.rows.hasKey(keyRec):
+    return false
+  let vals = htable.rows[keyRec]
+  for i in 0..<row.columnCount:
+    var vi = 0
+    for j in 0..<htable.def.len:
+      if not isKey(htable, j):
+        if j == i:
+          if row.columnValueAt(i) != toNqValue(vals[vi], htable.def[i]):
+            return false
+        vi += 1
+  result = true
 
 method `$`(vtable: VTable): string = nil
 

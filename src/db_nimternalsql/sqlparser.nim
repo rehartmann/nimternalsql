@@ -53,12 +53,12 @@ type
     whereExp*: Expression
     groupBy*: seq[QVarExp]
     allowDuplicates*: bool
-  TableExpKind* = enum tekSelect, tekUnion
+  TableExpKind* = enum tekSelect, tekUnion, tekExcept
   TableExp*  {.acyclic.} = ref object of Expression
     case kind*: TableExpKind
       of tekSelect:
         select*: SqlSelect
-      of tekUnion:
+      of tekUnion, tekExcept:
         exp1*, exp2*: TableExp
         allowDuplicates*: bool
   QueryExp* = ref object of SqlStatement
@@ -823,16 +823,28 @@ proc parseSelect(scanner: Scanner, argCount: var int): SqlSelect =
 proc parseTableExp(scanner: Scanner, argCount: var int): TableExp =
   var argCount = 0
   var allowDuplicates = true
+  var kind: TableExpKind
   while true:
     let sel = parseSelect(scanner, argCount)
     if result == nil:
       result = TableExp(kind: tekSelect, select: sel)
-    else:
-      result = TableExp(kind: tekUnion, exp1: result,
+    elif kind == tekUnion:
+      result = TableExp(kind: tekUnion,
+                        exp1: result,
                         exp2: TableExp(kind: tekSelect, select: sel),
                         allowDuplicates: allowDuplicates)
-    if currentToken(scanner).kind != tokUnion:
-      break
+    else:
+      result = TableExp(kind: tekExcept,
+                        exp1: result,
+                        exp2: TableExp(kind: tekSelect, select: sel),
+                        allowDuplicates: allowDuplicates)
+    case currentToken(scanner).kind
+      of tokUnion:
+        kind = tekUnion
+      of tokExcept:
+        kind = tekExcept
+      else:
+        break
     if nextToken(scanner).kind == tokAll:
       allowDuplicates = true
       discard nextToken(scanner)

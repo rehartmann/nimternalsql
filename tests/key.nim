@@ -30,7 +30,7 @@ try:
 except DbError as e:
   doAssert e.sqlState() == "23505"
 
-exec(db, sql"CREATE TABLE tst2 (a int, b text, c text, primary key(a, b))")
+exec(db, sql"CREATE TABLE tst2 (a int, b text, c text, primary key(b, a))")
 
 exec(db, sql"INSERT INTO tst2 VALUES (1, 'x', 'y')")
 
