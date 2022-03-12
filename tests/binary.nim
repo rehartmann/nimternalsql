@@ -19,4 +19,10 @@ doAssert row[2] == s3
 doAssert row[3] == s4
 doAssert row[4] == s5
 
+doAssert getValue(db,
+                  sql"""SELECT COUNT(*)
+                        FROM tst
+                        WHERE a = ?""",
+                  s1) == "1"
+
 close(db)
