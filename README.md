@@ -31,6 +31,8 @@ The following data types are supported:
 
 DECIMAL and NUMERIC are internally represented as 64-bit integers. The maximum number of digits is 18.
 
+AUTOINCREMENT is supported on INTEGER and BIGINT columns. It is not restricted to key columns.
+
 ## Scalar operators
 
 Besides the usual arithmetic, comparison, and logical operators, NimternalSQL supports the following scalar operators:
