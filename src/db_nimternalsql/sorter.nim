@@ -7,13 +7,15 @@ type
   SortedTable = ref object of VTable
     child: VTable
     order: seq[tuple[col: Natural, asc: bool]]
+    removeDuplicates: bool
   SortedTableCursor = ref object of Cursor
     table: SortedTable
     nextRow: Natural
     rows: seq[seq[NqValue]]
 
-func newSortedTable*(child: VTable, order: seq[tuple[col: Natural, asc: bool]]): VTable =
-  result = SortedTable(child: child, order: order)
+func newSortedTable*(child: VTable, order: seq[tuple[col: Natural, asc: bool]],
+                     removeDuplicates: bool = false): VTable =
+  result = SortedTable(child: child, order: order, removeDuplicates: removeDuplicates)
 
 method columnCount(table: SortedTable): Natural =
   result = columnCount(table.child)
@@ -62,11 +64,14 @@ method newCursor(table: SortedTable, args: openArray[string]): Cursor =
   result = cursor
 
 method next(cursor: SortedTableCursor, row: var InstantRow, varResolver: VarResolver = nil): bool =
-  if cursor.nextRow >= cursor.rows.len:
-    return false
-  row = newInstantRow(cursor.table, cursor.rows[cursor.nextRow])
-  cursor.nextRow += 1
-  result = true
+  while true:
+    if cursor.nextRow >= cursor.rows.len:
+      return false
+    row = newInstantRow(cursor.table, cursor.rows[cursor.nextRow])
+    cursor.nextRow += 1
+    if not cursor.table.removeDuplicates or
+       cursor.nextRow < 2 or cursor.rows[cursor.nextRow - 1] != cursor.rows[cursor.nextRow - 2]:
+      return true
 
 method getColumns*(table: SortedTable): DbColumns =
   result = table.child.getColumns()

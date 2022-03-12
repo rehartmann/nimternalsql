@@ -3,8 +3,8 @@ import db_common
 import sets
 
 type
-  DupRemTable = ref object of VTable
-    child: VTable
+  DupRemTable* = ref object of VTable
+    child*: VTable
   DupRemTableCursor = ref object of Cursor
     table: DupRemTable
     iter: iterator(cursor: DupRemTableCursor): InstantRow

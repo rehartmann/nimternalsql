@@ -371,7 +371,10 @@ proc toVTable(stmt: SqlStatement, db: Database): VTable =
                 "." else: "") &
             orderElement.name & " does not exist", undefinedColumnName)
       order.add((col: Natural(col), asc: orderElement.asc))
-    result = newSortedTable(result, order)
+    result = newSortedTable(if result of DupremTable: DupremTable(result).child
+                            else: result,
+                            order,
+                            result of DupremTable)
 
 iterator instantRows*(conn: DbConn; sql: SqlQuery; args: varargs[string,
     `$`]): InstantRow =
