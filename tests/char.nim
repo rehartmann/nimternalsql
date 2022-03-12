@@ -59,6 +59,8 @@ doAssert res[0][1] == "f"
 doAssert res[0][2] == "Don't "
 doAssert res[0][3] == "YoYOyo"
 
+doAssert getValue(db, sql"SELECT b FROM tst WHERE b >= ?", "f") == "f"
+
 exec(db, sql"UPDATE tst SET b = '', c = 'Do', d = d || d")
 
 res = @[]
