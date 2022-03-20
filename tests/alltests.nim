@@ -1,10 +1,10 @@
 import osproc
 
-var failure = false
+var failedTests: seq[string]
 
 proc execTest(testFile: string) =
   if execCmd("nim c -r " & testFile) != 0:
-    failure = true
+    failedTests.add(testFile)
 
 execTest("binary.nim")
 execTest("boolean.nim")
@@ -36,6 +36,7 @@ execTest("autoinc.nim")
 execTest("autoinc_txlog.nim")
 execTest("except.nim")
 execTest("intersect.nim")
+execTest("with.nim")
 
-if failure:
-  echo "FAILURE: One or more tests failed."
+if failedTests.len > 0:
+  echo "FAILURE: tests failed: " & $failedTests

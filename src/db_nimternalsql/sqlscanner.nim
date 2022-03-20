@@ -20,7 +20,7 @@ type
     tokFrom, tokGroup, tokIf, tokInsert, tokUpdate, tokSet, tokIn, tokIs,
     tokInto, tokJoin, tokKey, tokLike, tokNot, tokOn, tokOr, tokOrder,
     tokPrimary, tokSelect, tokTable, tokUnion, tokIntersect, tokExcept,
-    tokValues, tokWhere,
+    tokValues, tokWhere, tokWith,
     tokLeft, tokInner, tokOuter, tokPosition,
     tokAsterisk, tokDiv, tokPlus, tokNull, tokMinus, tokRightParen,
     tokLeftParen, tokComma, tokDot, tokEq, tokNeq, tokLt, tokLe, tokGt, tokGe,
@@ -228,6 +228,8 @@ proc toToken(s: string): Token =
       return Token(kind: tokWhen)
     of "WHERE":
       return Token(kind: tokWhere)
+    of "WITH":
+      return Token(kind: tokWith)
   result = Token(kind: tokIdentifier, identifier: toUpperAscii(s))
 
 proc currentToken*(s: Scanner): Token =

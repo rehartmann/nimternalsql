@@ -54,14 +54,18 @@ type
     groupBy*: seq[QVarExp]
     allowDuplicates*: bool
   TableExpKind* = enum tekSelect, tekUnion, tekExcept, tekIntersect
-  TableExp*  {.acyclic.} = ref object of Expression
+  TableExp* {.acyclic.} = ref object of Expression
     case kind*: TableExpKind
       of tekSelect:
         select*: SqlSelect
       of tekUnion, tekExcept, tekIntersect:
         exp1*, exp2*: TableExp
         allowDuplicates*: bool
+  NamedTableExp* = ref object
+      name*: string
+      exp*: TableExp
   QueryExp* = ref object of SqlStatement
+    withExps*: seq[NamedTableExp]
     tableExp*: TableExp
     orderBy*: seq[OrderByElement]
 
@@ -875,9 +879,30 @@ proc parseTableExp(scanner: Scanner, argCount: var int): TableExp =
     if currentToken(scanner).kind != tokSelect:
       raiseDbError("SELECT expected", syntaxError)
 
+proc parseNamedTableExp(scanner: Scanner, argcount: var int): NamedTableExp =
+  let nameTok = nextToken(scanner)
+  if nameTok.kind != tokIdentifier:
+    raiseDbError("identifier expected", syntaxError)
+  if nextToken(scanner).kind != tokAs:
+    raiseDbError("AS expected", syntaxError)
+  if nextToken(scanner).kind != tokLeftParen:
+    raiseDbError("( expected", syntaxError)
+  if nextToken(scanner).kind != tokSelect:
+    raiseDbError("SELECT expected", syntaxError)
+  let tableExp = parseTableExp(scanner, argCount)
+  if currentToken(scanner).kind != tokRightParen:
+    raiseDbError(") expected", syntaxError)
+  result = NamedTableExp(name: nameTok.identifier, exp: tableExp)
+
 proc parseQueryExp(scanner: Scanner): QueryExp =
   var argCount = 0
-  result = QueryExp(tableExp: parseTableExp(scanner, argCount))
+
+  var withTableExps: seq[NamedTableExp]
+  while currentToken(scanner).kind == tokWith or
+        currentToken(scanner).kind == tokComma:
+    withTableExps.add(parseNamedTableExp(scanner, argcount))
+    discard nextToken(scanner)
+  result = QueryExp(tableExp: parseTableExp(scanner, argCount), withExps: withTableExps)
   if currentToken(scanner).kind == tokOrder:
     result.orderBy = parseOrderBy(scanner)
   else:
@@ -947,7 +972,7 @@ proc parseStatement*(reader: Reader): SqlStatement =
       result = parseUpdate(scanner)
     of tokDelete:
       result = parseDelete(scanner)
-    of tokSelect:
+    of tokSelect, tokWith:
       result = parseQueryExp(scanner)
     of tokCommit:
       result = parseCommit(scanner);

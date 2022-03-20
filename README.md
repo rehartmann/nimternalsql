@@ -74,3 +74,5 @@ HAVING (GROUP BY is supported)
 ALTER TABLE
 
 Views
+
+RECURSIVE

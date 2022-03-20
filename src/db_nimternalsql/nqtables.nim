@@ -101,6 +101,8 @@ type
   AggrResolver = proc(exp: ScalarOpExp): NqValue
 
   VTable* = ref object of Expression
+    # Only used if the VTable is a common subexpression
+    name*: string
   BaseTableRef* = ref object of VTable
     table*: BaseTable
     rangeVar*: string
@@ -1218,12 +1220,22 @@ method columnNo(tableRef: BaseTableRef, name: string, tableName: string): int =
     return -1
   result = HashBaseTable(tableRef.table).columnNo(name)
 
-method columnNo(rtable: WhereTable, name: string, tableName: string): int =
-  return rtable.child.columnNo(name, tableName)
+method columnNo(table: WhereTable, name: string, tableName: string): int =
+  if table.name != "" and table.name == tableName:
+    # table is a common subexpression
+    result = columnNo(table.child, name, "")
+  else:
+    result = columnNo(table.child, name, tableName)
 
-method columnNo(rtable: ProjectTable, name: string, tableName: string): int =
-  for i in 0..<rtable.columns.len:
-    if rtable.columns[i].colName == name:
+method columnNo(table: ProjectTable, name: string, tableName: string): int =
+  if table.name != "" and table.name == tableName:
+    return columnNo(table, name, "")
+  
+  # Check if the base table name matches tableName
+  if tableName != "" and columnNo(table.child, name, tableName) == -1:
+    return -1
+  for i in 0..<table.columns.len:
+    if table.columns[i].colName == name:
       return i
   result = -1
 
@@ -1581,4 +1593,10 @@ method `$`(vtable: BaseTableRef): string =
 method `$`(vtable: WhereTable): string =
   result = $vtable.child
   if vtable.whereExp != nil:
-    result = result & ' ' & $vtable.whereExp
+    result = result & " WHERE " & $vtable.whereExp
+
+method `$`(vtable: ProjectTable): string =
+  result = $vtable.child & " ("
+  for col in vtable.columns:
+    result = result & col.colName & ' '
+  result = $vtable.child & ")"

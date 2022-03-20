@@ -84,7 +84,9 @@ func newGroupTable*(table: VTable, aggrs: seq[Expression], groupBy: seq[
           "." else: "") & colRef.name & " does not exist", undefinedColumnName)
   if table of ProjectTable:
     # Each column must either be in GROUP BY or an aggregation
-    for col in ProjectTable(table).columns:
+    let cols = ProjectTable(table).columns
+    for i in 0..<cols.len:
+      let col = cols[i]
       if not isAggregate(col.exp):
         var found = false
         for g in groupBy:
@@ -92,20 +94,28 @@ func newGroupTable*(table: VTable, aggrs: seq[Expression], groupBy: seq[
             found = true
             break
         if not found:
-          raiseDbError(col.colName & " is not a grouping column", invalidGrouping)    
+          if col.colName != "":
+            raiseDbError(col.colName & " is not a grouping column", invalidGrouping)
+          else:
+            raiseDbError("column #" & $i & " is not a grouping column", invalidGrouping)
     result = GroupTable(child: ProjectTable(table).child,
                        groupBy: groupBy, columns: ProjectTable(table).columns)
   else:
     # Each column must be in GROUP BY
     var cols: seq[SelectElement]
-    for dbcol in table.getColumns:
+    let dbcols = table.getColumns
+    for i in 0..<dbcols.len:
+      let dbcol = dbcols[i]
       var found = false
       for g in groupBy:
         if g.name == dbcol.name:
           found = true
           break
       if not found:
-        raiseDbError(dbcol.name & " is not a grouping column", invalidGrouping)
+        if dbcol.name != "":
+          raiseDbError(dbcol.name & " is not a grouping column", invalidGrouping)
+        else:
+          raiseDbError("column #" & $i & " is not a grouping column", invalidGrouping)
       cols.add(SelectElement(colName: dbcol.name, exp: newQVarExp(dbcol.name)))
     result = GroupTable(child: table, groupBy: groupBy, columns: cols)
 

@@ -51,6 +51,7 @@ import db_nimternalsql/sorter
 import db_nimternalsql/snapshot
 import db_nimternalsql/tx
 import strutils
+import tables
 import os
 
 export db_common.sql
@@ -281,45 +282,52 @@ proc execAffectedRows*(conn: DbConn; stmt: SqlPrepared; args: varargs[string, `$
   else:
     result = SqlStatement(stmt).execute(conn.db, conn.tx, args)
 
-func toVTable(tableRef: SqlTableRef, db: Database): VTable =
+func toVTable(tableRef: SqlTableRef, withTables: Table[string, VTable],
+              db: Database): VTable =
   case tableRef.kind:
     of trkSimpleTableRef:
+      if withTables.hasKey(tableRef.name):
+        return withTables[tableRef.name]
       result = BaseTableRef(table: getTable(db, tableRef.name),
                          rangeVar: tableRef.rangeVar)
     of trkRelOp:
-      result = newJoinTable(toVTable(tableRef.tableRef1, db),
-                             toVTable(tableRef.tableRef2, db),
+      result = newJoinTable(toVTable(tableRef.tableRef1, withTables, db),
+                             toVTable(tableRef.tableRef2, withTables, db),
                              tableRef.leftOuter,
                              tableRef.onExp)
 
-proc toVTable(tableExp: TableExp, db: Database): VTable
+proc toVTable(tableExp: TableExp, withTables: Table[string, VTable], db: Database): VTable
 
-method transform(exp: Expression, db: Database): Expression {.base.} =
+method transform(exp: Expression, withTables: Table[string, VTable],
+                 db: Database): Expression {.base.} =
   result = exp
 
-method transform(exp: ScalarOpExp, db: Database): Expression =
+method transform(exp: ScalarOpExp, withTables: Table[string, VTable],
+                 db: Database): Expression =
   var dstargs: seq[Expression]
   for arg in exp.args:
-    dstargs.add(transform(arg, db))
+    dstargs.add(transform(arg, withTables, db))
   result = ScalarOpExp(opName: exp.opName, args: dstargs)
 
-method transform(exp: TableExp, db: Database): Expression =
-  result = toVTable(exp, db)
+method transform(exp: TableExp, withTables: Table[string, VTable],
+                 db: Database): Expression =
+  result = toVTable(exp, withTables, db)
 
-proc toVTable(tableExp: TableExp, db: Database): VTable =
+proc toVTable(tableExp: TableExp, withTables: Table[string, VTable],
+              db: Database): VTable =
   case tableExp.kind:
     of tekSelect:
-      result = toVTable(tableExp.select.tables[0], db)
+      result = toVTable(tableExp.select.tables[0], withTables, db)
       for i in 1..<tableExp.select.tables.len:
         result = newJoinTable(result,
             BaseTableRef(table: getTable(db, tableExp.select.tables[i].name),
                       rangeVar: tableExp.select.tables[i].rangeVar))
       if tableExp.select.whereExp != nil:
-        let joinExp = transform(tableExp.select.whereExp, db)
+        let joinExp = transform(tableExp.select.whereExp, withTables, db)
         if (result of JoinTable) and ((JoinTable)result).exp == nil:
           ((JoinTable)result).exp = joinExp
         else:
-          result = newWhereTable(result, transform(tableExp.select.whereExp, db))
+          result = newWhereTable(result, transform(tableExp.select.whereExp, withTables, db))
       if tableExp.select.columns.len != 1 or
           tableExp.select.columns[0].colName != "*":
         for i in 0..<tableExp.select.columns.len:
@@ -334,19 +342,19 @@ proc toVTable(tableExp: TableExp, db: Database): VTable =
       if not tableExp.select.allowDuplicates:
         result = newDupRemTable(result)
     of tekUnion:
-      result = newUnionTable(toVTable(tableExp.exp1, db),
-                             toVTable(tableExp.exp2, db))
+      result = newUnionTable(toVTable(tableExp.exp1, withTables, db),
+                             toVTable(tableExp.exp2, withTables, db))
       if not tableExp.allowDuplicates:
         result = newDupRemTable(result)
     of tekExcept:
-      let leftChild = toVTable(tableExp.exp1, db)
+      let leftChild = toVTable(tableExp.exp1, withTables, db)
       result = newExceptTable(leftChild,
-                              toVTable(tableExp.exp2, db))
+                              toVTable(tableExp.exp2, withTables, db))
       if (not tableExp.allowDuplicates) and not (leftChild of BaseTableRef):
         result = newDupRemTable(result)
     of tekIntersect:
-      let leftChild = toVTable(tableExp.exp1, db)
-      let rightChild = toVTable(tableExp.exp2, db)
+      let leftChild = toVTable(tableExp.exp1, withTables, db)
+      let rightChild = toVTable(tableExp.exp2, withTables, db)
       if (rightChild of BaseTableRef) or not (leftChild of BaseTableRef):
         result = newIntersectTable(leftChild, rightChild)
         if (not tableExp.allowDuplicates) and not (leftChild of BaseTableRef):
@@ -360,7 +368,12 @@ proc toVTable(stmt: SqlStatement, db: Database): VTable =
   if not (stmt of QueryExp):
     raiseDbError("statement has no result", syntaxError)
   let queryExp = QueryExp(stmt)
-  result = toVTable(queryExp.tableExp, db)
+  var withTables: Table[string, VTable]
+  for withExp in queryExp.withExps:
+    let wtable = toVTable(withExp.exp, withTables, db)
+    wtable.name = withExp.name
+    withTables[withExp.name] = wtable
+  result = toVTable(queryExp.tableExp, withTables, db)
   if queryExp.orderBy.len > 0:
     var order: seq[tuple[col: Natural, asc: bool]]
     for orderElement in queryExp.orderBy:
