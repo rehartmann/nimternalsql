@@ -76,9 +76,18 @@ rows = getAllRows(db,
                 GROUP BY region, product
                 ORDER BY region, product""")
 
-echo $rows.len
-
-for i in 0..<rows.len:
-  echo $rows[i]
+doAssert rows.len == 3
+doAssert rows[0][0] == "France"
+doAssert rows[0][1] == "Coffee"
+doAssert rows[0][2] == "19"
+doAssert rows[0][3] == "90"
+doAssert rows[1][0] == "France"
+doAssert rows[1][1] == "Tea"
+doAssert rows[1][2] == "10"
+doAssert rows[1][3] == "20"
+doAssert rows[2][0] == "USA"
+doAssert rows[2][1] == "Coffee"
+doAssert rows[2][2] == "7"
+doAssert rows[2][3] == "50"
 
 close(db)
