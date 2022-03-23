@@ -71,8 +71,8 @@ OUTER JOIN (JOIN .. ON, CROSS JOIN, and LEFT JOIN are supported)
 
 HAVING (GROUP BY is supported)
 
+RECURSIVE (WITH without RECURSIVE is supported)
+
 ALTER TABLE
 
 Views
-
-RECURSIVE

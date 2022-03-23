@@ -90,4 +90,29 @@ doAssert rows[2][1] == "Coffee"
 doAssert rows[2][2] == "7"
 doAssert rows[2][3] == "50"
 
+exec(db, sql"CREATE TABLE employees (name text primary key, department_id int)")
+exec(db, sql"CREATE TABLE departments (department_id int primary key, name text)")
+
+exec(db, sql"INSERT INTO departments VALUES (1, 'Sales')")
+exec(db, sql"INSERT INTO departments VALUES (2, 'Production')")
+
+exec(db, sql"INSERT INTO employees VALUES ('Fred', 1)")
+exec(db, sql"INSERT INTO employees VALUES ('Daisy', 1)")
+exec(db, sql"INSERT INTO employees VALUES ('John', 2)")
+exec(db, sql"INSERT INTO employees VALUES ('Eve', 1)")
+
+rows = getAllRows(db,
+        sql"""WITH grp AS (
+                  SELECT dept.name AS dept_name, COUNT(*) AS emp_count
+                  FROM employees AS emp
+                  JOIN departments AS dept ON emp.department_id = dept.department_id
+                  GROUP BY dept_name)
+              SELECT * FROM grp
+              WHERE grp.emp_count > 1""")
+
+doAssert rows.len == 1
+
+doAssert rows[0][0] == "Sales"
+doAssert rows[0][1] == "3"
+
 close(db)
