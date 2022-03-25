@@ -16,6 +16,20 @@ var rows = getAllRows(db,
 doAssert rows.len == 1
 doAssert rows[0][0] == "Bcdefg"
 
+exec(db, sql"CREATE TABLE d (t text primary key)")
+exec(db, sql"INSERT INTO d VALUES ('')")
+
+exec(db, sql"INSERT INTO tst VALUES (3, '123.111')")
+
+rows = getAllRows(db,
+                      sql"""WITH t1 AS (
+                                SELECT a, b FROM tst WHERE a = 3
+                            )
+                            SELECT CAST((SELECT b FROM t1) AS NUMERIC(5, 2)) FROM d""")
+
+doAssert rows.len == 1
+doAssert rows[0][0] == "123.11"
+
 exec(db, sql"CREATE TABLE tst2 (a int primary key, b text)")
 exec(db, sql"INSERT INTO tst2 VALUES (1, 'w')")
 exec(db, sql"INSERT INTO tst2 VALUES (2, 'x')")

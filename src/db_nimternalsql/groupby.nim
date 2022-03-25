@@ -12,6 +12,7 @@ type
     iter: iterator(groupTable: Table[Record[NqValue], Record[
         NqValue]]): Record[NqValue]
     groupTable: Table[Record[NqValue], Record[NqValue]]
+    groupTableFilled: bool
     table: GroupTable
     rowsRead: bool
 
@@ -75,7 +76,6 @@ func isAggregate(exp: Expression): bool =
   else:
     result = false
 
-
 func newGroupTable*(table: VTable, aggrs: seq[Expression], groupBy: seq[
     QVarExp]): VTable =
   for colRef in groupBy:
@@ -135,9 +135,10 @@ func groupVals(groupBy: seq[QVarExp], columns: seq[SelectElement],
 proc aggrCount(table: VTable, groupBy: seq[QVarExp],
                columns: seq[SelectElement],
                groupByVals: Record[NqValue],
-               args: openArray[string]): NqValue =
+               args: openArray[string],
+               varResolver: VarResolver): NqValue =
   var cnt = 0
-  for row in instantRows(table, args):
+  for row in instantRows(table, args, varResolver):
     if groupByVals == groupVals(groupBy, columns, row):
       cnt += 1
   result = NqValue(kind: nqkNumeric, numericVal: cnt)
@@ -146,13 +147,14 @@ proc aggrMax(table: VTable, groupBy: seq[QVarExp],
              columns: seq[SelectElement],
              groupByVals: Record[NqValue],
              colRef: QVarExp,
-             args: openArray[string]): NqValue =
+             args: openArray[string],
+             varResolver: VarResolver): NqValue =
   let col = columnNo(table, colRef)
   if col == -1:
     raiseDbError("column " & (if colRef.tableName != "": colRef.tableName &
         "." else: "") & colRef.name & " does not exist", undefinedColumnName)
   result = NqValue(kind: nqkNull)
-  for row in instantRows(table, args):
+  for row in instantRows(table, args, varResolver):
     if groupByVals == groupVals(groupBy, columns, row):
       let val = columnValueAt(row, col)
       if val.kind != nqkNull:
@@ -179,13 +181,14 @@ proc aggrMin(table: VTable, groupBy: seq[QVarExp],
              columns: seq[SelectElement],
              groupByVals: Record[NqValue],
              colRef: QVarExp,
-             args: openArray[string]): NqValue =
+             args: openArray[string],
+             varResolver: VarResolver): NqValue =
   let col = columnNo(table, colRef)
   if col == -1:
     raiseDbError("column " & (if colRef.tableName != "": colRef.tableName &
         "." else: "") & colRef.name & " does not exist", undefinedColumnName)
   result = NqValue(kind: nqkNull)
-  for row in instantRows(table, args):
+  for row in instantRows(table, args, varResolver):
     if groupByVals == groupVals(groupBy, columns, row):
       let val = columnValueAt(row, col)
       if val.kind != nqkNull:
@@ -213,13 +216,14 @@ proc aggrSum(table: VTable, groupBy: seq[QVarExp],
              columns: seq[SelectElement],
              groupByVals: Record[NqValue],
              colRef: QVarExp,
-             args: openArray[string]): NqValue =
+             args: openArray[string],
+             varResolver: VarResolver): NqValue =
   let col = columnNo(table, colRef)
   if col == -1:
     raiseDbError("column " & (if colRef.tableName != "": colRef.tableName &
         "." else: "") & colRef.name & " does not exist", undefinedColumnName)
   result = NqValue(kind: nqkNull)
-  for row in instantRows(table, args):
+  for row in instantRows(table, args, varResolver):
     if groupByVals == groupVals(groupBy, columns, row):
       let val = columnValueAt(row, col)
       if val.kind != nqkNull:
@@ -234,14 +238,15 @@ proc aggrAvg(table: VTable, groupBy: seq[QVarExp],
              columns: seq[SelectElement],
              groupByVals: Record[NqValue],
              colRef: QVarExp,
-             args: openArray[string]): NqValue =
+             args: openArray[string],
+             varResolver: VarResolver): NqValue =
   let col = columnNo(table, colRef)
   if col == -1:
     raiseDbError("column " & (if colRef.tableName != "": colRef.tableName &
         "." else: "") & colRef.name & " does not exist", undefinedColumnName)
   var n: int64 = 0
   var avg: float
-  for row in instantRows(table, args):
+  for row in instantRows(table, args, varResolver):
     if groupByVals == groupVals(groupBy, columns, row):
       let val = columnValueAt(row, col)
       if val.kind != nqkNull:
@@ -260,23 +265,29 @@ iterator groupKeys(groupTable: Table[Record[NqValue], Record[NqValue]]
 method newCursor(rtable: GroupTable, args: openArray[string]): Cursor =
   var groupTable: Table[Record[NqValue], Record[NqValue]] =
     initTable[Record[NqValue], Record[NqValue]]()
-  let cursor = newCursor(rtable.child, args)
+  result = GroupTableCursor(table: rtable, iter: groupKeys,
+                            groupTable: groupTable,
+                            groupTableFilled: false, args: @args)
+
+proc fillGroupTable(cursor: GroupTableCursor, varResolver: VarResolver) =
   var row: InstantRow
-  while cursor.next(row):
+  let ncursor = newCursor(cursor.table.child, cursor.args)
+  while ncursor.next(row, varResolver):
     var key: Record[NqValue]
-    for colRef in rtable.groupBy:
-      let col = columnNo(rtable.child, mapColRef(colRef, rtable.columns))
+    for colRef in cursor.table.groupBy:
+      let col = columnNo(cursor.table.child, mapColRef(colRef, cursor.table.columns))
       if col == -1:
         raiseDbError("column " & (if colRef.tableName != "": colRef.tableName & "." else: "") &
                      colRef.name & " does not exist", undefinedColumnName)
       key.add(columnValueAt(row, col))
-    if not groupTable.hasKey(key):
-      groupTable[key] = Record[NqValue](@[])
-  result = GroupTableCursor(table: rtable, iter: groupKeys,
-                            groupTable: groupTable, args: @args)
+    if not cursor.groupTable.hasKey(key):
+      cursor.groupTable[key] = Record[NqValue](@[])
 
 method next(cursor: GroupTableCursor, row: var InstantRow,
     varResolver: VarResolver = nil): bool =
+  if not cursor.groupTableFilled:
+    fillGroupTable(cursor, varResolver)
+    cursor.groupTableFilled = true
   let k = cursor.iter(cursor.groupTable)
   if finished(cursor.iter):
     if cursor.rowsRead or cursor.table.groupBy.len > 0:
@@ -302,7 +313,8 @@ method next(cursor: GroupTableCursor, row: var InstantRow,
         case exp.opName
           of "COUNT":
             result = aggrCount(cursor.table.child, cursor.table.groupBy,
-                               cursor.table.columns, k, cursor.args)
+                               cursor.table.columns, k, cursor.args,
+                               varResolver)
           of "AVG", "MAX", "MIN", "SUM":
             if exp.args.len != 1:
               raiseDbError("1 argument to " & exp.opName & " required", undefinedFunction)
@@ -314,22 +326,22 @@ method next(cursor: GroupTableCursor, row: var InstantRow,
                 result = aggrMax(cursor.table.child,
                                  cursor.table.groupBy,
                                  cursor.table.columns, k,
-                                 colRef, cursor.args)
+                                 colRef, cursor.args, varResolver)
               of "MIN":
                 result = aggrMin(cursor.table.child,
                                  cursor.table.groupBy,
                                  cursor.table.columns, k,
-                                 colRef, cursor.args)
+                                 colRef, cursor.args, varResolver)
               of "SUM":
                 result = aggrSum(cursor.table.child,
                                  cursor.table.groupBy,
                                  cursor.table.columns, k,
-                                 colRef, cursor.args)
+                                 colRef, cursor.args, varResolver)
               of "AVG":
                 result = aggrAvg(cursor.table.child,
                                  cursor.table.groupBy,
                                  cursor.table.columns, k,
-                                 colRef, cursor.args)
+                                 colRef, cursor.args, varResolver)
       ))
   row = InstantRow(table: cursor.table, material: false, vals: vals)
   result = true

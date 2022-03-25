@@ -10,7 +10,7 @@ doAssert getValue(db, sql"""SELECT k + CAST ('2' AS INT) FROM tst""") == "3"
 doAssert getValue(db, sql"""SELECT k + CAST ('2' AS REAL) FROM tst""") == "3.0"
 doAssert getValue(db, sql"""SELECT k + CAST ('2' AS DOUBLE PRECISION) FROM tst""") == "3.0"
 doAssert getValue(db, sql"""SELECT k + CAST ('2' AS BIGINT) FROM tst""") == "3"
-doAssert getValue(db, sql"""SELECT CAST (n AS NUMERIC(4,2)) FROM tst""") == "5.5"
+doAssert getValue(db, sql"""SELECT CAST (n AS NUMERIC(4,2)) FROM tst""") == "5.50"
 doAssert getValue(db, sql"""SELECT ':' || CAST (n as TEXT) FROM tst""") == ":5.5"
 doAssert getValue(db, sql"""SELECT CAST (s || 'RUE' AS BOOLEAN) FROM tst""") == "TRUE"
 

@@ -1,4 +1,5 @@
 import db_nimternalsql
+import parseutils
 
 let db = open("", "", "", "")
 exec(db, sql"CREATE TABLE s (sno integer primary key, sname text)")
@@ -56,3 +57,35 @@ res = getAllRows(db, sql"""SELECT * FROM s
 doAssert res.len == 1
 doAssert res[0][0] == "2"
 doAssert res[0][1] == "two"
+
+exec(db, sql"CREATE TABLE employees (name text primary key, department int, salary int)")
+exec(db, sql"INSERT INTO employees VALUES('Fred', 1, 2000)")
+exec(db, sql"INSERT INTO employees VALUES('John', 2, 1200)")
+exec(db, sql"INSERT INTO employees VALUES('Laura', 1, 2200)")
+
+res = getAllRows(db,
+                 sql"""SELECT
+                           name,
+                           (SELECT AVG(salary)
+                               FROM employees
+                               WHERE department = emp.department),
+                           (SELECT SUM(salary)
+                               FROM employees
+                               WHERE department = emp.department)
+                       FROM employees emp
+                       ORDER by name""")
+
+doAssert res.len == 3
+var num: int
+doAssert res[0][0] == "Fred"
+discard parseInt(res[0][1], num)
+doAssert num == 2100
+doAssert res[0][2] == "4200"
+doAssert res[1][0] == "John"
+discard parseInt(res[1][1], num)
+doAssert num == 1200
+doAssert res[1][2] == "1200"
+doAssert res[2][0] == "Laura"
+discard parseInt(res[2][1], num)
+doAssert num == 2100
+doAssert res[2][2] == "4200"

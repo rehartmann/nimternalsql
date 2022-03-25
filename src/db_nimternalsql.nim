@@ -309,6 +309,10 @@ method transform(exp: ScalarOpExp, withTables: Table[string, VTable],
     dstargs.add(transform(arg, withTables, db))
   result = ScalarOpExp(opName: exp.opName, args: dstargs)
 
+method transform(exp: CastExp, withTables: Table[string, VTable],
+                 db: Database): Expression =
+  result = newCastExp(transform(exp.exp, withTables, db), exp.typeDef)
+
 method transform(exp: TableExp, withTables: Table[string, VTable],
                  db: Database): Expression =
   result = toVTable(exp, withTables, db)
@@ -335,7 +339,10 @@ proc toVTable(tableExp: TableExp, withTables: Table[string, VTable],
               tableExp.select.columns[i].exp of QVarExp:
             tableExp.select.columns[i].colName = QVarExp(
                 tableExp.select.columns[i].exp).name
-        result = newProjectTable(result, tableExp.select.columns)
+        var cols: seq[SelectElement]
+        for col in tableExp.select.columns:
+          cols.add(SelectElement(colName: col.colName, exp: transform(col.exp, withTables, db)))
+        result = newProjectTable(result, cols)
       let aggrs = getAggrs(tableExp.select.columns)
       if aggrs.len > 0 or tableExp.select.groupBy.len > 0:
         result = newGroupTable(result, aggrs, tableExp.select.groupBy)
@@ -395,7 +402,7 @@ iterator instantRows*(conn: DbConn; sql: SqlQuery; args: varargs[string,
   ## The InstantRows instance returned is not guaranteed to be valid
   ## outside the iterator body.
   let stmt = parseStatement(newStringReader(string(sql)))
-  for r in instantRows(toVTable(stmt, conn.db), args):
+  for r in instantRows(toVTable(stmt, conn.db), args, nil):
     yield r
 
 iterator instantRows*(conn: DbConn; columns: var DbColumns; sql: SqlQuery;
@@ -403,7 +410,7 @@ iterator instantRows*(conn: DbConn; columns: var DbColumns; sql: SqlQuery;
   let stmt = parseStatement(newStringReader(string(sql)))
   let table = toVTable(stmt, conn.db)
   columns = table.getColumns()
-  for r in instantRows(table, args):
+  for r in instantRows(table, args, nil):
     yield r
 
 proc prepare*(conn: DbConn; sql: SqlQuery): SqlPrepared =
@@ -414,7 +421,7 @@ proc prepare*(conn: DbConn; sql: SqlQuery): SqlPrepared =
 iterator instantRows*(conn: DbConn; sql: SqlPrepared; args: varargs[string,
     `$`]): InstantRow =
   ## Executes the prepared query and iterates over the result dataset.
-  for r in instantRows(toVTable(SqlStatement(sql), conn.db), args):
+  for r in instantRows(toVTable(SqlStatement(sql), conn.db), args, nil):
     yield r
 
 proc `[]`*(row: InstantRow; col: int): string =
@@ -462,7 +469,7 @@ proc getRow*(conn: DbConn; query: SqlQuery; args: varargs[string, `$`]): Row =
   ## this proc will return a Row with empty strings for each column.
   let stmt = parseStatement(newStringReader(string(query)))
   let vtable = toVTable(stmt, conn.db)
-  for r in instantRows(vtable, args):
+  for r in instantRows(vtable, args, nil):
     for i in 0..<r.len:
       result.add(r[i])
     return
@@ -471,7 +478,7 @@ proc getRow*(conn: DbConn; query: SqlQuery; args: varargs[string, `$`]): Row =
 
 proc getRow*(conn: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]): Row =
   let vtable = toVTable(SqlStatement(stmt), conn.db)
-  for r in instantRows(vtable, args):
+  for r in instantRows(vtable, args, nil):
     for i in 0..<r.len:
       result.add(r[i])
     return

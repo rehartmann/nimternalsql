@@ -791,16 +791,9 @@ method next*(cursor: Cursor, row: var InstantRow,
   ## If there are no more rows, false is returned and the value of row is undefined.
   raiseDbError("not supported", internalError)
 
-iterator instantRows*(rtable: VTable, args: varargs[string]): InstantRow =
+iterator instantRows*(rtable: VTable, args: varargs[string],
+                      varResolver: VarResolver): InstantRow =
   let cursor = rtable.newCursor(args)
-  var row: InstantRow
-  while true:
-    if not next(cursor, row):
-      break
-    yield row
-
-iterator instantRows(rtable: VTable, varResolver: VarResolver): InstantRow =
-  let cursor = rtable.newCursor([])
   var row: InstantRow
   while true:
     if not next(cursor, row, varResolver):
@@ -826,12 +819,12 @@ func evalCmpAllOrAny(arg0: NqValue, exp: ScalarOpExp,
     raiseDbError("subquery must have exactly one column", syntaxError)
   if exp.opName == "ALL":
     result = NqValue(kind: nqkBool, boolVal: true)
-    for row in instantRows(VTable(exp.args[0]), varResolver):
+    for row in instantRows(VTable(exp.args[0]), @[], varResolver):
       if not cmp(arg0, row.columnValueAt(0)):
         return NqValue(kind: nqkBool, boolVal: false)
   else:
     result = NqValue(kind: nqkBool, boolVal: false)
-    for row in instantRows(VTable(exp.args[0]), varResolver):
+    for row in instantRows(VTable(exp.args[0]), @[], varResolver):
       if cmp(arg0, row.columnValueAt(0)):
         return NqValue(kind: nqkBool, boolVal: true)
 
@@ -849,7 +842,7 @@ method eval*(exp: ScalarOpExp, varResolver: VarResolver,
     of "EXISTS":
       if not (exp.args[0] of VTable):
         raiseDbError("argument of EXISTS must be a table expression", syntaxError)
-      for row in instantRows(VTable(exp.args[0]), varResolver):
+      for row in instantRows(VTable(exp.args[0]), @[], varResolver):
         return NqValue(kind: nqkBool, boolVal: true)
       return NqValue(kind: nqkBool, boolVal: false)
   let arg0 = eval(exp.args[0], varResolver, aggrResolver)
@@ -925,7 +918,7 @@ method eval*(exp: ScalarOpExp, varResolver: VarResolver,
       if exp.args[1] of VTable:
         if columnCount(VTable(exp.args[1])) != 1:
           raiseDbError("subquery must have exactly one column", syntaxError)
-        for row in instantRows(VTable(exp.args[1]), varResolver):
+        for row in instantRows(VTable(exp.args[1]), @[], varResolver):
           if row.columnValueAt(0) == arg0:
             return NqValue(kind: nqkBool, boolVal: true)
         return NqValue(kind: nqkBool, boolVal: false)
@@ -1078,7 +1071,7 @@ method eval*(exp: VTable, varResolver: VarResolver,
   if columnCount(exp) != 1:
     raiseDbError("subquery has too many columns", syntaxError)
   var count = 0
-  for row in instantRows(exp, varResolver):
+  for row in instantRows(exp, @[], varResolver):
     if count > 0:
       raiseDbError("more than one row returned by a subquery used as an expression",
                    tooManyRowsReturnedBySubquery)
@@ -1164,13 +1157,10 @@ method eval*(exp: CastExp, varResolver: VarResolver,
         raiseDBError("value out of range for int", valueOutOfRange)
       result = NqValue(kind: nqkInt, intVal: int32(v))
     of kNumeric:
-      result = toNumeric(arg)
-
-      # Check if result is compatible with target type
       coldef.typ = exp.typeDef.typ
       coldef.precision = exp.typeDef.precision
       coldef.scale = exp.typeDef.scale
-      discard toMatValue(result, coldef)
+      result = toNqValue(toMatValue(toNumeric(arg), coldef), coldef)
     of kFloat:
       result = NqValue(kind: nqkFloat, floatVal: toFloat(arg))
     of kString:
