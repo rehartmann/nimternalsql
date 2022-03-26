@@ -72,11 +72,6 @@ type
   CastExp* {.acyclic.} = ref object of Expression
     exp*: Expression
     typeDef*: TypeDef
-  TrimExp* {.acyclic.} = ref object of Expression
-    src*: Expression
-    leading*: bool
-    trailing*: bool
-    char*: Expression
   SelectElement* {.acyclic.} = object
     colName*: string
     exp*: Expression
@@ -130,10 +125,6 @@ func newCaseExp*(exp: Expression,
 func newCastExp*(exp: Expression, typ: TypeDef): Expression =
   result = CastExp(exp: exp, typedef: typ)
 
-func newTrimExp*(src: Expression, leading: bool, trailing: bool, char: Expression = nil):
-     Expression =
-  result = TrimExp(src: src, leading: leading, trailing: trailing, char: char)
-     
 method `$`*(exp: Expression): string {.base.} = nil
 
 method `$`(exp: ScalarLit): string =
@@ -146,6 +137,15 @@ method `$`(exp: ScalarOpExp): string =
       result &= ','
     result &= $ exp.args[i]
   result &= ')'
+
+method `$`(exp: CaseExp): string =
+  result = "CASE "
+  if exp.exp != nil:
+    result &= $exp.exp
+  for w in exp.whens:
+    result &= " WHEN " & $w.cond & " THEN " & $w.exp
+  if exp.elseExp != nil:
+    result &= " ELSE " & $exp.elseExp
 
 method `$`(exp: QVarExp): string =
   if exp.tableName != "":

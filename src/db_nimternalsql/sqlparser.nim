@@ -309,18 +309,21 @@ proc parseOperand(scanner: Scanner, argCount: var int): Expression =
               discard # Cannot be reached
           t = nextToken(scanner)
           if t.kind == tokFrom:
-            result = newTrimExp(parseExpression(scanner, argCount), leading, trailing)
+            result = newScalarOpExp("TRIM", parseExpression(scanner, argCount),
+                                    newBoolLit(leading), newBoolLit(trailing), newNullLit())
           else:
             exp = parseExpression(scanner, argCount, false)
             if currentToken(scanner).kind != tokFrom:
               raiseDbError("FROM expected", syntaxError)
-            result = newTrimExp(parseExpression(scanner, argCount), leading, trailing, exp)
+            result = newScalarOpExp("TRIM", parseExpression(scanner, argCount),
+                                    newBoolLit(leading), newBoolLit(trailing), exp)
         else:
           exp = parseExpression(scanner, argCount, false)
           if currentToken(scanner).kind == tokFrom:
-            result = newTrimExp(parseExpression(scanner, argCount), true, true, exp)
+            result = newScalarOpExp("TRIM", parseExpression(scanner, argCount),
+                                    newBoolLit(true), newBoolLit(true), exp)
           else:
-            result = newTrimExp(exp, true, true)
+            result = newScalarOpExp("TRIM", exp, newBoolLit(true), newBoolLit(true), newNullLit())
       if currentToken(scanner).kind != tokRightParen:
         raiseDbError(") expected", syntaxError)
     of tokPosition:

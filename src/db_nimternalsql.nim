@@ -317,6 +317,16 @@ method transform(exp: TableExp, withTables: Table[string, VTable],
                  db: Database): Expression =
   result = toVTable(exp, withTables, db)
 
+method transform(exp: CaseExp, withTables: Table[string, VTable],
+                 db: Database): Expression =
+  var whens: seq[tuple[cond: Expression, exp: Expression]]
+  for w in exp.whens:
+    whens.add((cond: transform(w.cond, withTables, db),
+                    exp: transform(w.exp, withTables, db)))
+  result = newCaseExp(if exp.exp != nil: transform(exp.exp, withTables, db) else: nil,
+                      whens,
+                      if exp.elseExp != nil: transform(exp.elseExp, withTables, db) else: nil)
+
 proc toVTable(tableExp: TableExp, withTables: Table[string, VTable],
               db: Database): VTable =
   case tableExp.kind:

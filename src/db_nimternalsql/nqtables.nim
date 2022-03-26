@@ -1022,6 +1022,22 @@ method eval*(exp: ScalarOpExp, varResolver: VarResolver,
       else:
         result = NqValue(kind: nqkInt,
                          intVal: int32(runeLen(str.strVal[0..<pos]) + 1))
+    of "TRIM":
+      if exp.args.len != 4:
+        raiseDbError("Invalid number of arguments", undefinedFunction)
+      let src = eval(exp.args[0], varResolver, aggrResolver)
+      let leading = eval(exp.args[1], varResolver, aggrResolver)
+      let trailing = eval(exp.args[2], varResolver, aggrResolver)
+      let ch = eval(exp.args[3], varResolver, aggrResolver)
+      if ch.kind != nqkNull:
+        if ch.kind != nqkString or ch.strVal.runeLen != 1:
+            raiseDbError("single character expected", stringTooLong)
+        result = NqValue(kind: nqkString,
+                    strVal: unicode.strip(src.strVal, leading.boolVal, trailing.boolVal,
+                                          [runeAt(ch.strVal, 0)]))
+      else:
+        result = NqValue(kind: nqkString,
+                    strVal: unicode.strip(src.strVal, leading.boolVal, trailing.boolVal))
     else:
       raiseDbError("Unknown operator: " & exp.opName, undefinedFunction)
 
@@ -1097,19 +1113,6 @@ method eval*(exp: CaseExp, varResolver: VarResolver,
         return eval(exp.whens[i].exp, varResolver, aggrResolver)
   result = if exp.elseExp != nil: eval(exp.elseExp, varResolver, aggrResolver)
            else: NqValue(kind: nqkNull)
-
-method eval*(exp: TrimExp, varResolver: VarResolver,
-    aggrResolver: AggrResolver): NqValue =
-  let src = eval(exp.src, varResolver, aggrResolver)
-  if exp.char != nil:
-    let ch = eval(exp.char, varResolver, aggrResolver)
-    if ch.kind != nqkString or ch.strVal.runeLen != 1:
-      raiseDbError("single character expected", stringTooLong)
-    result = NqValue(kind: nqkString,
-                     strVal: unicode.strip(src.strVal, exp.leading, exp.trailing, [runeAt(ch.strVal, 0)]))
-  else:
-    result = NqValue(kind: nqkString,
-                     strVal: unicode.strip(src.strVal, exp.leading, exp.trailing))
 
 proc `$`*(val: NqValue): string =
   case val.kind

@@ -25,10 +25,19 @@ rows = getAllRows(db,
                       sql"""WITH t1 AS (
                                 SELECT a, b FROM tst WHERE a = 3
                             )
-                            SELECT CAST((SELECT b FROM t1) AS NUMERIC(5, 2)) FROM d""")
+                            SELECT
+                                CAST((SELECT b FROM t1) AS NUMERIC(5, 2)),
+                                TRIM(CAST((SELECT b FROM t1) AS TEXT)),
+                                CASE
+                                    WHEN (SELECT b FROM t1) = 123.111 THEN 'yes'
+                                    ELSE 'no'
+                                END
+                            FROM d""")
 
 doAssert rows.len == 1
 doAssert rows[0][0] == "123.11"
+doAssert rows[0][1] == "123.111"
+doAssert rows[0][2] == "yes"
 
 exec(db, sql"CREATE TABLE tst2 (a int primary key, b text)")
 exec(db, sql"INSERT INTO tst2 VALUES (1, 'w')")
