@@ -30,6 +30,10 @@ doAssert rows[2][0] == "Adam"
 doAssert rows[2][1] == "Eve"
 doAssert rows[2][2] == "3"
 
+rows = getAllRows(db, sql"SELECT a FROM babababa WHERE b <> 'Eve' AND c >= 1")
+doAssert rows.len == 1
+doAssert rows[0][0] == "Baba"
+
 rows = @[]
 var cols: DbColumns
 for r in instantRows(db, cols, sql"SELECT * FROM babababa WHERE c IN (1,-9) ORDER BY c"):
