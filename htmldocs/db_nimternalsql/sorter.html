@@ -113,8 +113,10 @@ window.addEventListener('DOMContentLoaded', main);
 
   </ul>
   <ul class="simple nested-toc-section">newSortedTable
-      <li><a class="reference" href="#newSortedTable%2CVTable%2Cseq%5Btuple%5BNatural%2Cbool%5D%5D"
-    title="newSortedTable(child: VTable; order: seq[tuple[col: Natural, asc: bool]]): VTable">newSortedTable(child: VTable; order: seq[tuple[col: Natural, asc: bool]]): VTable</a></li>
+      <li><a class="reference" href="#newSortedTable%2CVTable%2Cseq%5Btuple%5BNatural%2Cbool%5D%5D%2Cbool"
+    title="newSortedTable(child: VTable; order: seq[tuple[col: Natural, asc: bool]];
+               removeDuplicates: bool = false): VTable">newSortedTable(child: VTable; order: seq[tuple[col: Natural, asc: bool]];
+               removeDuplicates: bool = false): VTable</a></li>
 
   </ul>
 
@@ -156,9 +158,10 @@ window.addEventListener('DOMContentLoaded', main);
 
 </dd>
 </div>
-<div id="newSortedTable,VTable,seq[tuple[Natural,bool]]">
-<dt><pre><span class="Keyword">func</span> <a href="#newSortedTable%2CVTable%2Cseq%5Btuple%5BNatural%2Cbool%5D%5D"><span class="Identifier">newSortedTable</span></a><span class="Other">(</span><span class="Identifier">child</span><span class="Other">:</span> <a href="nqtables.html#VTable"><span class="Identifier">VTable</span></a><span class="Other">;</span> <span class="Identifier">order</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Keyword">tuple</span><span class="Other">[</span><span class="Identifier">col</span><span class="Other">:</span> <span class="Identifier">Natural</span><span class="Other">,</span> <span class="Identifier">asc</span><span class="Other">:</span> <span class="Identifier">bool</span><span class="Other">]</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <a href="nqtables.html#VTable"><span class="Identifier">VTable</span></a> {.
-    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+<div id="newSortedTable,VTable,seq[tuple[Natural,bool]],bool">
+<dt><pre><span class="Keyword">func</span> <a href="#newSortedTable%2CVTable%2Cseq%5Btuple%5BNatural%2Cbool%5D%5D%2Cbool"><span class="Identifier">newSortedTable</span></a><span class="Other">(</span><span class="Identifier">child</span><span class="Other">:</span> <a href="nqtables.html#VTable"><span class="Identifier">VTable</span></a><span class="Other">;</span> <span class="Identifier">order</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Keyword">tuple</span><span class="Other">[</span><span class="Identifier">col</span><span class="Other">:</span> <span class="Identifier">Natural</span><span class="Other">,</span> <span class="Identifier">asc</span><span class="Other">:</span> <span class="Identifier">bool</span><span class="Other">]</span><span class="Other">]</span><span class="Other">;</span>
+                    <span class="Identifier">removeDuplicates</span><span class="Other">:</span> <span class="Identifier">bool</span> <span class="Other">=</span> <span class="Identifier">false</span><span class="Other">)</span><span class="Other">:</span> <a href="nqtables.html#VTable"><span class="Identifier">VTable</span></a> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
 
@@ -188,7 +191,7 @@ window.addEventListener('DOMContentLoaded', main);
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-02-28 16:16:42 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-03-27 09:29:55 UTC</small>
       </div>
     </div>
   </div>

@@ -1,3 +1,3 @@
-newSortedTable	db_nimternalsql/sorter.html#newSortedTable,VTable,seq[tuple[Natural,bool]]	sorter: newSortedTable(child: VTable; order: seq[tuple[col: Natural, asc: bool]]): VTable	
+newSortedTable	db_nimternalsql/sorter.html#newSortedTable,VTable,seq[tuple[Natural,bool]],bool	sorter: newSortedTable(child: VTable; order: seq[tuple[col: Natural, asc: bool]];\n               removeDuplicates: bool = false): VTable	
 cmp	db_nimternalsql/sorter.html#cmp,NqValue,NqValue	sorter: cmp(v1: NqValue; v2: NqValue): int	
 getColumns	db_nimternalsql/sorter.html#getColumns.e,SortedTable	sorter: getColumns(table: SortedTable): DbColumns	

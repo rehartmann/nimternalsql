@@ -68,7 +68,7 @@ eval	db_nimternalsql/nqtables.html#eval.e,NullLit,VarResolver,AggrResolver	nqtab
 `+`	db_nimternalsql/nqtables.html#+,NqValue,NqValue	nqtables: `+`(a: NqValue; b: NqValue): NqValue	
 newCursor	db_nimternalsql/nqtables.html#newCursor.e,VTable,openArray[string]	nqtables: newCursor(table: VTable; args: openArray[string]): Cursor	
 next	db_nimternalsql/nqtables.html#next.e,Cursor,InstantRow,VarResolver	nqtables: next(cursor: Cursor; row: var InstantRow; varResolver: VarResolver = nil): bool	
-instantRows	db_nimternalsql/nqtables.html#instantRows.i,VTable,varargs[string]	nqtables: instantRows(rtable: VTable; args: varargs[string]): InstantRow	
+instantRows	db_nimternalsql/nqtables.html#instantRows.i,VTable,varargs[string],VarResolver	nqtables: instantRows(rtable: VTable; args: varargs[string]; varResolver: VarResolver): InstantRow	
 columnCount	db_nimternalsql/nqtables.html#columnCount.e,VTable	nqtables: columnCount(table: VTable): Natural	
 columnCount	db_nimternalsql/nqtables.html#columnCount,InstantRow	nqtables: columnCount(row: InstantRow): int	
 eval	db_nimternalsql/nqtables.html#eval.e,ScalarOpExp,VarResolver,AggrResolver	nqtables: eval(exp: ScalarOpExp; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
@@ -77,7 +77,6 @@ eval	db_nimternalsql/nqtables.html#eval.e,QVarExp,VarResolver,AggrResolver	nqtab
 eval	db_nimternalsql/nqtables.html#eval.e,ListExp,VarResolver,AggrResolver	nqtables: eval(exp: ListExp; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
 eval	db_nimternalsql/nqtables.html#eval.e,VTable,VarResolver,AggrResolver	nqtables: eval(exp: VTable; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
 eval	db_nimternalsql/nqtables.html#eval.e,CaseExp,VarResolver,AggrResolver	nqtables: eval(exp: CaseExp; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
-eval	db_nimternalsql/nqtables.html#eval.e,TrimExp,VarResolver,AggrResolver	nqtables: eval(exp: TrimExp; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
 `$`	db_nimternalsql/nqtables.html#$,NqValue	nqtables: `$`(val: NqValue): string	
 eval	db_nimternalsql/nqtables.html#eval.e,CastExp,VarResolver,AggrResolver	nqtables: eval(exp: CastExp; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue	
 columnNo	db_nimternalsql/nqtables.html#columnNo.e,BaseTable,string	nqtables: columnNo(rtable: BaseTable; name: string): int	
@@ -93,3 +92,5 @@ instantRows	db_nimternalsql/nqtables.html#instantRows.i,BaseTableRef	nqtables: i
 isConst	db_nimternalsql/nqtables.html#isConst,Expression	nqtables: isConst(exp: Expression): bool	
 expKeyCols	db_nimternalsql/nqtables.html#expKeyCols,Expression,BaseTableRef,proc(Expression),openArray[string]	nqtables: expKeyCols(exp: Expression; tableRef: BaseTableRef;\n           isConstProc: proc (exp: Expression): bool; args: openArray[string]): seq[\n    tuple[colNo: Natural, exp: Expression]]	
 isKeyUpdate	db_nimternalsql/nqtables.html#isKeyUpdate,BaseTable,seq[ColumnAssignment]	nqtables: isKeyUpdate(table: BaseTable; assignments: seq[ColumnAssignment]): bool	
+contains	db_nimternalsql/nqtables.html#contains.e,VTable,InstantRow	nqtables: contains(table: VTable; row: InstantRow): bool	
+contains	db_nimternalsql/nqtables.html#contains.e,BaseTableRef,InstantRow	nqtables: contains(table: BaseTableRef; row: InstantRow): bool	

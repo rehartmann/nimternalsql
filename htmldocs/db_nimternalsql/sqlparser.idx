@@ -15,7 +15,10 @@ OrderByElement	db_nimternalsql/sqlparser.html#OrderByElement	sqlparser: OrderByE
 SqlSelect	db_nimternalsql/sqlparser.html#SqlSelect	sqlparser: SqlSelect	
 tekSelect	db_nimternalsql/sqlparser.html#tekSelect	TableExpKind.tekSelect	
 tekUnion	db_nimternalsql/sqlparser.html#tekUnion	TableExpKind.tekUnion	
+tekExcept	db_nimternalsql/sqlparser.html#tekExcept	TableExpKind.tekExcept	
+tekIntersect	db_nimternalsql/sqlparser.html#tekIntersect	TableExpKind.tekIntersect	
 TableExpKind	db_nimternalsql/sqlparser.html#TableExpKind	sqlparser: TableExpKind	
 TableExp	db_nimternalsql/sqlparser.html#TableExp	sqlparser: TableExp	
+NamedTableExp	db_nimternalsql/sqlparser.html#NamedTableExp	sqlparser: NamedTableExp	
 QueryExp	db_nimternalsql/sqlparser.html#QueryExp	sqlparser: QueryExp	
 parseStatement	db_nimternalsql/sqlparser.html#parseStatement,Reader	sqlparser: parseStatement(reader: Reader): SqlStatement	

@@ -1,2 +1,3 @@
+DupRemTable	db_nimternalsql/duprem.html#DupRemTable	duprem: DupRemTable	
 newDupRemTable	db_nimternalsql/duprem.html#newDupRemTable,VTable	duprem: newDupRemTable(child: VTable): VTable	
 getColumns	db_nimternalsql/duprem.html#getColumns.e,DupRemTable	duprem: getColumns(table: DupRemTable): DbColumns	

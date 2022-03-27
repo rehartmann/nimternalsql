@@ -54,8 +54,11 @@ tokPrimary	db_nimternalsql/sqlscanner.html#tokPrimary	TokenKind.tokPrimary
 tokSelect	db_nimternalsql/sqlscanner.html#tokSelect	TokenKind.tokSelect	
 tokTable	db_nimternalsql/sqlscanner.html#tokTable	TokenKind.tokTable	
 tokUnion	db_nimternalsql/sqlscanner.html#tokUnion	TokenKind.tokUnion	
+tokIntersect	db_nimternalsql/sqlscanner.html#tokIntersect	TokenKind.tokIntersect	
+tokExcept	db_nimternalsql/sqlscanner.html#tokExcept	TokenKind.tokExcept	
 tokValues	db_nimternalsql/sqlscanner.html#tokValues	TokenKind.tokValues	
 tokWhere	db_nimternalsql/sqlscanner.html#tokWhere	TokenKind.tokWhere	
+tokWith	db_nimternalsql/sqlscanner.html#tokWith	TokenKind.tokWith	
 tokLeft	db_nimternalsql/sqlscanner.html#tokLeft	TokenKind.tokLeft	
 tokInner	db_nimternalsql/sqlscanner.html#tokInner	TokenKind.tokInner	
 tokOuter	db_nimternalsql/sqlscanner.html#tokOuter	TokenKind.tokOuter	

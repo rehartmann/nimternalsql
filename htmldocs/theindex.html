@@ -70,7 +70,7 @@ window.addEventListener('DOMContentLoaded', main);
 <div class="document" id="documentId">
   <div class="container">
     <h1 class="title">Index</h1>
-    Modules: <a href="db_nimternalsql.html">db_nimternalsql</a>, <a href="db_nimternalsql/duprem.html">db_nimternalsql/duprem</a>, <a href="db_nimternalsql/groupby.html">db_nimternalsql/groupby</a>, <a href="db_nimternalsql/join.html">db_nimternalsql/join</a>, <a href="db_nimternalsql/like.html">db_nimternalsql/like</a>, <a href="db_nimternalsql/nqcommon.html">db_nimternalsql/nqcommon</a>, <a href="db_nimternalsql/nqtables.html">db_nimternalsql/nqtables</a>, <a href="db_nimternalsql/snapshot.html">db_nimternalsql/snapshot</a>, <a href="db_nimternalsql/sorter.html">db_nimternalsql/sorter</a>, <a href="db_nimternalsql/sqlparser.html">db_nimternalsql/sqlparser</a>, <a href="db_nimternalsql/sqlscanner.html">db_nimternalsql/sqlscanner</a>, <a href="db_nimternalsql/tx.html">db_nimternalsql/tx</a>, <a href="db_nimternalsql/union.html">db_nimternalsql/union</a>.<br/><p /><h2>API symbols</h2>
+    Modules: <a href="db_nimternalsql.html">db_nimternalsql</a>, <a href="db_nimternalsql/duprem.html">db_nimternalsql/duprem</a>, <a href="db_nimternalsql/groupby.html">db_nimternalsql/groupby</a>, <a href="db_nimternalsql/intersect.html">db_nimternalsql/intersect</a>, <a href="db_nimternalsql/join.html">db_nimternalsql/join</a>, <a href="db_nimternalsql/like.html">db_nimternalsql/like</a>, <a href="db_nimternalsql/nqcommon.html">db_nimternalsql/nqcommon</a>, <a href="db_nimternalsql/nqexcept.html">db_nimternalsql/nqexcept</a>, <a href="db_nimternalsql/nqtables.html">db_nimternalsql/nqtables</a>, <a href="db_nimternalsql/snapshot.html">db_nimternalsql/snapshot</a>, <a href="db_nimternalsql/sorter.html">db_nimternalsql/sorter</a>, <a href="db_nimternalsql/sqlparser.html">db_nimternalsql/sqlparser</a>, <a href="db_nimternalsql/sqlscanner.html">db_nimternalsql/sqlscanner</a>, <a href="db_nimternalsql/tx.html">db_nimternalsql/tx</a>, <a href="db_nimternalsql/union.html">db_nimternalsql/union</a>.<br/><p /><h2>API symbols</h2>
 <dl><dt><a name="%60%24%60" href="#%60%24%60"><span>`$`:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="nqcommon: `$`(exp: Expression): string" href="db_nimternalsql/nqcommon.html#%24.e%2CExpression">nqcommon: `$`(exp: Expression): string</a></li>
@@ -145,6 +145,10 @@ window.addEventListener('DOMContentLoaded', main);
           </ul></dd>
 <dt><a name="columnNo" href="#columnNo"><span>columnNo:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
+          data-doc-search-tag="intersect: columnNo(table: IntersectTable; name: string; tableName: string): int" href="db_nimternalsql/intersect.html#columnNo.e%2CIntersectTable%2Cstring%2Cstring">intersect: columnNo(table: IntersectTable; name: string; tableName: string): int</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="nqexcept: columnNo(table: ExceptTable; name: string; tableName: string): int" href="db_nimternalsql/nqexcept.html#columnNo.e%2CExceptTable%2Cstring%2Cstring">nqexcept: columnNo(table: ExceptTable; name: string; tableName: string): int</a></li>
+          <li><a class="reference external"
           data-doc-search-tag="nqtables: columnNo(table: VTable; colRef: QVarExp): int" href="db_nimternalsql/nqtables.html#columnNo%2CVTable%2CQVarExp">nqtables: columnNo(table: VTable; colRef: QVarExp): int</a></li>
           <li><a class="reference external"
           data-doc-search-tag="nqtables: columnNo(rtable: BaseTable; name: string): int" href="db_nimternalsql/nqtables.html#columnNo.e%2CBaseTable%2Cstring">nqtables: columnNo(rtable: BaseTable; name: string): int</a></li>
@@ -168,6 +172,12 @@ window.addEventListener('DOMContentLoaded', main);
 <dt><a name="commit" href="#commit"><span>commit:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="tx: commit(tx: Tx)" href="db_nimternalsql/tx.html#commit%2CTx">tx: commit(tx: Tx)</a></li>
+          </ul></dd>
+<dt><a name="contains" href="#contains"><span>contains:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="nqtables: contains(table: BaseTableRef; row: InstantRow): bool" href="db_nimternalsql/nqtables.html#contains.e%2CBaseTableRef%2CInstantRow">nqtables: contains(table: BaseTableRef; row: InstantRow): bool</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="nqtables: contains(table: VTable; row: InstantRow): bool" href="db_nimternalsql/nqtables.html#contains.e%2CVTable%2CInstantRow">nqtables: contains(table: VTable; row: InstantRow): bool</a></li>
           </ul></dd>
 <dt><a name="createBaseTable" href="#createBaseTable"><span>createBaseTable:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -211,6 +221,10 @@ window.addEventListener('DOMContentLoaded', main);
 <li><a class="reference external"
           data-doc-search-tag="tx: dropBaseTable(tx: Tx; db: Database; name: string)" href="db_nimternalsql/tx.html#dropBaseTable%2CTx%2CDatabase%2Cstring">tx: dropBaseTable(tx: Tx; db: Database; name: string)</a></li>
           </ul></dd>
+<dt><a name="DupRemTable" href="#DupRemTable"><span>DupRemTable:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="duprem: DupRemTable" href="db_nimternalsql/duprem.html#DupRemTable">duprem: DupRemTable</a></li>
+          </ul></dd>
 <dt><a name="eval" href="#eval"><span>eval:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="nqtables: eval(exp: BoolLit; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue" href="db_nimternalsql/nqtables.html#eval.e%2CBoolLit%2CVarResolver%2CAggrResolver">nqtables: eval(exp: BoolLit; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue</a></li>
@@ -242,8 +256,6 @@ window.addEventListener('DOMContentLoaded', main);
           data-doc-search-tag="nqtables: eval(exp: TimeLit; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue" href="db_nimternalsql/nqtables.html#eval.e%2CTimeLit%2CVarResolver%2CAggrResolver">nqtables: eval(exp: TimeLit; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue</a></li>
           <li><a class="reference external"
           data-doc-search-tag="nqtables: eval(exp: TimestampLit; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue" href="db_nimternalsql/nqtables.html#eval.e%2CTimestampLit%2CVarResolver%2CAggrResolver">nqtables: eval(exp: TimestampLit; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue</a></li>
-          <li><a class="reference external"
-          data-doc-search-tag="nqtables: eval(exp: TrimExp; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue" href="db_nimternalsql/nqtables.html#eval.e%2CTrimExp%2CVarResolver%2CAggrResolver">nqtables: eval(exp: TrimExp; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue</a></li>
           <li><a class="reference external"
           data-doc-search-tag="nqtables: eval(exp: VTable; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue" href="db_nimternalsql/nqtables.html#eval.e%2CVTable%2CVarResolver%2CAggrResolver">nqtables: eval(exp: VTable; varResolver: VarResolver; aggrResolver: AggrResolver): NqValue</a></li>
           </ul></dd>
@@ -303,7 +315,11 @@ window.addEventListener('DOMContentLoaded', main);
           <li><a class="reference external"
           data-doc-search-tag="groupby: getColumns(table: GroupTable): DbColumns" href="db_nimternalsql/groupby.html#getColumns.e%2CGroupTable">groupby: getColumns(table: GroupTable): DbColumns</a></li>
           <li><a class="reference external"
+          data-doc-search-tag="intersect: getColumns(table: IntersectTable): DbColumns" href="db_nimternalsql/intersect.html#getColumns.e%2CIntersectTable">intersect: getColumns(table: IntersectTable): DbColumns</a></li>
+          <li><a class="reference external"
           data-doc-search-tag="join: getColumns(table: JoinTable): DbColumns" href="db_nimternalsql/join.html#getColumns.e%2CJoinTable">join: getColumns(table: JoinTable): DbColumns</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="nqexcept: getColumns(table: ExceptTable): DbColumns" href="db_nimternalsql/nqexcept.html#getColumns.e%2CExceptTable">nqexcept: getColumns(table: ExceptTable): DbColumns</a></li>
           <li><a class="reference external"
           data-doc-search-tag="nqtables: getColumns(table: BaseTableRef): DbColumns" href="db_nimternalsql/nqtables.html#getColumns.e%2CBaseTableRef">nqtables: getColumns(table: BaseTableRef): DbColumns</a></li>
           <li><a class="reference external"
@@ -361,7 +377,7 @@ window.addEventListener('DOMContentLoaded', main);
           <li><a class="reference external"
           data-doc-search-tag="nqtables: instantRows(tableRef: BaseTableRef): InstantRow" href="db_nimternalsql/nqtables.html#instantRows.i%2CBaseTableRef">nqtables: instantRows(tableRef: BaseTableRef): InstantRow</a></li>
           <li><a class="reference external"
-          data-doc-search-tag="nqtables: instantRows(rtable: VTable; args: varargs[string]): InstantRow" href="db_nimternalsql/nqtables.html#instantRows.i%2CVTable%2Cvarargs%5Bstring%5D">nqtables: instantRows(rtable: VTable; args: varargs[string]): InstantRow</a></li>
+          data-doc-search-tag="nqtables: instantRows(rtable: VTable; args: varargs[string]; varResolver: VarResolver): InstantRow" href="db_nimternalsql/nqtables.html#instantRows.i%2CVTable%2Cvarargs%5Bstring%5D%2CVarResolver">nqtables: instantRows(rtable: VTable; args: varargs[string]; varResolver: VarResolver): InstantRow</a></li>
           </ul></dd>
 <dt><a name="internalError" href="#internalError"><span>internalError:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -481,6 +497,10 @@ window.addEventListener('DOMContentLoaded', main);
 <li><a class="reference external"
           data-doc-search-tag="nqtables: maxPrecision" href="db_nimternalsql/nqtables.html#maxPrecision">nqtables: maxPrecision</a></li>
           </ul></dd>
+<dt><a name="NamedTableExp" href="#NamedTableExp"><span>NamedTableExp:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="sqlparser: NamedTableExp" href="db_nimternalsql/sqlparser.html#NamedTableExp">sqlparser: NamedTableExp</a></li>
+          </ul></dd>
 <dt><a name="newBoolLit" href="#newBoolLit"><span>newBoolLit:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="nqcommon: newBoolLit(v: bool): Expression" href="db_nimternalsql/nqcommon.html#newBoolLit%2Cbool">nqcommon: newBoolLit(v: bool): Expression</a></li>
@@ -513,6 +533,10 @@ window.addEventListener('DOMContentLoaded', main);
 <li><a class="reference external"
           data-doc-search-tag="duprem: newDupRemTable(child: VTable): VTable" href="db_nimternalsql/duprem.html#newDupRemTable%2CVTable">duprem: newDupRemTable(child: VTable): VTable</a></li>
           </ul></dd>
+<dt><a name="newExceptTable" href="#newExceptTable"><span>newExceptTable:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="nqexcept: newExceptTable(lchild: VTable; rchild: VTable): VTable" href="db_nimternalsql/nqexcept.html#newExceptTable%2CVTable%2CVTable">nqexcept: newExceptTable(lchild: VTable; rchild: VTable): VTable</a></li>
+          </ul></dd>
 <dt><a name="newFileReader" href="#newFileReader"><span>newFileReader:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="sqlscanner: newFileReader(f: File): FileReader" href="db_nimternalsql/sqlscanner.html#newFileReader%2CFile">sqlscanner: newFileReader(f: File): FileReader</a></li>
@@ -528,6 +552,10 @@ window.addEventListener('DOMContentLoaded', main);
 <dt><a name="newInstantRow" href="#newInstantRow"><span>newInstantRow:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="nqtables: newInstantRow(table: VTable; vals: seq[NqValue]): InstantRow" href="db_nimternalsql/nqtables.html#newInstantRow%2CVTable%2Cseq%5BNqValue%5D">nqtables: newInstantRow(table: VTable; vals: seq[NqValue]): InstantRow</a></li>
+          </ul></dd>
+<dt><a name="newIntersectTable" href="#newIntersectTable"><span>newIntersectTable:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="intersect: newIntersectTable(child1: VTable; child2: VTable): VTable" href="db_nimternalsql/intersect.html#newIntersectTable%2CVTable%2CVTable">intersect: newIntersectTable(child1: VTable; child2: VTable): VTable</a></li>
           </ul></dd>
 <dt><a name="newJoinTable" href="#newJoinTable"><span>newJoinTable:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -569,7 +597,9 @@ window.addEventListener('DOMContentLoaded', main);
           </ul></dd>
 <dt><a name="newSortedTable" href="#newSortedTable"><span>newSortedTable:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="sorter: newSortedTable(child: VTable; order: seq[tuple[col: Natural, asc: bool]]): VTable" href="db_nimternalsql/sorter.html#newSortedTable%2CVTable%2Cseq%5Btuple%5BNatural%2Cbool%5D%5D">sorter: newSortedTable(child: VTable; order: seq[tuple[col: Natural, asc: bool]]): VTable</a></li>
+          data-doc-search-tag="sorter: newSortedTable(child: VTable; order: seq[tuple[col: Natural, asc: bool]];
+               removeDuplicates: bool = false): VTable" href="db_nimternalsql/sorter.html#newSortedTable%2CVTable%2Cseq%5Btuple%5BNatural%2Cbool%5D%5D%2Cbool">sorter: newSortedTable(child: VTable; order: seq[tuple[col: Natural, asc: bool]];
+               removeDuplicates: bool = false): VTable</a></li>
           </ul></dd>
 <dt><a name="newStringLit" href="#newStringLit"><span>newStringLit:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -586,12 +616,6 @@ window.addEventListener('DOMContentLoaded', main);
 <dt><a name="newTimestampLit" href="#newTimestampLit"><span>newTimestampLit:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="nqcommon: newTimestampLit(v: string): Expression" href="db_nimternalsql/nqcommon.html#newTimestampLit%2Cstring">nqcommon: newTimestampLit(v: string): Expression</a></li>
-          </ul></dd>
-<dt><a name="newTrimExp" href="#newTrimExp"><span>newTrimExp:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="nqcommon: newTrimExp(src: Expression; leading: bool; trailing: bool;
-           char: Expression = nil): Expression" href="db_nimternalsql/nqcommon.html#newTrimExp%2CExpression%2Cbool%2Cbool%2CExpression">nqcommon: newTrimExp(src: Expression; leading: bool; trailing: bool;
-           char: Expression = nil): Expression</a></li>
           </ul></dd>
 <dt><a name="newTx" href="#newTx"><span>newTx:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -885,6 +909,14 @@ window.addEventListener('DOMContentLoaded', main);
 <li><a class="reference external"
           data-doc-search-tag="sqlparser: TableExpKind" href="db_nimternalsql/sqlparser.html#TableExpKind">sqlparser: TableExpKind</a></li>
           </ul></dd>
+<dt><a name="tekExcept" href="#tekExcept"><span>tekExcept:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="TableExpKind.tekExcept" href="db_nimternalsql/sqlparser.html#tekExcept">TableExpKind.tekExcept</a></li>
+          </ul></dd>
+<dt><a name="tekIntersect" href="#tekIntersect"><span>tekIntersect:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="TableExpKind.tekIntersect" href="db_nimternalsql/sqlparser.html#tekIntersect">TableExpKind.tekIntersect</a></li>
+          </ul></dd>
 <dt><a name="tekSelect" href="#tekSelect"><span>tekSelect:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="TableExpKind.tekSelect" href="db_nimternalsql/sqlparser.html#tekSelect">TableExpKind.tekSelect</a></li>
@@ -1037,6 +1069,10 @@ window.addEventListener('DOMContentLoaded', main);
 <li><a class="reference external"
           data-doc-search-tag="TokenKind.tokEq" href="db_nimternalsql/sqlscanner.html#tokEq">TokenKind.tokEq</a></li>
           </ul></dd>
+<dt><a name="tokExcept" href="#tokExcept"><span>tokExcept:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="TokenKind.tokExcept" href="db_nimternalsql/sqlscanner.html#tokExcept">TokenKind.tokExcept</a></li>
+          </ul></dd>
 <dt><a name="tokExists" href="#tokExists"><span>tokExists:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="TokenKind.tokExists" href="db_nimternalsql/sqlscanner.html#tokExists">TokenKind.tokExists</a></li>
@@ -1084,6 +1120,10 @@ window.addEventListener('DOMContentLoaded', main);
 <dt><a name="tokInt" href="#tokInt"><span>tokInt:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="TokenKind.tokInt" href="db_nimternalsql/sqlscanner.html#tokInt">TokenKind.tokInt</a></li>
+          </ul></dd>
+<dt><a name="tokIntersect" href="#tokIntersect"><span>tokIntersect:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="TokenKind.tokIntersect" href="db_nimternalsql/sqlscanner.html#tokIntersect">TokenKind.tokIntersect</a></li>
           </ul></dd>
 <dt><a name="tokInto" href="#tokInto"><span>tokInto:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -1261,6 +1301,10 @@ window.addEventListener('DOMContentLoaded', main);
 <li><a class="reference external"
           data-doc-search-tag="TokenKind.tokWhere" href="db_nimternalsql/sqlscanner.html#tokWhere">TokenKind.tokWhere</a></li>
           </ul></dd>
+<dt><a name="tokWith" href="#tokWith"><span>tokWith:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="TokenKind.tokWith" href="db_nimternalsql/sqlscanner.html#tokWith">TokenKind.tokWith</a></li>
+          </ul></dd>
 <dt><a name="toMatValue" href="#toMatValue"><span>toMatValue:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="nqtables: toMatValue(v: NqValue; colDef: ColumnDef): MatValue" href="db_nimternalsql/nqtables.html#toMatValue%2CNqValue%2CColumnDef">nqtables: toMatValue(v: NqValue; colDef: ColumnDef): MatValue</a></li>
@@ -1280,10 +1324,6 @@ window.addEventListener('DOMContentLoaded', main);
 <dt><a name="tooManyRowsReturnedBySubquery" href="#tooManyRowsReturnedBySubquery"><span>tooManyRowsReturnedBySubquery:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="nqcommon: tooManyRowsReturnedBySubquery" href="db_nimternalsql/nqcommon.html#tooManyRowsReturnedBySubquery">nqcommon: tooManyRowsReturnedBySubquery</a></li>
-          </ul></dd>
-<dt><a name="TrimExp" href="#TrimExp"><span>TrimExp:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="nqcommon: TrimExp" href="db_nimternalsql/nqcommon.html#TrimExp">nqcommon: TrimExp</a></li>
           </ul></dd>
 <dt><a name="trkRelOp" href="#trkRelOp"><span>trkRelOp:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -1386,7 +1426,7 @@ window.addEventListener('DOMContentLoaded', main);
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-02-28 16:16:42 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-03-27 09:29:55 UTC</small>
       </div>
     </div>
   </div>

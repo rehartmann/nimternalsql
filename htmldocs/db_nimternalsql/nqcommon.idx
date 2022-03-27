@@ -36,7 +36,6 @@ QVarExp	db_nimternalsql/nqcommon.html#QVarExp	nqcommon: QVarExp
 ListExp	db_nimternalsql/nqcommon.html#ListExp	nqcommon: ListExp	
 CaseExp	db_nimternalsql/nqcommon.html#CaseExp	nqcommon: CaseExp	
 CastExp	db_nimternalsql/nqcommon.html#CastExp	nqcommon: CastExp	
-TrimExp	db_nimternalsql/nqcommon.html#TrimExp	nqcommon: TrimExp	
 SelectElement	db_nimternalsql/nqcommon.html#SelectElement	nqcommon: SelectElement	
 SqlError	db_nimternalsql/nqcommon.html#SqlError	nqcommon: SqlError	
 raiseDbError	db_nimternalsql/nqcommon.html#raiseDbError,string,string	nqcommon: raiseDbError(msg: string; sqlstate: string)	
@@ -52,5 +51,4 @@ newScalarOpExp	db_nimternalsql/nqcommon.html#newScalarOpExp,string,varargs[Expre
 newQVarExp	db_nimternalsql/nqcommon.html#newQVarExp,string,string	nqcommon: newQVarExp(name: string; tableName: string = &quot;&quot;): QVarExp	
 newCaseExp	db_nimternalsql/nqcommon.html#newCaseExp,Expression,seq[tuple[Expression,Expression]],Expression	nqcommon: newCaseExp(exp: Expression;\n           whens: seq[tuple[cond: Expression, exp: Expression]];\n           elseExp: Expression): Expression	
 newCastExp	db_nimternalsql/nqcommon.html#newCastExp,Expression,TypeDef	nqcommon: newCastExp(exp: Expression; typ: TypeDef): Expression	
-newTrimExp	db_nimternalsql/nqcommon.html#newTrimExp,Expression,bool,bool,Expression	nqcommon: newTrimExp(src: Expression; leading: bool; trailing: bool;\n           char: Expression = nil): Expression	
 `$`	db_nimternalsql/nqcommon.html#$.e,Expression	nqcommon: `$`(exp: Expression): string	

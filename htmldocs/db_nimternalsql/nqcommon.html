@@ -158,12 +158,6 @@ window.addEventListener('DOMContentLoaded', main);
     title="TimeLit {.final.} = ref object of ScalarLit">TimeLit</a></li>
   <li><a class="reference" href="#TimestampLit"
     title="TimestampLit {.final.} = ref object of ScalarLit">TimestampLit</a></li>
-  <li><a class="reference" href="#TrimExp"
-    title="TrimExp {.acyclic.} = ref object of Expression
-  src*: Expression
-  leading*: bool
-  trailing*: bool
-  char*: Expression">TrimExp</a></li>
   <li><a class="reference" href="#TypeDef"
     title="TypeDef = object
   typ*: string
@@ -288,13 +282,6 @@ window.addEventListener('DOMContentLoaded', main);
   <ul class="simple nested-toc-section">newTimestampLit
       <li><a class="reference" href="#newTimestampLit%2Cstring"
     title="newTimestampLit(v: string): Expression">newTimestampLit(v: string): Expression</a></li>
-
-  </ul>
-  <ul class="simple nested-toc-section">newTrimExp
-      <li><a class="reference" href="#newTrimExp%2CExpression%2Cbool%2Cbool%2CExpression"
-    title="newTrimExp(src: Expression; leading: bool; trailing: bool;
-           char: Expression = nil): Expression">newTrimExp(src: Expression; leading: bool; trailing: bool;
-           char: Expression = nil): Expression</a></li>
 
   </ul>
   <ul class="simple nested-toc-section">raiseDbError
@@ -490,19 +477,6 @@ window.addEventListener('DOMContentLoaded', main);
 </div>
 <div id="TimestampLit">
 <dt><pre><a href="nqcommon.html#TimestampLit"><span class="Identifier">TimestampLit</span></a> {.<span class="Identifier">final</span>.} <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span> <span class="Keyword">of</span> <a href="nqcommon.html#ScalarLit"><span class="Identifier">ScalarLit</span></a></pre></dt>
-<dd>
-
-
-
-</dd>
-</div>
-<div id="TrimExp">
-<dt><pre><a href="nqcommon.html#TrimExp"><span class="Identifier">TrimExp</span></a> {.<span class="Identifier">acyclic</span>.} <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span> <span class="Keyword">of</span> <a href="nqcommon.html#Expression"><span class="Identifier">Expression</span></a>
-  <span class="Identifier">src</span><span class="Operator">*</span><span class="Other">:</span> <a href="nqcommon.html#Expression"><span class="Identifier">Expression</span></a>
-  <span class="Identifier">leading</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">bool</span>
-  <span class="Identifier">trailing</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">bool</span>
-  <span class="Identifier">char</span><span class="Operator">*</span><span class="Other">:</span> <a href="nqcommon.html#Expression"><span class="Identifier">Expression</span></a>
-</pre></dt>
 <dd>
 
 
@@ -809,15 +783,6 @@ window.addEventListener('DOMContentLoaded', main);
 
 </dd>
 </div>
-<div id="newTrimExp,Expression,bool,bool,Expression">
-<dt><pre><span class="Keyword">func</span> <a href="#newTrimExp%2CExpression%2Cbool%2Cbool%2CExpression"><span class="Identifier">newTrimExp</span></a><span class="Other">(</span><span class="Identifier">src</span><span class="Other">:</span> <a href="nqcommon.html#Expression"><span class="Identifier">Expression</span></a><span class="Other">;</span> <span class="Identifier">leading</span><span class="Other">:</span> <span class="Identifier">bool</span><span class="Other">;</span> <span class="Identifier">trailing</span><span class="Other">:</span> <span class="Identifier">bool</span><span class="Other">;</span>
-                <span class="Identifier">char</span><span class="Other">:</span> <a href="nqcommon.html#Expression"><span class="Identifier">Expression</span></a> <span class="Other">=</span> <span class="Keyword">nil</span><span class="Other">)</span><span class="Other">:</span> <a href="nqcommon.html#Expression"><span class="Identifier">Expression</span></a> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
-<dd>
-
-
-
-</dd>
-</div>
 <div id="raiseDbError,string,string">
 <dt><pre><span class="Keyword">proc</span> <a href="#raiseDbError%2Cstring%2Cstring"><span class="Identifier">raiseDbError</span></a><span class="Other">(</span><span class="Identifier">msg</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">sqlstate</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span> {.<span class="Identifier">noreturn</span><span class="Other">,</span> <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">SqlError</span><span class="Other">]</span><span class="Other">,</span>
     <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
@@ -850,7 +815,7 @@ window.addEventListener('DOMContentLoaded', main);
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-02-28 16:16:41 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-03-27 09:29:55 UTC</small>
       </div>
     </div>
   </div>

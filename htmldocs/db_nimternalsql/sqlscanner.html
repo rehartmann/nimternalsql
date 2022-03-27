@@ -142,11 +142,12 @@ window.addEventListener('DOMContentLoaded', main);
   tokTimestamp, tokTrim, tokLeading, tokTrailing, tokBoth, tokPrecision,
   tokExists, tokFrom, tokGroup, tokIf, tokInsert, tokUpdate, tokSet, tokIn,
   tokIs, tokInto, tokJoin, tokKey, tokLike, tokNot, tokOn, tokOr, tokOrder,
-  tokPrimary, tokSelect, tokTable, tokUnion, tokValues, tokWhere, tokLeft,
-  tokInner, tokOuter, tokPosition, tokAsterisk, tokDiv, tokPlus, tokNull,
-  tokMinus, tokRightParen, tokLeftParen, tokComma, tokDot, tokEq, tokNeq, tokLt,
-  tokLe, tokGt, tokGe, tokConcat, tokIdentifier, tokString, tokInt, tokRat,
-  tokTrue, tokFalse, tokPlaceholder, tokNumPlaceholder, tokEndOfInput">TokenKind</a></li>
+  tokPrimary, tokSelect, tokTable, tokUnion, tokIntersect, tokExcept, tokValues,
+  tokWhere, tokWith, tokLeft, tokInner, tokOuter, tokPosition, tokAsterisk,
+  tokDiv, tokPlus, tokNull, tokMinus, tokRightParen, tokLeftParen, tokComma,
+  tokDot, tokEq, tokNeq, tokLt, tokLe, tokGt, tokGe, tokConcat, tokIdentifier,
+  tokString, tokInt, tokRat, tokTrue, tokFalse, tokPlaceholder,
+  tokNumPlaceholder, tokEndOfInput">TokenKind</a></li>
 
   </ul>
 </li>
@@ -282,11 +283,12 @@ window.addEventListener('DOMContentLoaded', main);
   <span class="Identifier">tokTimestamp</span><span class="Other">,</span> <span class="Identifier">tokTrim</span><span class="Other">,</span> <span class="Identifier">tokLeading</span><span class="Other">,</span> <span class="Identifier">tokTrailing</span><span class="Other">,</span> <span class="Identifier">tokBoth</span><span class="Other">,</span> <span class="Identifier">tokPrecision</span><span class="Other">,</span>
   <span class="Identifier">tokExists</span><span class="Other">,</span> <span class="Identifier">tokFrom</span><span class="Other">,</span> <span class="Identifier">tokGroup</span><span class="Other">,</span> <span class="Identifier">tokIf</span><span class="Other">,</span> <span class="Identifier">tokInsert</span><span class="Other">,</span> <span class="Identifier">tokUpdate</span><span class="Other">,</span> <span class="Identifier">tokSet</span><span class="Other">,</span> <span class="Identifier">tokIn</span><span class="Other">,</span>
   <span class="Identifier">tokIs</span><span class="Other">,</span> <span class="Identifier">tokInto</span><span class="Other">,</span> <span class="Identifier">tokJoin</span><span class="Other">,</span> <span class="Identifier">tokKey</span><span class="Other">,</span> <span class="Identifier">tokLike</span><span class="Other">,</span> <span class="Identifier">tokNot</span><span class="Other">,</span> <span class="Identifier">tokOn</span><span class="Other">,</span> <span class="Identifier">tokOr</span><span class="Other">,</span> <span class="Identifier">tokOrder</span><span class="Other">,</span>
-  <span class="Identifier">tokPrimary</span><span class="Other">,</span> <span class="Identifier">tokSelect</span><span class="Other">,</span> <span class="Identifier">tokTable</span><span class="Other">,</span> <span class="Identifier">tokUnion</span><span class="Other">,</span> <span class="Identifier">tokValues</span><span class="Other">,</span> <span class="Identifier">tokWhere</span><span class="Other">,</span> <span class="Identifier">tokLeft</span><span class="Other">,</span>
-  <span class="Identifier">tokInner</span><span class="Other">,</span> <span class="Identifier">tokOuter</span><span class="Other">,</span> <span class="Identifier">tokPosition</span><span class="Other">,</span> <span class="Identifier">tokAsterisk</span><span class="Other">,</span> <span class="Identifier">tokDiv</span><span class="Other">,</span> <span class="Identifier">tokPlus</span><span class="Other">,</span> <span class="Identifier">tokNull</span><span class="Other">,</span>
-  <span class="Identifier">tokMinus</span><span class="Other">,</span> <span class="Identifier">tokRightParen</span><span class="Other">,</span> <span class="Identifier">tokLeftParen</span><span class="Other">,</span> <span class="Identifier">tokComma</span><span class="Other">,</span> <span class="Identifier">tokDot</span><span class="Other">,</span> <span class="Identifier">tokEq</span><span class="Other">,</span> <span class="Identifier">tokNeq</span><span class="Other">,</span> <span class="Identifier">tokLt</span><span class="Other">,</span>
-  <span class="Identifier">tokLe</span><span class="Other">,</span> <span class="Identifier">tokGt</span><span class="Other">,</span> <span class="Identifier">tokGe</span><span class="Other">,</span> <span class="Identifier">tokConcat</span><span class="Other">,</span> <span class="Identifier">tokIdentifier</span><span class="Other">,</span> <span class="Identifier">tokString</span><span class="Other">,</span> <span class="Identifier">tokInt</span><span class="Other">,</span> <span class="Identifier">tokRat</span><span class="Other">,</span>
-  <span class="Identifier">tokTrue</span><span class="Other">,</span> <span class="Identifier">tokFalse</span><span class="Other">,</span> <span class="Identifier">tokPlaceholder</span><span class="Other">,</span> <span class="Identifier">tokNumPlaceholder</span><span class="Other">,</span> <span class="Identifier">tokEndOfInput</span></pre></dt>
+  <span class="Identifier">tokPrimary</span><span class="Other">,</span> <span class="Identifier">tokSelect</span><span class="Other">,</span> <span class="Identifier">tokTable</span><span class="Other">,</span> <span class="Identifier">tokUnion</span><span class="Other">,</span> <span class="Identifier">tokIntersect</span><span class="Other">,</span> <span class="Identifier">tokExcept</span><span class="Other">,</span> <span class="Identifier">tokValues</span><span class="Other">,</span>
+  <span class="Identifier">tokWhere</span><span class="Other">,</span> <span class="Identifier">tokWith</span><span class="Other">,</span> <span class="Identifier">tokLeft</span><span class="Other">,</span> <span class="Identifier">tokInner</span><span class="Other">,</span> <span class="Identifier">tokOuter</span><span class="Other">,</span> <span class="Identifier">tokPosition</span><span class="Other">,</span> <span class="Identifier">tokAsterisk</span><span class="Other">,</span>
+  <span class="Identifier">tokDiv</span><span class="Other">,</span> <span class="Identifier">tokPlus</span><span class="Other">,</span> <span class="Identifier">tokNull</span><span class="Other">,</span> <span class="Identifier">tokMinus</span><span class="Other">,</span> <span class="Identifier">tokRightParen</span><span class="Other">,</span> <span class="Identifier">tokLeftParen</span><span class="Other">,</span> <span class="Identifier">tokComma</span><span class="Other">,</span>
+  <span class="Identifier">tokDot</span><span class="Other">,</span> <span class="Identifier">tokEq</span><span class="Other">,</span> <span class="Identifier">tokNeq</span><span class="Other">,</span> <span class="Identifier">tokLt</span><span class="Other">,</span> <span class="Identifier">tokLe</span><span class="Other">,</span> <span class="Identifier">tokGt</span><span class="Other">,</span> <span class="Identifier">tokGe</span><span class="Other">,</span> <span class="Identifier">tokConcat</span><span class="Other">,</span> <span class="Identifier">tokIdentifier</span><span class="Other">,</span>
+  <span class="Identifier">tokString</span><span class="Other">,</span> <span class="Identifier">tokInt</span><span class="Other">,</span> <span class="Identifier">tokRat</span><span class="Other">,</span> <span class="Identifier">tokTrue</span><span class="Other">,</span> <span class="Identifier">tokFalse</span><span class="Other">,</span> <span class="Identifier">tokPlaceholder</span><span class="Other">,</span>
+  <span class="Identifier">tokNumPlaceholder</span><span class="Other">,</span> <span class="Identifier">tokEndOfInput</span></pre></dt>
 <dd>
 
 
@@ -373,7 +375,7 @@ window.addEventListener('DOMContentLoaded', main);
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-02-28 16:16:42 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-03-27 09:29:55 UTC</small>
       </div>
     </div>
   </div>
