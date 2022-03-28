@@ -107,4 +107,6 @@ try:
     discard
   raiseAssert("tst is still accessible after DROP table")
 except DbError:
-  discard
+  doAssert sqlState((ref DbError)(getCurrentException())) == "42704"
+
+exec(db, sql"DROP TABLE IF EXISTS tst")
