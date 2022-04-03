@@ -381,6 +381,18 @@ proc toVTable(tableExp: TableExp, withTables: Table[string, VTable],
         if (not tableExp.allowDuplicates) and not (rightChild of BaseTableRef):
           result = newDupRemTable(result)
 
+func orderByAllCols(order: seq[tuple[col: Natural, asc: bool]],
+                    colCount: Natural): bool =
+  for i in 0..<colCount:
+    var found = false
+    for o in order:
+      if o.col == i:
+        found = true
+        break
+    if not found:
+      return false
+  result = true
+
 proc toVTable(stmt: SqlStatement, db: Database): VTable =
   if not (stmt of QueryExp):
     raiseDbError("statement has no result", syntaxError)
@@ -401,10 +413,11 @@ proc toVTable(stmt: SqlStatement, db: Database): VTable =
                 "." else: "") &
             orderElement.name & " does not exist", undefinedColumnName)
       order.add((col: Natural(col), asc: orderElement.asc))
-    result = newSortedTable(if result of DupremTable: DupremTable(result).child
+    let dupremBySort = result of DupremTable and orderByAllCols(order, result.columnCount())
+    result = newSortedTable(if dupremBySort: DupremTable(result).child
                             else: result,
                             order,
-                            result of DupremTable)
+                            dupremBySort)
 
 iterator instantRows*(conn: DbConn; sql: SqlQuery; args: varargs[string,
     `$`]): InstantRow =
