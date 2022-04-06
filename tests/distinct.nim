@@ -37,9 +37,9 @@ doAssert rows[0][1] == "uh"
 doAssert rows[1][0] == "Fritz"
 doAssert rows[1][1] == "ui"
 
-rows = getAllRows(db, sql"SELECT DISTINCT b, c FROM tst ORDER BY b, c")
+rows = getAllRows(db, sql"SELECT DISTINCT b, c FROM tst ORDER BY b, c DESC")
 doAssert rows.len == 2
 doAssert rows[0][0] == "Fritz"
-doAssert rows[0][1] == "uh"
+doAssert rows[0][1] == "ui"
 doAssert rows[1][0] == "Fritz"
-doAssert rows[1][1] == "ui"
+doAssert rows[1][1] == "uh"
