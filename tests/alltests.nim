@@ -37,6 +37,7 @@ execTest("autoinc_txlog.nim")
 execTest("except.nim")
 execTest("intersect.nim")
 execTest("with.nim")
+execTest("insert_select.nim")
 
 if failedTests.len > 0:
   echo "FAILURE: tests failed: " & $failedTests

@@ -145,56 +145,72 @@ method execute(stmt: SqlDropTable, db: Database, tx: Tx, args: varargs[string]):
       raise getCurrentException()
   result = 0
 
-method execute(stmt: SqlInsert, db: Database, tx: Tx, args: varargs[string]): int64 =
-  if stmt.columns.len > 0:
-    if stmt.columns.len != stmt.values.len:
-      raiseDbError("number of expressions differs from number of target columns", syntaxError)
-  var vals: seq[NqValue]
-  var argv: seq[string] = @args
-  for val in stmt.values:
-    vals.add(val.eval(proc (name: string, rangeVar: string): NqValue =
-      if name[0] == '$':
-        return NqValue(kind: nqkString, strVal: argv[parseInt(name[
-            1..name.high]) - 1])
-      raise newException(KeyError, "variables not supported")))
-  let table = getTable(db, stmt.tableName)
-  if stmt.columns.len == 0 and stmt.values.len > 0:
-    insert(tx, table, vals)
+proc toVTable(tableExp: TableExp, withTables: Table[string, VTable], db: Database): VTable
+
+func insValues(vals: seq[NqValue], columns: seq[string], table: BaseTable): seq[NqValue] =
+  if columns.len == 0 and vals.len > 0:
+    result = vals
   else:
-    var insvals: seq[NqValue]
     var valSet: seq[bool]
-    newSeq(insvals, table.def.len)
+    newSeq(result, table.def.len)
     newSeq(valSet, table.def.len)
     var i = 0
-    for colName in stmt.columns:
+    for colName in columns:
       let col = columnNo(table, colName)
       if col == -1:
         raiseDbError("column \"" & colName & "\" does not exist", undefinedColumnName)
-      insvals[col] = vals[i]
+      result[col] = vals[i]
       valSet[col] = true
       i += 1
     for i in 0..<table.def.len:
       if not valSet[i]:
         if table.def[i].defaultValue != nil:
-          insvals[i] = eval(table.def[i].defaultValue, nil, nil)
+          result[i] = eval(table.def[i].defaultValue, nil, nil)
         elif table.def[i].autoincrement:
           if table.def[i].typ == "INTEGER" or table.def[i].typ == "INT":
             if table.def[i].currentAutoincVal >= high(int32):
               raiseDbError("AUTOINCREMENT reached highest possible value on column " &
                           table.def[i].name, valueOutOfRange)
             table.def[i].currentAutoincVal += 1
-            insvals[i] = NqValue(kind: nqkInt,
+            result[i] = NqValue(kind: nqkInt,
                                 intVal: int32(table.def[i].currentAutoincVal))
           else:
             if table.def[i].currentAutoincVal == high(int64):
               raiseDbError("AUTOINCREMENT reached highest possible value on column " &
                           table.def[i].name, valueOutOfRange)
             table.def[i].currentAutoincVal += 1
-            insvals[i] = NqValue(kind: nqkBigint,
+            result[i] = NqValue(kind: nqkBigint,
                                 bigintVal: table.def[i].currentAutoincVal)
         else:
-          insvals[i] = NqValue(kind: nqkNull)
-    insert(tx, table, insvals)
+          result[i] = NqValue(kind: nqkNull)
+
+method execute(stmt: SqlInsert, db: Database, tx: Tx, args: varargs[string]): int64 =
+  var vals: seq[NqValue]
+  var argv: seq[string] = @args
+  let table = getTable(db, stmt.tableName)
+  if stmt.kind == ikSelect:
+    let srcTable = toVTable(stmt.select, initTable[string, VTable](), db)
+    if stmt.columns.len > 0:
+      if stmt.columns.len != srcTable.columnCount:
+        raiseDbError("number of source column differs from number of target columns", syntaxError)
+    var rowCount: int64
+    for r in instantRows(srcTable, args, nil):
+      var insvals: seq[NqValue]
+      for col in 0..<r.columnCount():
+        insvals.add(r.columnValueAt(col))
+      insert(tx, table, insValues(insvals, stmt.columns, table))
+      rowCount += 1
+    return rowCount
+  if stmt.columns.len > 0:
+    if stmt.columns.len != stmt.values.len:
+      raiseDbError("number of expressions differs from number of target columns", syntaxError)
+  for val in stmt.values:
+    vals.add(val.eval(proc (name: string, rangeVar: string): NqValue =
+      if name[0] == '$':
+        return NqValue(kind: nqkString, strVal: argv[parseInt(name[
+            1..name.high]) - 1])
+      raise newException(KeyError, "variables not supported")))
+  insert(tx, table, insValues(vals, stmt.columns, table))
   result = 1
 
 method execute(stmt: SqlUpdate, db: Database, tx: Tx, args: varargs[string]): int64 =
@@ -295,8 +311,6 @@ func toVTable(tableRef: SqlTableRef, withTables: Table[string, VTable],
                              toVTable(tableRef.tableRef2, withTables, db),
                              tableRef.leftOuter,
                              tableRef.onExp)
-
-proc toVTable(tableExp: TableExp, withTables: Table[string, VTable], db: Database): VTable
 
 method transform(exp: Expression, withTables: Table[string, VTable],
                  db: Database): Expression {.base.} =

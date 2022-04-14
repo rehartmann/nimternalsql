@@ -20,6 +20,12 @@ type
         leftOuter*: bool
 
   SqlStatement* = ref object of RootObj
+  SqlSelect* = ref object
+    columns*: seq[SelectElement]
+    tables*: seq[SqlTableRef]
+    whereExp*: Expression
+    groupBy*: seq[QVarExp]
+    allowDuplicates*: bool
   SqlCreateTable* = ref object of SqlStatement
     tableName*: string
     columns*: seq[ColumnDef]
@@ -27,10 +33,15 @@ type
   SqlDropTable* = ref object of SqlStatement
     tableName*: string
     ifExists*: bool
+  SqlInsertKind* = enum ikValues, ikSelect
   SqlInsert* = ref object of SqlStatement
     tableName*: string
     columns*: seq[string]
-    values*: seq[Expression]
+    case kind*: SqlInsertKind
+      of ikValues:
+        values*: seq[Expression]
+      of ikSelect:
+        select*: TableExp
   UpdateAssignment* = object
     column*: string
     src*: Expression
@@ -47,12 +58,6 @@ type
     name*: string
     tableName*: string
     asc*: bool
-  SqlSelect* = ref object
-    columns*: seq[SelectElement]
-    tables*: seq[SqlTableRef]
-    whereExp*: Expression
-    groupBy*: seq[QVarExp]
-    allowDuplicates*: bool
   TableExpKind* = enum tekSelect, tekUnion, tekExcept, tekIntersect
   TableExp* {.acyclic.} = ref object of Expression
     case kind*: TableExpKind
@@ -624,9 +629,9 @@ proc parseInsert(scanner: Scanner): SqlStatement =
   var columns: seq[string]
   t = nextToken(scanner)
   if t.kind == tokDefault:
-    if nextToken(scanner).kind != tokValues:
-      raiseDbError("VALUES expected", syntaxError)
-    return SqlInsert(tableName: nameTok.identifier, columns: @[], values: @[])
+    if nextToken(scanner).kind == tokValues:
+      return SqlInsert(tableName: nameTok.identifier, columns: @[], kind: ikValues, values: @[])
+    raiseDbError("VALUES expected", syntaxError)
   elif t.kind == tokLeftParen:
     t = nextToken(scanner)
     if t.kind != tokIdentifier:
@@ -642,19 +647,22 @@ proc parseInsert(scanner: Scanner): SqlStatement =
     if t.kind != tokRightParen:
       raiseDbError("\")\" expected", syntaxError)
     t = nextToken(scanner)
+  var argCount = 0
+  if t.kind == tokSelect:
+    let tableExp = parseTableExp(scanner, argCount)
+    return SqlInsert(tableName: nameTok.identifier, columns: columns, kind: ikSelect, select: tableExp)
   if t.kind != tokValues:
-    raiseDbError("VALUES expected", syntaxError)
+    raiseDbError("VALUES or SELECT expected", syntaxError)
   t = nextToken(scanner)
   if t.kind != tokLeftParen:
     raiseDbError("( expected", syntaxError)
   var vals: seq[Expression]
-  var argCount = 0
   vals.add(parseExpression(scanner, argCount))
   while currentToken(scanner).kind == tokComma:
     vals.add(parseExpression(scanner, argCount))
   if currentToken(scanner).kind != tokRightParen:
     raiseDbError(") expected", syntaxError)
-  result = SqlInsert(tableName: nameTok.identifier, columns: columns, values: vals)
+  result = SqlInsert(tableName: nameTok.identifier, columns: columns, kind: ikValues, values: vals)
 
 proc parseSelectElement(scanner: Scanner, argCount: var int): SelectElement =
   var t = currentToken(scanner)
