@@ -34,9 +34,15 @@ doAssert rows[2][1] == "Gamma"
 
 exec(db, sql"CREATE TABLE tst4 (y text default '-', x char primary key)")
 
+doAssert execAffectedRows(db, sql"INSERT INTO tst4 (x) SELECT b FROM tst WHERE b > 'g' ") == 0
+
+rows = getAllRows(db, sql"SELECT * FROM tst4 ORDER BY x")
+doAssert rows.len == 0
+
 doAssert execAffectedRows(db, sql"INSERT INTO tst4 (x) SELECT b FROM tst") == 3
 
 rows = getAllRows(db, sql"SELECT * FROM tst4 ORDER BY x")
+doAssert rows.len == 3
 doAssert rows[0][0] == "-"
 doAssert rows[0][1] == "a"
 doAssert rows[1][0] == "-"
