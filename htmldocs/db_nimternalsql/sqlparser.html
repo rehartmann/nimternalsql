@@ -140,7 +140,15 @@ window.addEventListener('DOMContentLoaded', main);
     title="SqlInsert = ref object of SqlStatement
   tableName*: string
   columns*: seq[string]
-  values*: seq[Expression]">SqlInsert</a></li>
+  case kind*: SqlInsertKind
+  of ikValues:
+      values*: seq[Expression]
+
+  of ikSelect:
+      select*: TableExp">SqlInsert</a></li>
+  <li><a class="reference" href="#SqlInsertKind"
+    title="SqlInsertKind = enum
+  ikValues, ikSelect">SqlInsertKind</a></li>
   <li><a class="reference" href="#SqlRollback"
     title="SqlRollback = ref object of SqlStatement">SqlRollback</a></li>
   <li><a class="reference" href="#SqlSelect"
@@ -299,8 +307,23 @@ window.addEventListener('DOMContentLoaded', main);
 <dt><pre><a href="sqlparser.html#SqlInsert"><span class="Identifier">SqlInsert</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span> <span class="Keyword">of</span> <a href="sqlparser.html#SqlStatement"><span class="Identifier">SqlStatement</span></a>
   <span class="Identifier">tableName</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>
   <span class="Identifier">columns</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span>
-  <span class="Identifier">values</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><a href="nqcommon.html#Expression"><span class="Identifier">Expression</span></a><span class="Other">]</span>
-</pre></dt>
+  <span class="Keyword">case</span> <span class="Identifier">kind</span><span class="Operator">*</span><span class="Other">:</span> <a href="sqlparser.html#SqlInsertKind"><span class="Identifier">SqlInsertKind</span></a>
+  <span class="Keyword">of</span> <span class="Identifier">ikValues</span><span class="Other">:</span>
+      <span class="Identifier">values</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><a href="nqcommon.html#Expression"><span class="Identifier">Expression</span></a><span class="Other">]</span>
+
+  <span class="Keyword">of</span> <span class="Identifier">ikSelect</span><span class="Other">:</span>
+      <span class="Identifier">select</span><span class="Operator">*</span><span class="Other">:</span> <a href="sqlparser.html#TableExp"><span class="Identifier">TableExp</span></a>
+
+  </pre></dt>
+<dd>
+
+
+
+</dd>
+</div>
+<div id="SqlInsertKind">
+<dt><pre><a href="sqlparser.html#SqlInsertKind"><span class="Identifier">SqlInsertKind</span></a> <span class="Other">=</span> <span class="Keyword">enum</span>
+  <span class="Identifier">ikValues</span><span class="Other">,</span> <span class="Identifier">ikSelect</span></pre></dt>
 <dd>
 
 
@@ -438,7 +461,7 @@ window.addEventListener('DOMContentLoaded', main);
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-03-27 09:29:55 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-04-15 18:07:30 UTC</small>
       </div>
     </div>
   </div>

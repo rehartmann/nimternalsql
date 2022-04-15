@@ -78,10 +78,10 @@ proc open*(connection, user, password, database: string): DbConn =
   ## The user, password, and database arguments are ignored.
   ## For compatibility with future versions, empty strings should be passed.
   ##
-  ## If the connection argument is not an empty string, it is the name of a directory
-  ## where the transaction log file is kept.
-  ## If open() finds a file "dump.ndb" this directory, it restores the database from this file.
-  ## Afterwards, if open() finds a transaction log file, it reads the file to restore
+  ## If the connection argument is not an empty string, transaction logging is activated.
+  ## The connection argument must be the name of a directory where the transaction log file is kept.
+  ## If a file "dump.ndb" is found in this directory, the database is restored from this file.
+  ## Afterwards, if a transaction log file is found in this directory, the log file is read to restore
   ## the last state of the database.
   let db = newDatabase()
   let tx = newTx(connection, if connection != "": openLog(connection, db) else: nil)

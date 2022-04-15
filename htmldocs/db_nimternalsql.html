@@ -445,7 +445,7 @@ Returns number of columns in a row.
 <dd>
 
 <p>Opens a database, creating a new database in memory. The user, password, and database arguments are ignored. For compatibility with future versions, empty strings should be passed.</p>
-<p>If the connection argument is not an empty string, it is the name of a directory where the transaction log file is kept. If open() finds a file &quot;dump.ndb&quot; this directory, it restores the database from this file. Afterwards, if open() finds a transaction log file, it reads the file to restore the last state of the database.</p>
+<p>If the connection argument is not an empty string, transaction logging is activated. The connection argument must be the name of a directory where the transaction log file is kept. If a file &quot;dump.ndb&quot; is found in this directory, the database is restored from this file. Afterwards, if a transaction log file is found in this directory, the log file is read to restore the last state of the database.</p>
 
 
 </dd>
@@ -591,7 +591,7 @@ Executes the query and iterates over the result dataset.
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-03-27 09:29:55 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-04-15 18:07:30 UTC</small>
       </div>
     </div>
   </div>

@@ -3,8 +3,12 @@ trkRelOp	db_nimternalsql/sqlparser.html#trkRelOp	SqlTableRefKind.trkRelOp
 SqlTableRefKind	db_nimternalsql/sqlparser.html#SqlTableRefKind	sqlparser: SqlTableRefKind	
 SqlTableRef	db_nimternalsql/sqlparser.html#SqlTableRef	sqlparser: SqlTableRef	
 SqlStatement	db_nimternalsql/sqlparser.html#SqlStatement	sqlparser: SqlStatement	
+SqlSelect	db_nimternalsql/sqlparser.html#SqlSelect	sqlparser: SqlSelect	
 SqlCreateTable	db_nimternalsql/sqlparser.html#SqlCreateTable	sqlparser: SqlCreateTable	
 SqlDropTable	db_nimternalsql/sqlparser.html#SqlDropTable	sqlparser: SqlDropTable	
+ikValues	db_nimternalsql/sqlparser.html#ikValues	SqlInsertKind.ikValues	
+ikSelect	db_nimternalsql/sqlparser.html#ikSelect	SqlInsertKind.ikSelect	
+SqlInsertKind	db_nimternalsql/sqlparser.html#SqlInsertKind	sqlparser: SqlInsertKind	
 SqlInsert	db_nimternalsql/sqlparser.html#SqlInsert	sqlparser: SqlInsert	
 UpdateAssignment	db_nimternalsql/sqlparser.html#UpdateAssignment	sqlparser: UpdateAssignment	
 SqlUpdate	db_nimternalsql/sqlparser.html#SqlUpdate	sqlparser: SqlUpdate	
@@ -12,7 +16,6 @@ SqlDelete	db_nimternalsql/sqlparser.html#SqlDelete	sqlparser: SqlDelete
 SqlCommit	db_nimternalsql/sqlparser.html#SqlCommit	sqlparser: SqlCommit	
 SqlRollback	db_nimternalsql/sqlparser.html#SqlRollback	sqlparser: SqlRollback	
 OrderByElement	db_nimternalsql/sqlparser.html#OrderByElement	sqlparser: OrderByElement	
-SqlSelect	db_nimternalsql/sqlparser.html#SqlSelect	sqlparser: SqlSelect	
 tekSelect	db_nimternalsql/sqlparser.html#tekSelect	TableExpKind.tekSelect	
 tekUnion	db_nimternalsql/sqlparser.html#tekUnion	TableExpKind.tekUnion	
 tekExcept	db_nimternalsql/sqlparser.html#tekExcept	TableExpKind.tekExcept	
