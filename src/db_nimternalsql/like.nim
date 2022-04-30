@@ -23,8 +23,8 @@ func matchesLike*(s: seq[Rune], pattern: seq[Rune], startAt: Natural = 0): bool 
       else:
         if s[idx] != pattern[patIdx]:
           return false
-        idx = idx + 1
-        patIdx = patIdx + 1
+        idx += 1
+        patIdx += 1
   for c in pattern[patIdx..pattern.high]:
     if c != matchMany:
       return false
