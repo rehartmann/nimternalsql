@@ -256,7 +256,7 @@ proc exec*(conn: DbConn; stmt: SqlPrepared; args: varargs[string, `$`]) =
     discard SqlStatement(stmt).execute(conn.db, conn.tx, args)
 
 proc tryExec*(db: DbConn; query: SqlQuery; args: varargs[string, `$`]): bool =
-  ## Tries to execute the prepared query and returns true if successful, false otherwise.
+  ## Tries to execute the query and returns true if successful, false otherwise.
   try:
     exec(db, query, args)
     return true
