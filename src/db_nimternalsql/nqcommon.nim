@@ -3,7 +3,7 @@
 #
 # See the file LICENSE for details about the copyright.
 # 
-import db_common
+import db_connector/db_common
 
 const
   defaultDumpName* = "dump.ndb"

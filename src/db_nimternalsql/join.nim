@@ -1,6 +1,6 @@
 import nqcommon
 import nqtables
-import db_common
+import db_connector/db_common
 import strutils
 import tables
 import sequtils

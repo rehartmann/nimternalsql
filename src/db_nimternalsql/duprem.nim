@@ -1,5 +1,5 @@
 import nqtables
-import db_common
+import db_connector/db_common
 import sets
 
 type

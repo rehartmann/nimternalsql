@@ -1,5 +1,5 @@
 import db_nimternalsql
-import db_common
+import db_connector/db_common
 import algorithm
 import strutils
     

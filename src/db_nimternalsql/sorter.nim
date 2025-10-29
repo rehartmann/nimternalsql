@@ -1,7 +1,7 @@
 import nqcommon
 import nqtables
 import algorithm
-import db_common
+import db_connector/db_common
 
 type
   SortedTable = ref object of VTable

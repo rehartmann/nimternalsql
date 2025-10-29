@@ -1,6 +1,6 @@
 import nqcommon
 import nqtables
-import db_common
+import db_connector/db_common
 
 type
   ExceptTable = ref object of VTable

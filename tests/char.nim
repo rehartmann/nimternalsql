@@ -1,5 +1,5 @@
 import db_nimternalsql
-import db_common
+import db_connector/db_common
 
 let db = open("", "", "", "")
 exec(db, sql"CREATE TABLE tst (a char(3) primary key, b char, c varchar(5), d text)")

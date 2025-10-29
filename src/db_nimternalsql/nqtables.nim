@@ -3,7 +3,7 @@
 #
 # See the file LICENSE for details about the copyright.
 # 
-import db_common
+import db_connector/db_common
 import tables
 import strutils
 import hashes
@@ -812,7 +812,7 @@ func isAllOrAny(exp: Expression): bool =
   result = (exp of ScalarOpExp) and (((ScalarOpExp)exp).opName == "ALL" or
                                      ((ScalarOpExp)exp).opName == "ANY")
 
-func evalCmpAllOrAny(arg0: NqValue, exp: ScalarOpExp,
+proc evalCmpAllOrAny(arg0: NqValue, exp: ScalarOpExp,
                      cmp: proc(v1: NqValue, v2: NqValue): bool,
                      varResolver: VarResolver): NqValue =
   if columnCount(VTable(exp.args[0])) != 1:

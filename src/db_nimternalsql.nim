@@ -36,7 +36,7 @@
 ## .. code-block:: Nim
 ##     db.exec(sql"INSERT INTO my_table (id, name) VALUES (0, ?)",
 ##             "Nicolas")
-import db_common
+import db_connector/db_common
 import db_nimternalsql/nqcommon
 import db_nimternalsql/nqtables
 import db_nimternalsql/sqlscanner
